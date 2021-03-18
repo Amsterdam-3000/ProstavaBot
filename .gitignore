@@ -13,3 +13,6 @@ Thumbs.db
 
 # Ignore built ts files
 dist/**/*
+
+# Ignore idea bullshit
+.idea
