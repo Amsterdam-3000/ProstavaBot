@@ -2,8 +2,9 @@
   "name": "prostavabot",
   "version": "0.1.0",
   "description": "Я контролирую проставы твоих друзей",
-  "main": "prostavabot.ts",
-  "scripts": {},
+  "scripts": {
+    "dev": "nodemon src/index.ts"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/usebooz/ProstavaBot.git"
@@ -15,11 +16,13 @@
   },
   "homepage": "https://github.com/usebooz/ProstavaBot#readme",
   "dependencies": {
+    "@edjopato/telegraf-i18n": "^0.2.1",
     "dotenv": "^8.2.0",
     "mongoose": "^5.12.0",
     "telegraf": "^4.3.0"
   },
   "devDependencies": {
+    "@types/node": "^14.14.36",
     "@typescript-eslint/eslint-plugin": "^4.18.0",
     "@typescript-eslint/parser": "^4.18.0",
     "eslint": "^7.22.0",
