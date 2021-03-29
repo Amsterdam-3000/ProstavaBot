@@ -6,5 +6,6 @@ config({ path: resolve(process.cwd(), "private", ".env") });
 
 export const CONFIG = {
     TELEGRAM_TOKEN: process.env.TELEGRAM_TOKEN,
-    MONGODB_URI: process.env.MONGODB_URI
+    MONGODB_URI: process.env.MONGODB_URI,
+    SUPER_ADMIN_ID: Number(process.env.SUPER_ADMIN_ID)
 };

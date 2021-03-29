@@ -1,10 +1,9 @@
 import { Scenes } from "telegraf";
 import { SCENE } from "../commons/constants";
-import { UpdateContext } from "../commons/interfaces";
+import { enterHelpScene } from "../controllers";
+import { UpdateContext } from "../types/telegraf";
 
 export const startScene = new Scenes.BaseScene<UpdateContext>(SCENE.START);
 
-//TODO controllers
-//TEST
-startScene.enter((ctx) => ctx.reply("Hi"));
-startScene.leave((ctx) => ctx.reply("Bye"));
+//Redirect to Help Scene
+startScene.enter(enterHelpScene);

@@ -1,30 +1,38 @@
 import { bot } from "./commons/bot";
 import { db } from "./commons/db";
-import { SCENE } from "./commons/constants";
-import { getSceneController } from "./commons/util";
-import { addI18n, addSession, addLog, isGroup, addAllScenes } from "./middlewares";
+import { addI18n, addSession, addLog, addMainStage, addGroup } from "./middlewares";
+import { enterHelpScene, enterSettingsScene, enterStartScene } from "./controllers";
 
 db.on("error", (err) => {
     //TODO Logger
-    console.error.bind(console, "DB connection error:");
+    console.log(err);
     process.exit(1);
 });
 
 db.once("open", () => {
-    //Apply middlewares
+    //Add Global Session to Context
     bot.use(addSession);
-    bot.use(addLog);
+    //Add Global I18N to Context
     bot.use(addI18n);
-    bot.use(isGroup);
-    bot.use(addAllScenes);
-    //Apply scenes
-    bot.start(getSceneController(SCENE.START));
-    bot.help(getSceneController(SCENE.HELP));
-    bot.settings(getSceneController(SCENE.SETTINGS));
-    //TODO custom commands
-    // Launch bot
+    //Add Main Stage to Context
+    bot.use(addMainStage);
+    //Add Logging
+    bot.use(addLog);
+    //Add Group to Global Session
+    bot.use(addGroup);
+    //Enter Start Scene
+    bot.start(enterStartScene);
+    //Enter Help Scene
+    bot.help(enterHelpScene);
+    //Enter Settings Scene
+    bot.settings(enterSettingsScene);
+    //TODO Custom commands
+    //Launch bot
     bot.launch();
-    // Enable graceful stop
+    //Catch errors
+    //TODO Logger
+    bot.catch((err) => console.log(err));
+    //Enable graceful stop
     process.once("SIGINT", () => bot.stop("SIGINT"));
     process.once("SIGTERM", () => bot.stop("SIGTERM"));
 });

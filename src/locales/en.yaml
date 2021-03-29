@@ -1,2 +1,5 @@
 reply:
-    not_group: I only work in groups!
+    not_group: 🚫 I only work in groups!
+    not_admin: 🔞 You are not admin in this group!
+    app_wrong: 📵 Something went wrong!
+
