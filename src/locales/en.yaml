@@ -1,5 +1,17 @@
 reply:
-    not_group: 🚫 I only work in groups!
-    not_admin: 🔞 You are not admin in this group!
-    app_wrong: 📵 Something went wrong!
-
+    not_group: "🚫 I only work in groups!"
+    not_admin: "🔞 You are not admin in this group!"
+    app_wrong: "📵 Something went wrong!"
+command:
+    start: "🎬 start Prostava"
+    help: "🚑 show Prostava help"
+    settings: "🛠 change Prostava settings"
+    profile: "🎂 complete Your profile"
+    prostava: "🍺 announce new prostava"
+    search: "🔎 search for prostavas"
+command_group:
+    bot: "Bot"
+    user: "User"
+    prostava: "Prostava"
+header:
+    help: "I can help you control prostavas. Here are my commands:"

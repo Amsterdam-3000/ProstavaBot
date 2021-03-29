@@ -2,7 +2,7 @@ import { CHAT_TYPE, LOCALE_REPLY } from "../commons/constants";
 import { UpdateContext } from "../types/telegraf";
 import { GroupCollection } from "../models";
 
-export const addGroup = async (ctx: UpdateContext, next: Function) => {
+export const addGroupToSession = async (ctx: UpdateContext, next: Function) => {
     if (ctx.session.group) {
         return next();
     }

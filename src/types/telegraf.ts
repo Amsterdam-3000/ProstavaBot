@@ -10,6 +10,7 @@ export interface UpdateContext extends Context {
     readonly i18n: I18nContext;
     scene: Scenes.SceneContextScene<UpdateContext>;
     session: GroupSession;
+    help: string;
 }
 
 

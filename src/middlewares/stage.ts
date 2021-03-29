@@ -1,3 +1,3 @@
 import { mainStage } from "../scenes";
 
-export const addMainStage = mainStage.middleware();
+export const addStageToSession = mainStage.middleware();
