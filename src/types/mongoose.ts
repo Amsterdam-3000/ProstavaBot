@@ -5,6 +5,7 @@ export interface GroupSettings {
     open_period?: number;
     min_percent?: number;
     prev_period?: number;
+    language?: string;
 }
 export interface Group {
     _id: number;

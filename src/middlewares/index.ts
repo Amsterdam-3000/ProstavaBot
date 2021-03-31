@@ -4,3 +4,4 @@ export * from "./i18n";
 export * from "./group";
 export * from "./user";
 export * from "./stage";
+export * from "./help";

@@ -9,9 +9,12 @@ command:
     profile: "🎂 complete Your profile"
     prostava: "🍺 announce new prostava"
     search: "🔎 search for prostavas"
+    language: "👅 change Prostava language"
 command_group:
     bot: "Bot"
     user: "User"
     prostava: "Prostava"
 header:
     help: "I can help you control prostavas. Here are my commands:"
+action:
+    show_languages: "Language: ${language}"

@@ -3,7 +3,7 @@ import { I18nContext } from "@edjopato/telegraf-i18n";
 import { GroupDocument } from "./mongoose";
 
 interface GroupSession extends Scenes.SceneSession {
-    group: GroupDocument
+    group: GroupDocument;
 }
 
 export interface UpdateContext extends Context {
@@ -12,5 +12,3 @@ export interface UpdateContext extends Context {
     session: GroupSession;
     help: string;
 }
-
-

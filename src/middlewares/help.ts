@@ -5,6 +5,7 @@ import { UpdateContext } from "../types/telegraf";
 
 export const addHelpToContext = async (ctx: UpdateContext, next: Function) => {
     if (!ctx.help) {
+        //TODO Catch error
         ctx.help = await renderFile(resolve(process.cwd(), "src/views", "help.ejs"), {
             i18n: ctx.i18n,
             COMMAND: COMMAND,
