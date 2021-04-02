@@ -1,14 +1,15 @@
 import { Scenes, Context } from "telegraf";
 import { I18nContext } from "@edjopato/telegraf-i18n";
-import { GroupDocument } from "./mongoose";
+import { Group, User } from ".";
 
-interface GroupSession extends Scenes.SceneSession {
-    group: GroupDocument;
+interface ContextSession extends Scenes.SceneSession {
+    group: Group;
+    user: User;
 }
 
 export interface UpdateContext extends Context {
     readonly i18n: I18nContext;
     scene: Scenes.SceneContextScene<UpdateContext>;
-    session: GroupSession;
+    session: ContextSession;
     help: string;
 }

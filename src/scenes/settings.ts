@@ -1,12 +1,12 @@
 import { Scenes } from "telegraf";
 import { ACTION, SCENE } from "../commons/constants";
-import { UpdateContext } from "../types/telegraf";
+import { UpdateContext } from "../types";
 import { isUserAdmin, applyGroupSettings, changeLanguage, saveGroupSettings } from "../middlewares";
-import { hideSettings, showLanguages, showSettings } from "../controllers";
+import { backToSettings, forbidAction, hideScene, showLanguages, showSettings } from "../controllers";
 
 export const settingsScene = new Scenes.BaseScene<UpdateContext>(SCENE.SETTINGS);
 
-settingsScene.enter(showSettings);
+settingsScene.enter(showSettings, (ctx) => console.log(ctx));
 
 settingsScene.action(ACTION.SHOW_LANGUAGES, isUserAdmin, showLanguages);
 settingsScene.action(
@@ -17,5 +17,8 @@ settingsScene.action(
     applyGroupSettings,
     showLanguages
 );
+settingsScene.action(ACTION.BACK, isUserAdmin, backToSettings);
 
-settingsScene.leave(hideSettings);
+settingsScene.leave(hideScene);
+
+settingsScene.action(/./, forbidAction);

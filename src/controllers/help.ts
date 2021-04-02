@@ -1,5 +1,5 @@
 import { SCENE } from "../commons/constants";
-import { UpdateContext } from "../types/telegraf";
+import { UpdateContext } from "../types";
 
 export const enterHelpScene = async (ctx: UpdateContext) => ctx.scene.enter(SCENE.HELP);
 

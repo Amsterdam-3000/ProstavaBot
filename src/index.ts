@@ -1,5 +1,6 @@
 import { bot } from "./commons/bot";
 import { db } from "./commons/db";
+import { COMMAND } from "./commons/constants";
 import {
     addI18nToContext,
     addSessionToContext,
@@ -8,9 +9,10 @@ import {
     addGroupToSession,
     isGroupChat,
     addHelpToContext,
-    applyGroupSettings
+    applyGroupSettings,
+    addUserToSession
 } from "./middlewares";
-import { enterHelpScene, enterSettingsScene, enterStartScene } from "./controllers";
+import { enterHelpScene, enterSettingsScene, enterStartScene, enterProfileScene, forbidAction } from "./controllers";
 
 db.on("error", (err) => {
     //TODO Logger
@@ -24,12 +26,14 @@ db.once("open", () => {
     bot.use(addStageToSession);
     bot.use(isGroupChat, addGroupToSession, applyGroupSettings);
     bot.use(addHelpToContext);
+    bot.use(addUserToSession);
     bot.use(addUpdateLogging);
 
     bot.start(enterStartScene);
     bot.help(enterHelpScene);
     bot.settings(enterSettingsScene);
-    //TODO Custom commands
+    bot.command(COMMAND.PROFILE, enterProfileScene);
+    bot.action(/./, forbidAction);
 
     //Launch bot
     bot.launch();

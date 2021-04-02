@@ -1,7 +1,7 @@
 import { renderFile } from "ejs";
 import { resolve } from "path";
-import { COMMAND, LOCALE_COMMAND, LOCALE_HEADER, LOCALE_COMMAND_GROUP } from "../commons/constants";
-import { UpdateContext } from "../types/telegraf";
+import { COMMAND, LOCALE_COMMAND, LOCALE_HEADER, LOCALE_COMMAND_GROUP, COMMAND_CODE } from "../commons/constants";
+import { UpdateContext } from "../types";
 
 export const addHelpToContext = async (ctx: UpdateContext, next: Function) => {
     if (!ctx.help) {
@@ -9,6 +9,7 @@ export const addHelpToContext = async (ctx: UpdateContext, next: Function) => {
         ctx.help = await renderFile(resolve(process.cwd(), "src/views", "help.ejs"), {
             i18n: ctx.i18n,
             COMMAND: COMMAND,
+            COMMAND_CODE: COMMAND_CODE,
             LOCALE_COMMAND: LOCALE_COMMAND,
             LOCALE_HEADER: LOCALE_HEADER,
             LOCALE_COMMAND_GROUP: LOCALE_COMMAND_GROUP

@@ -1,7 +1,7 @@
 import { Scenes } from "telegraf";
 import { SCENE } from "../commons/constants";
 import { enterHelpScene } from "../controllers";
-import { UpdateContext } from "../types/telegraf";
+import { UpdateContext } from "../types";
 
 export const startScene = new Scenes.BaseScene<UpdateContext>(SCENE.START);
 

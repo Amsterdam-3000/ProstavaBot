@@ -1,6 +1,7 @@
-import { model, Schema } from "mongoose";
+import { Model, model, Schema } from "mongoose";
 import { DB_COLLECTION } from "../commons/constants";
-import { GroupDocument, GroupModel, GroupSettings } from "../types/mongoose";
+import { GroupModel, GroupDocument, GroupSettings, Group, User } from "../types";
+import * as mongooseAutoPopulate from "mongoose-autopopulate";
 
 const GroupSettinsSchema = new Schema(
     {
@@ -29,15 +30,38 @@ const GroupSettinsSchema = new Schema(
 const GroupSchema = new Schema<GroupDocument, GroupModel>(
     {
         _id: Number,
-        settings: GroupSettinsSchema
+        settings: GroupSettinsSchema,
+        users: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: DB_COLLECTION.USER,
+                autopopulate: true
+            }
+        ]
     },
     { _id: false }
 );
 
-const GroupCollection = model<GroupDocument, GroupModel>(DB_COLLECTION.GROUP, GroupSchema);
+GroupSchema.plugin(mongooseAutoPopulate);
 
-export const upsertGroup = async (groupId: number): Promise<GroupDocument> =>
-    GroupCollection.findOneAndUpdate({ _id: groupId }, {}, { upsert: true, setDefaultsOnInsert: true });
+GroupSchema.statics.upsertGroup = async function (this: Model<GroupDocument>, groupId: Group["_id"]) {
+    return this.findOneAndUpdate({ _id: groupId }, {}, { upsert: true, setDefaultsOnInsert: true });
+};
 
-export const updateSettings = async (groupId: number, settings: GroupSettings) =>
-    GroupCollection.updateOne({ _id: groupId }, { $set: { settings: settings } });
+GroupSchema.statics.updateSettings = async function (
+    this: Model<GroupDocument>,
+    groupId: Group["_id"],
+    settings: GroupSettings
+) {
+    return this.updateOne({ _id: groupId }, { $set: { settings: settings } });
+};
+
+GroupSchema.statics.pushUser = async function (this: Model<GroupDocument>, groupId: Group["_id"], userId: User["_id"]) {
+    return this.updateOne({ _id: groupId }, { $addToSet: { users: userId } });
+};
+
+GroupSchema.statics.popUser = async function (this: Model<GroupDocument>, groupId: Group["_id"], userId: User["_id"]) {
+    return this.updateOne({ _id: groupId }, { $pull: { users: userId } });
+};
+
+export const GroupCollection = model<GroupDocument, GroupModel>(DB_COLLECTION.GROUP, GroupSchema);
