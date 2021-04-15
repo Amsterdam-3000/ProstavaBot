@@ -1,66 +1,47 @@
-import { MEMBER_STATUS, LOCALE_REPLY, ERROR_CODE } from "../commons/constants";
-import { CONFIG } from "../commons/config";
-import { UpdateContext, User } from "../types";
+import { CODE } from "../constants";
+import { UpdateContext, UserDocument } from "../types";
 import { UserCollection } from "../models";
-import { Message } from "telegraf/typings/core/types/typegram";
+import { LocaleUtils, ProstavaUtils, TelegramUtils } from "../utils";
 
-export const isUserAdmin = async (ctx: UpdateContext, next: Function) => {
-    if (ctx.callbackQuery.from.id === CONFIG.SUPER_ADMIN_ID) {
-        return next();
+export class UserMiddleware {
+    static async addUserToContext(ctx: UpdateContext, next: Function) {
+        const chat = TelegramUtils.getChatFromContext(ctx);
+        const user = TelegramUtils.getUserFromContext(ctx);
+        ctx.user = ProstavaUtils.findUserByUserId(ctx.group.users, user.id);
+        if (!ctx.user) {
+            ctx.user = new UserCollection({ user_id: user.id, group_id: chat.id });
+            ctx.group.users.push(ctx.user);
+        }
+        await next();
     }
-    //TODO Catch error
-    const chatMember = await ctx.getChatMember(ctx.callbackQuery.from.id);
-    if (chatMember.status === MEMBER_STATUS.OWNER || chatMember.status === MEMBER_STATUS.ADMIN) {
-        return next();
-    }
-    return ctx.answerCbQuery(ctx.i18n.t(LOCALE_REPLY.NOT_ADMIN, { error_code: ERROR_CODE.NOT_ADMIN }));
-};
 
-export const addUserToSession = async (ctx: UpdateContext, next: Function) => {
-    if (ctx.session.user) {
-        return next();
-    }
-    const users = ctx.session.group.users as [User];
-    ctx.session.user = users.find((user) => user.user_id === ctx.from.id);
-    if (ctx.session.user) {
-        return next();
-    }
-    //TODO Catch error
-    ctx.session.user = await UserCollection.upsertUser(ctx.from.id, ctx.chat.id);
-    if (ctx.session.user) {
-        return next();
-    }
-    return ctx.reply(ctx.i18n.t(LOCALE_REPLY.APP_WRONG, { error_code: ERROR_CODE.APP_WRONG }));
-};
+    static async isUserAdmin(ctx: UpdateContext, next: Function) {
+        const chatMember = await ctx.getChatMember(TelegramUtils.getUserFromContext(ctx).id);
+        if (!TelegramUtils.isMemberAdmin(chatMember)) {
+            ctx.answerCbQuery(LocaleUtils.getErrorText(ctx.i18n, CODE.ERROR.NOT_ADMIN));
+            return;
+        }
+        await next();
+    }  
 
-export const saveUserPersonalData = async (ctx: UpdateContext, next: Function) => {
-    //TODO Catch error
-    await UserCollection.updatePersonalData(
-        ctx.session.user.user_id,
-        ctx.session.user.group_id,
-        ctx.session.user.personal_data
-    );
-    return next();
-};
-
-export const changeUserEmoji = async (ctx: UpdateContext, next: Function) => {
-    const message = ctx.message as Message.TextMessage;
-    if (message.text === ctx.session.user.personal_data.emoji) {
-        return;
+    static async saveUser(ctx: UpdateContext, next: Function) {
+        if ((ctx.user as UserDocument).isModified()) {
+            try {
+                await (ctx.user as UserDocument).save();
+            } catch {
+                //TOTO Logger
+                return;
+            }
+        }
+        await next();
     }
-    ctx.session.user.personal_data.emoji = message.text;
-    return next();
-};
 
-export const changeUserBirthday = async (ctx: UpdateContext, next: Function) => {
-    const message = ctx.message as Message.TextMessage;
-    const birthday = new Date(message.text);
-    if (
-        ctx.session.user.personal_data.birthday &&
-        ctx.session.user.personal_data.birthday.toLocaleDateString() === birthday.toLocaleDateString()
-    ) {
-        return;
+    static async changeUserEmoji(ctx: UpdateContext, next: Function) {
+        ctx.user.personal_data.emoji = TelegramUtils.getTextMessage(ctx).text;
+        await next();
     }
-    ctx.session.user.personal_data.birthday = birthday;
-    return next();
-};
+    static async changeUserBirthday(ctx: UpdateContext, next: Function) {
+        ctx.user.personal_data.birthday = new Date(TelegramUtils.getTextMessage(ctx).text);
+        await next();
+    }
+}

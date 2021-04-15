@@ -1,24 +1,72 @@
 import { Scenes } from "telegraf";
-import { ACTION, SCENE } from "../commons/constants";
+import { PROSTAVA } from "../constants";
+import { CommonController, SettingsController } from "../controllers";
+import { CommonMiddleware, GroupMiddleware, UserMiddleware } from "../middlewares";
 import { UpdateContext } from "../types";
-import { isUserAdmin, applyGroupSettings, changeLanguage, saveGroupSettings } from "../middlewares";
-import { backToSettings, forbidAction, hideScene, showLanguages, showSettings } from "../controllers";
+import { RegexUtils } from "../utils";
+import { CommonScene } from "./common";
 
-export const settingsScene = new Scenes.BaseScene<UpdateContext>(SCENE.SETTINGS);
+export const settingsScene = new Scenes.BaseScene<UpdateContext>(PROSTAVA.COMMAND.SETTINGS);
 
-settingsScene.enter(showSettings, (ctx) => console.log(ctx));
+settingsScene.enter(SettingsController.showSettings);
 
-settingsScene.action(ACTION.SHOW_LANGUAGES, isUserAdmin, showLanguages);
+//Language
 settingsScene.action(
-    new RegExp(`${ACTION.CHANGE_LANGUAGE}`),
-    isUserAdmin,
-    changeLanguage,
-    saveGroupSettings,
-    applyGroupSettings,
-    showLanguages
+    RegexUtils.matchAction(PROSTAVA.ACTION.SETTINGS_LANGUAGE),
+    UserMiddleware.isUserAdmin,
+    CommonMiddleware.isCbMessageOrigin,
+    SettingsController.showLanguages
 );
-settingsScene.action(ACTION.BACK, isUserAdmin, backToSettings);
+settingsScene.action(
+    RegexUtils.matchSubAction(PROSTAVA.ACTION.SETTINGS_LANGUAGE),
+    UserMiddleware.isUserAdmin,
+    CommonMiddleware.isCbMessageOrigin,
+    GroupMiddleware.changeLanguage,
+    GroupMiddleware.applyGroupSettings,
+    GroupMiddleware.saveGroup,
+    SettingsController.showLanguages
+);
 
-settingsScene.leave(hideScene);
+//Currency
+settingsScene.action(
+    RegexUtils.matchAction(PROSTAVA.ACTION.SETTINGS_CURRENCY),
+    UserMiddleware.isUserAdmin,
+    CommonMiddleware.isCbMessageOrigin,
+    SettingsController.showCurrencies
+);
+settingsScene.action(
+    RegexUtils.matchSubAction(PROSTAVA.ACTION.SETTINGS_CURRENCY),
+    UserMiddleware.isUserAdmin,
+    CommonMiddleware.isCbMessageOrigin,
+    GroupMiddleware.changeCurrency,
+    GroupMiddleware.saveGroup,
+    SettingsController.showCurrencies
+);
 
-settingsScene.action(/./, forbidAction);
+//Days Count Percentage Hours
+CommonScene.actionInputRequest(settingsScene, PROSTAVA.ACTION.SETTINGS_DAYS);
+CommonScene.actionInputRequest(settingsScene, PROSTAVA.ACTION.SETTINGS_COUNT);
+CommonScene.actionInputRequest(settingsScene, PROSTAVA.ACTION.SETTINGS_PERCENTAGE);
+CommonScene.actionInputRequest(settingsScene, PROSTAVA.ACTION.SETTINGS_HOURS);
+settingsScene.hears(
+    RegexUtils.matchNumber(),
+    CommonMiddleware.checkStateAction([
+        PROSTAVA.ACTION.SETTINGS_DAYS,
+        PROSTAVA.ACTION.SETTINGS_COUNT,
+        PROSTAVA.ACTION.SETTINGS_PERCENTAGE,
+        PROSTAVA.ACTION.SETTINGS_HOURS
+    ]),
+    GroupMiddleware.changeSettings,
+    GroupMiddleware.saveGroup,
+    CommonController.enterScene(PROSTAVA.COMMAND.SETTINGS)
+);
+
+//Back
+settingsScene.action(
+    RegexUtils.matchAction(PROSTAVA.ACTION.BACK),
+    UserMiddleware.isUserAdmin,
+    CommonMiddleware.isCbMessageOrigin,
+    SettingsController.backToSettings
+);
+
+settingsScene.leave(CommonController.hideScene);

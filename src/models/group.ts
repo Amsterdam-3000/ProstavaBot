@@ -1,40 +1,65 @@
-import { Model, model, Schema } from "mongoose";
-import { DB_COLLECTION } from "../commons/constants";
-import { GroupModel, GroupDocument, GroupSettings, Group, User } from "../types";
+import { model, Schema } from "mongoose";
+import { PROSTAVA, LOCALE, CODE } from "../constants";
+import { GroupModel, GroupDocument } from "../types";
 import * as mongooseAutoPopulate from "mongoose-autopopulate";
 
 const GroupSettinsSchema = new Schema(
     {
-        open_period: {
-            type: Number,
-            default: 0
-        },
-        min_percent: {
-            type: Number,
-            default: 0
-        },
-        prev_period: {
-            type: Number,
-            default: 0
-        },
         language: {
             type: String,
-            default: "en",
+            default: LOCALE.LANGUAGE.EN,
             minLength: 2,
             maxLength: 2
+        },
+        currency: {
+            type: String,
+            default: CODE.CURRENCY.DOLLAR,
+            minLength: 1,
+            maxLength: 1
+        },
+        create_days_ago: {
+            type: Number,
+            default: 0
+        },
+        chat_members_count: {
+            type: Number,
+            default: 0
+        },
+        participants_min_percent: {
+            type: Number,
+            default: 0,
+            min: 0,
+            max: 100,
+        },
+        pending_hours: {
+            type: Number,
+            default: 0
         }
     },
     { _id: false }
 );
+GroupSettinsSchema.virtual("participants_min_count").get(function () {
+    return Math.ceil(this.chat_members_count * this.participants_min_percent / 100);
+});
 
 const GroupSchema = new Schema<GroupDocument, GroupModel>(
     {
         _id: Number,
-        settings: GroupSettinsSchema,
+        settings: {
+            type: GroupSettinsSchema,
+            default: {}
+        },
         users: [
             {
                 type: Schema.Types.ObjectId,
-                ref: DB_COLLECTION.USER,
+                ref: PROSTAVA.COLLECTION.USER,
+                autopopulate: true
+            }
+        ],
+        prostavas: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: PROSTAVA.COLLECTION.PROSTAVA,
                 autopopulate: true
             }
         ]
@@ -44,24 +69,4 @@ const GroupSchema = new Schema<GroupDocument, GroupModel>(
 
 GroupSchema.plugin(mongooseAutoPopulate);
 
-GroupSchema.statics.upsertGroup = async function (this: Model<GroupDocument>, groupId: Group["_id"]) {
-    return this.findOneAndUpdate({ _id: groupId }, {}, { upsert: true, setDefaultsOnInsert: true });
-};
-
-GroupSchema.statics.updateSettings = async function (
-    this: Model<GroupDocument>,
-    groupId: Group["_id"],
-    settings: GroupSettings
-) {
-    return this.updateOne({ _id: groupId }, { $set: { settings: settings } });
-};
-
-GroupSchema.statics.pushUser = async function (this: Model<GroupDocument>, groupId: Group["_id"], userId: User["_id"]) {
-    return this.updateOne({ _id: groupId }, { $addToSet: { users: userId } });
-};
-
-GroupSchema.statics.popUser = async function (this: Model<GroupDocument>, groupId: Group["_id"], userId: User["_id"]) {
-    return this.updateOne({ _id: groupId }, { $pull: { users: userId } });
-};
-
-export const GroupCollection = model<GroupDocument, GroupModel>(DB_COLLECTION.GROUP, GroupSchema);
+export const GroupCollection = model<GroupDocument, GroupModel>(PROSTAVA.COLLECTION.GROUP, GroupSchema);

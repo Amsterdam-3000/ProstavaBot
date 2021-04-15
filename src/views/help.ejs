@@ -1,13 +1,14 @@
-<%= i18n.t(LOCALE_HEADER.HELP) %>
+<%= i18n.t('header.help') %>
 
-<b><%= i18n.t(LOCALE_COMMAND_GROUP.BOT) %></b>
-/<%= COMMAND.START %> - <%= i18n.t(LOCALE_COMMAND.START, { command_code: COMMAND_CODE.START }) %>
-/<%= COMMAND.HELP %> - <%= i18n.t(LOCALE_COMMAND.HELP, { command_code: COMMAND_CODE.HELP }) %>
-/<%= COMMAND.SETTINGS %> - <%= i18n.t(LOCALE_COMMAND.SETTINGS, { command_code: COMMAND_CODE.SETTINGS }) %>
+<b><%= i18n.t('command_group.bot') %></b>
+/<%= COMMAND.START %> - <%= LocaleUtils.getCommandText(i18n, COMMAND.START) %>
+/<%= COMMAND.HELP %> - <%= LocaleUtils.getCommandText(i18n, COMMAND.HELP) %>
+/<%= COMMAND.SETTINGS %> - <%= LocaleUtils.getCommandText(i18n, COMMAND.SETTINGS) %>
 
-<b><%= i18n.t(LOCALE_COMMAND_GROUP.USER) %></b>
-/<%= COMMAND.PROFILE %> - <%= i18n.t(LOCALE_COMMAND.PROFILE, { command_code: COMMAND_CODE.PROFILE, username: '' }) %>
+<b><%= i18n.t('command_group.user') %></b>
+/<%= COMMAND.PROFILE %> - <%= LocaleUtils.getCommandText(i18n, COMMAND.PROFILE) %>
 
-<b><%= i18n.t(LOCALE_COMMAND_GROUP.PROSTAVA) %></b>
-/<%= COMMAND.PROSTAVA %> - <%= i18n.t(LOCALE_COMMAND.PROSTAVA, { command_code: COMMAND_CODE.PROSTAVA }) %>
-/<%= COMMAND.SEARCH %> - <%= i18n.t(LOCALE_COMMAND.SEARCH, { command_code: COMMAND_CODE.SEARCH }) %>
+<b><%= i18n.t('command_group.prostava') %></b>
+/<%= COMMAND.PROSTAVA %> <%= LocaleUtils.getCommandPlaceholder(i18n, COMMAND.PROSTAVA) %> - <%= LocaleUtils.getCommandText(i18n, COMMAND.PROSTAVA) %>
+/<%= COMMAND.PROSTAVA_OFF %> - <%= LocaleUtils.getCommandText(i18n, COMMAND.PROSTAVA_OFF) %>
+/<%= COMMAND.SEARCH %> - <%= LocaleUtils.getCommandText(i18n, COMMAND.SEARCH) %>

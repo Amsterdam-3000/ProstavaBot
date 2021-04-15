@@ -1,27 +1,32 @@
+import { I18nContext } from "@edjopato/telegraf-i18n/dist/source";
 import { Markup } from "telegraf";
-import { ACTION, DEFAULT_CODE, LOCALE_ACTION } from "../commons/constants";
-import { stringifyActionData } from "../commons/utils";
-import { UpdateContext } from "../types";
-import { oneColumn } from "./scene";
+import { PROSTAVA, CODE } from "../constants";
+import { PersonalData } from "../types";
+import { DateUtils, FunctionUtils, LocaleUtils, ObjectUtils, StringUtils } from "../utils";
 
-export const getProfileKeyboard = (ctx: UpdateContext) =>
-    Markup.inlineKeyboard(
-        [
-            Markup.button.callback(
-                ctx.i18n.t(LOCALE_ACTION.SET_EMOJI, { emoji: ctx.session.user.personal_data.emoji }),
-                stringifyActionData(ACTION.SET_EMOJI)
-            ),
-            Markup.button.callback(
-                ctx.i18n.t(LOCALE_ACTION.SET_BIRTHDAY, {
-                    birthday:
-                        (ctx.session.user.personal_data.birthday &&
-                            ctx.session.user.personal_data.birthday.toLocaleDateString()) ||
-                        DEFAULT_CODE.BIRTHDAY
-                }),
-                stringifyActionData(ACTION.SET_BIRTHDAY)
-            )
-        ],
-        {
-            wrap: oneColumn
-        }
-    );
+export class ProfileView {
+    static getProfileKeyboard(i18n: I18nContext, personalData: PersonalData) {
+        return Markup.inlineKeyboard(
+            [
+                Markup.button.callback(
+                    LocaleUtils.getActionText(i18n, PROSTAVA.ACTION.PROFILE_EMOJI, personalData.emoji),
+                    ObjectUtils.stringifyActionData(PROSTAVA.ACTION.PROFILE_EMOJI)
+                ),
+                Markup.button.callback(
+                    LocaleUtils.getActionText(
+                        i18n,
+                        PROSTAVA.ACTION.PROFILE_BIRTHDAY,
+                        StringUtils.displayValue(
+                            DateUtils.getDateString(i18n.languageCode, personalData.birthday),
+                            CODE.ACTION.PROFILE_BIRTHDAY
+                        )
+                    ),
+                    ObjectUtils.stringifyActionData(PROSTAVA.ACTION.PROFILE_BIRTHDAY)
+                )
+            ],
+            {
+                wrap: FunctionUtils.oneColumn
+            }
+        );
+    }
+}

@@ -1,6 +1,6 @@
 import { Message } from "telegraf/typings/core/types/typegram";
 
 export interface SceneState {
-    message: Message;
+    message?: Message;
     actionData?: string;
 }

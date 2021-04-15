@@ -16,7 +16,4 @@ export interface UserDocument extends User, Document {
     _id: Types.ObjectId;
 }
 
-export interface UserModel extends Model<UserDocument> {
-    upsertUser(userId: User["user_id"], groupId: User["group_id"]): Promise<UserDocument>;
-    updatePersonalData(userId: User["user_id"], groupId: User["group_id"], personal_data: PersonalData): Promise<void>;
-}
+export interface UserModel extends Model<UserDocument> {}

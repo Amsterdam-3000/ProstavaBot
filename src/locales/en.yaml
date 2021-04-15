@@ -1,26 +1,62 @@
 reply:
-    not_group: "${error_code} I only work in groups!"
-    not_admin: "${error_code} You are not admin in this group!"
-    app_wrong: "${error_code} Something went wrong!"
-    are_going: "${error_code} Where are you going!?"
-    send_emoji: "${default_code} Send me Your emoji"
-    send_birthday: "${default_code} Send me Your date of birth (YYYY-MM-DD)"
+    settings:
+        language: "${code} поменять язык Проставы"
+        currency: "${code} Change Prostava currency"
+        days: "${code} Send me expiration date of prostava in days (0-∞)"
+        count: "${code} Send me chat members count (0-∞)"
+        percentage: "${code} Send me minimum percent of participants (0-100)"
+        hours: "${code} Send me pending time of prostava in hours (0-∞)"
+    profile:
+        emoji: "${code} Send me Your emoji"
+        birthday: "${code} Send me Your date of birth (YYYY-MM-DD)"
+    prostava:
+        title: "${code} Send me prostava title"
+        date: "${code} Select prostava date"
+        venue: "${code} Send me prostava location and title"
+        cost: "${code} Send me prostava cost amount with currency"
+action:
+    back: "${code} Back"
+    settings:
+        language: "Language: ${value}"
+        currency: "Currency: ${value}"
+        days: "${code} Prostava expiry days: ${value}"
+        count: "${code} Chat members count: ${value}"
+        percentage: "Minimum of participants: ${value}${code}"
+        hours: "${code} Prostava pending hours: ${value}"
+    profile:
+        emoji: "Emoji: ${value}"
+        birthday: "Birthday: ${value}"
+    prostava:
+        title: "Title: ${value}"
+        date: "${code} Date: ${value}"
+        venue: "${code} Venue: ${value}"
+        cost: "${code} Cost: ${value}"
+        create: "${value} Announce prostava"
+        participants: "${code} Participants: ${value}"
+        rating: "${code} Rating: ${value}"
+status:
+    pending: "${code} Pending of votes: ${value}"
+    rejected: "${code} Rejected by participants"
+    approved: "${code} Approved by participants"
+error:
+    not_group: "${code} I only work in groups!"
+    not_admin: "${code} You are not admin in this group!"
+    app_wrong: "${code} Something went wrong!"
+    are_going: "${code} Where are you going!?"
+    not_create: "${code} Send me all prostava data!"
+header:
+    help: "I can help you control prostavas. Here are my commands:"
 command:
-    start: "${command_code} start Prostava"
-    help: "${command_code} show Prostava help"
-    settings: "${command_code} change Prostava settings"
-    profile: "${command_code} complete Your profile ${username}"
-    prostava: "${command_code} announce new prostava"
-    search: "${command_code} search for prostavas"
-    language: "${command_code} change Prostava language" 
+    start: "${code} start Prostava"
+    help: "${code} show Prostava help"
+    settings: "${code} change Prostava settings"
+    profile: "${code} complete Your profile ${value}"
+    prostava: "${code} announce new prostava ${value}"
+    prostava_off: "${code} withdraw announced prostava"
+    search: "${code} search for prostavas"
+command_text:
+    prostava: "title|date|venue|cost"
 command_group:
     bot: "Bot"
     user: "User"
     prostava: "Prostava"
-header:
-    help: "I can help you control prostavas. Here are my commands:"
-action:
-    show_languages: "Language: ${language}"
-    set_emoji: "Emoji: ${emoji}"
-    set_birthday: "Birthday: ${birthday}"
-    back: "${default_code} Back"

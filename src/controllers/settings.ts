@@ -1,23 +1,33 @@
-import { COMMAND_CODE, LOCALE_COMMAND, SCENE } from "../commons/constants";
-import { setNewMessageState } from "../commons/utils";
+import { PROSTAVA } from "../constants";
 import { UpdateContext } from "../types";
-import { getLanguageKeyboard, getSettingsKeyboard } from "../views/settings";
+import { SettingsView } from "../views";
+import { LocaleUtils, ObjectUtils, TelegramUtils } from "../utils";
 
-export const enterSettingsScene = async (ctx: UpdateContext) => ctx.scene.enter(SCENE.SETTINGS);
+export class SettingsController {
+    static async showSettings(ctx: UpdateContext) {
+        ctx.reply(
+            LocaleUtils.getCommandText(ctx.i18n, PROSTAVA.COMMAND.SETTINGS),
+            SettingsView.getSettingsKeyboard(ctx.i18n, ctx.group?.settings)
+        ).then((message) => TelegramUtils.setSceneStateToContext(ctx, ObjectUtils.initializeState(message)));
+    }
 
-export const showSettings = async (ctx: UpdateContext) =>
-    ctx
-        .reply(ctx.i18n.t(LOCALE_COMMAND.SETTINGS, { command_code: COMMAND_CODE.SETTINGS }), getSettingsKeyboard(ctx))
-        .then((message) => (ctx.scene.state = setNewMessageState(message)));
+    static async showLanguages(ctx: UpdateContext) {
+        ctx.editMessageText(
+            LocaleUtils.getActionReplyText(ctx.i18n, PROSTAVA.ACTION.SETTINGS_LANGUAGE),
+            SettingsView.getLanguageKeyboard(ctx.i18n)
+        );
+    }
+    static async showCurrencies(ctx: UpdateContext) {
+        ctx.editMessageText(
+            LocaleUtils.getActionReplyText(ctx.i18n, PROSTAVA.ACTION.SETTINGS_CURRENCY),
+            SettingsView.getCurrencyKeyboard(ctx.i18n, ctx.group?.settings?.currency)
+        );
+    }
 
-export const showLanguages = async (ctx: UpdateContext) =>
-    ctx.editMessageText(
-        ctx.i18n.t(LOCALE_COMMAND.LANGUAGE, { command_code: COMMAND_CODE.LANGUAGE }),
-        getLanguageKeyboard(ctx)
-    );
-
-export const backToSettings = async (ctx: UpdateContext) =>
-    ctx.editMessageText(
-        ctx.i18n.t(LOCALE_COMMAND.SETTINGS, { command_code: COMMAND_CODE.SETTINGS }),
-        getSettingsKeyboard(ctx)
-    );
+    static async backToSettings(ctx: UpdateContext) {
+        ctx.editMessageText(
+            LocaleUtils.getCommandText(ctx.i18n, PROSTAVA.COMMAND.SETTINGS),
+            SettingsView.getSettingsKeyboard(ctx.i18n, ctx.group?.settings)
+        );
+    }
+}

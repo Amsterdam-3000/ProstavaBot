@@ -1,6 +1,8 @@
-import { SCENE } from "../commons/constants";
 import { UpdateContext } from "../types";
+import { HelpView } from "../views";
 
-export const enterHelpScene = async (ctx: UpdateContext) => ctx.scene.enter(SCENE.HELP);
-
-export const showHelp = async (ctx: UpdateContext) => ctx.replyWithHTML(ctx.help);
+export class HelpController {
+    static async showHelp(ctx: UpdateContext) {
+        ctx.replyWithHTML(await HelpView.getHelpHtml(ctx.i18n));
+    }
+}

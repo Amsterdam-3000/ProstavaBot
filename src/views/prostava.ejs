@@ -1,0 +1,15 @@
+<%= prostava.prostava_data.title %>
+
+<%= prostava.author.personal_data.emoji %> <%= TelegramUtils.getUserString(user) %>
+
+<%= LocaleUtils.getActionText(i18n, ACTION.PROSTAVA_DATE, DateUtils.getDateString(i18n.languageCode, prostava.prostava_data.date)) %>
+
+<%= LocaleUtils.getActionText(i18n, ACTION.PROSTAVA_VENUE, prostava.prostava_data.venue.string) %>
+
+<%= LocaleUtils.getActionText(i18n, ACTION.PROSTAVA_COST, prostava.prostava_data.cost.string) %>
+
+<%= LocaleUtils.getActionText(i18n, ACTION.PROSTAVA_PARTICIPANTS, ProstavaUtils.getParticipantsString(prostava.participants, prostava.participants_min_count)) %>
+
+<%= LocaleUtils.getActionText(i18n, ACTION.PROSTAVA_RATING, ProstavaUtils.getRatingString(prostava.rating, prostava.rating_string)) %>
+
+<%= LocaleUtils.getStatusText(i18n, prostava.status, ProstavaUtils.getParticipantsVotesString(prostava.participants_string, prostava.chat_members_count)) %>

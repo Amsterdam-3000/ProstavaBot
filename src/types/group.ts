@@ -1,17 +1,22 @@
-import { Document, Model, Types } from "mongoose";
+import { Document, Model } from "mongoose";
+import { Prostava } from "./prostava";
 import { User } from "./user";
 
 export interface GroupSettings {
-    open_period?: number;
-    min_percent?: number;
-    prev_period?: number;
     language?: string;
+    currency?: string;
+    create_days_ago?: number;
+    chat_members_count?: number;
+    participants_min_percent?: number;
+    participants_min_count?: number;
+    pending_hours?: number;
 }
 
 export interface Group {
     _id: number;
     settings: GroupSettings;
-    users: Array<User["_id"] | User>;
+    users: [User["_id"] | User];
+    prostavas: [Prostava["_id"] | Prostava];
 }
 
 interface GroupBaseDocument extends Group, Document {
@@ -19,16 +24,13 @@ interface GroupBaseDocument extends Group, Document {
 }
 
 export interface GroupDocument extends GroupBaseDocument {
-    users: Array<User["_id"]>;
+    users: [User["_id"]];
+    prostavas: [Prostava["_id"]];
 }
 
 export interface GroupPopulatedDocument extends GroupBaseDocument {
-    users: Array<User>;
+    users: [User];
+    prostavas: [Prostava];
 }
 
-export interface GroupModel extends Model<GroupDocument> {
-    upsertGroup(groupId: Group["_id"]): Promise<GroupDocument>;
-    updateSettings(groupId: Group["_id"], settings: GroupSettings): Promise<void>;
-    pushUser(groupId: Group["_id"], userId: User["_id"]): Promise<void>;
-    popUser(groupId: Group["_id"], userId: User["_id"]): Promise<void>;
-}
+export interface GroupModel extends Model<GroupDocument> {}

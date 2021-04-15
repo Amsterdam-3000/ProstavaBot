@@ -1,26 +1,62 @@
 reply:
-    not_group: "${error_code} Работаю только в группах!"
-    not_admin: "${error_code} Ты не админ в этой группе!"
-    app_wrong: "${error_code} Что-то пошло не так!"
-    are_going: "${error_code} Куда ты лезешь!?"
-    send_emoji: "${default_code} Отправь мне свой эмодзи"
-    send_birthday: "${default_code} Отправь мне свою дату рождения (ГГГГ-ММ-ДД)"
+    settings:
+        language: "${code} поменять язык Проставы"
+        currency: "${code} Change Prostava currency"
+        days: "${code} Send me expiration date of prostava in days (0-∞)"
+        count: "${code} Send me chat members count (0-∞)"
+        percentage: "${code} Send me minimum percent of participants (0-100)"
+        hours: "${code} Send me pending time of prostava in hours (0-∞)"
+    profile:
+        emoji: "${code} Отправь мне свой эмодзи"
+        birthday: "${code} Отправь мне свою дату рождения (ГГГГ-ММ-ДД)"
+    prostava:
+        title: "${code} Send me prostava title"
+        date: "${code} Select prostava date"
+        venue: "${code} Send me prostava location and title"
+        cost: "${code} Send me prostava cost amount with currency"
+action:
+    back: "${code} Назад"
+    settings:
+        language: "Language: ${value}"
+        currency: "Currency: ${value}"
+        days: "${code} Prostava expiry days: ${value}"
+        count: "${code} Chat members count: ${value}"
+        percentage: "Minimum of participants: ${value}${code}"
+        hours: "${code} Prostava pending hours: ${value}"
+    profile:
+        emoji: "Эмодзи: ${value}"
+        birthday: "День рождения: ${value}"
+    prostava:
+        title: "Title: ${value}"
+        date: "${code} Date: ${value}"
+        venue: "${code} Venue: ${value}"
+        cost: "${code} Cost: ${value}"
+        create: "${value} Announce prostava"
+        participants: "${code} Participants: ${value}"
+        rating: "${code} Rating: ${value}"
+status:
+    pending: "${code} Pending of votes: ${value}"
+    rejected: "${code} Rejected by participants"
+    approved: "${code} Approved by participants"
+error:
+    not_group: "${code} Работаю только в группах!"
+    not_admin: "${code} Ты не админ в этой группе!"
+    app_wrong: "${code} Что-то пошло не так!"
+    are_going: "${code} Куда ты лезешь!?"
+    not_create: "${code} Send me all prostava data"
+header:
+    help: "Я помогаю контроллировать проставы. Вот мои команды:"
 command:
-    start: "${command_code} запустить Проставу"
-    help: "${command_code} показать команды Проставы"
-    settings: "${command_code} изменить настройки Проставы"
-    profile: "${command_code} заполнить свой профиль ${username}"
-    prostava: "${command_code} объявить новую проставу"
-    search: "${command_code} поиск простав"
-    language: "${command_code} поменять язык Проставы"
+    start: "${code} запустить Проставу"
+    help: "${code} показать команды Проставы"
+    settings: "${code} изменить настройки Проставы"
+    profile: "${code} заполнить свой профиль ${value}"
+    prostava: "${code} объявить новую проставу ${value}"
+    prostava_off: "${code} withdraw announced prostava"
+    search: "${code} поиск простав"
+command_text:
+    prostava: "title|date|venue|cost"
 command_group:
     bot: "Бот"
     user: "Пользователь"
     prostava: "Простава"
-header:
-    help: "Я помогаю контроллировать проставы. Вот мои команды:"
-action:
-    show_languages: "Язык: ${language}"
-    set_emoji: "Эмодзи: ${emoji}"
-    set_birthday: "День рождения: ${birthday}"
-    back: "${default_code} Назад"

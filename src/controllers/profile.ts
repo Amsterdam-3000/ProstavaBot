@@ -1,20 +1,14 @@
-import { COMMAND_CODE, DEFAULT_CODE, LOCALE_COMMAND, LOCALE_REPLY, SCENE } from "../commons/constants";
-import { setNewMessageState } from "../commons/utils";
+import { PROSTAVA } from "../constants";
 import { UpdateContext } from "../types";
-import { getProfileKeyboard } from "../views/profile";
+import { LocaleUtils, ObjectUtils, TelegramUtils } from "../utils";
+import { ProfileView } from "../views";
 
-export const enterProfileScene = async (ctx: UpdateContext) => ctx.scene.enter(SCENE.PROFILE);
-
-export const showProfile = async (ctx: UpdateContext) =>
-    ctx
-        .reply(
-            ctx.i18n.t(LOCALE_COMMAND.PROFILE, { command_code: COMMAND_CODE.PROFILE, username: ctx.from.username }),
-            getProfileKeyboard(ctx)
-        )
-        .then((message) => (ctx.scene.state = setNewMessageState(message)));
-
-export const showEmojiMessage = async (ctx: UpdateContext) =>
-    ctx.answerCbQuery(ctx.i18n.t(LOCALE_REPLY.SEND_EMOJI, { default_code: DEFAULT_CODE.EMOJI }));
-
-export const showBirthdayMessage = async (ctx: UpdateContext) =>
-    ctx.answerCbQuery(ctx.i18n.t(LOCALE_REPLY.SEND_BIRTHDAY, { default_code: DEFAULT_CODE.BIRTHDAY }));
+export class ProfileController {
+    static async showProfile(ctx: UpdateContext) {
+        const user = TelegramUtils.getUserFromContext(ctx);
+        ctx.reply(
+            LocaleUtils.getCommandText(ctx.i18n, PROSTAVA.COMMAND.PROFILE, TelegramUtils.getUserString(user)),
+            ProfileView.getProfileKeyboard(ctx.i18n, ctx.user?.personal_data)
+        ).then((message) => TelegramUtils.setSceneStateToContext(ctx, ObjectUtils.initializeState(message)));
+    }
+}

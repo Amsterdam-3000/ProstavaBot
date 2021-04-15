@@ -1,15 +1,19 @@
 import { Scenes, Context } from "telegraf";
 import { I18nContext } from "@edjopato/telegraf-i18n";
 import { Group, User } from ".";
+import { Prostava } from "./prostava";
+import { Chat } from "telegraf/typings/core/types/typegram";
 
 interface ContextSession extends Scenes.SceneSession {
-    group: Group;
-    user: User;
+    prostava: Prostava;
+    chat: Chat;
 }
 
 export interface UpdateContext extends Context {
-    readonly i18n: I18nContext;
-    scene: Scenes.SceneContextScene<UpdateContext>;
+    readonly i18n: I18nContext;    
+    group: Group;
+    user: User;
+    prostava: Prostava;
     session: ContextSession;
-    help: string;
+    scene: Scenes.SceneContextScene<UpdateContext>;
 }

@@ -1,49 +1,33 @@
 import { Scenes } from "telegraf";
-import { ACTION, SCENE } from "../commons/constants";
+import { PROSTAVA } from "../constants";
+import { CommonController, ProfileController } from "../controllers";
+import { CommonMiddleware, UserMiddleware } from "../middlewares";
 import { UpdateContext } from "../types";
-import {
-    changeUserBirthday,
-    changeUserEmoji,
-    checkStateAction,
-    isMessageOrigin,
-    saveActionDataToState,
-    saveUserPersonalData
-} from "../middlewares";
-import {
-    enterProfileScene,
-    forbidAction,
-    hideScene,
-    showBirthdayMessage,
-    showEmojiMessage,
-    showProfile
-} from "../controllers";
-import { emojiRegex } from "../commons/utils";
+import { RegexUtils } from "../utils";
+import { CommonScene } from "./common";
 
-export const profileScene = new Scenes.BaseScene<UpdateContext>(SCENE.PROFILE);
+export const profileScene = new Scenes.BaseScene<UpdateContext>(PROSTAVA.COMMAND.PROFILE);
 
-profileScene.enter(showProfile);
+profileScene.enter(ProfileController.showProfile);
 
 //Emoji
-profileScene.action(new RegExp(`${ACTION.SET_EMOJI}`), isMessageOrigin, saveActionDataToState, showEmojiMessage);
+CommonScene.actionInputRequest(profileScene, PROSTAVA.ACTION.PROFILE_EMOJI)
 profileScene.hears(
-    new RegExp(`^(${emojiRegex().source})$`),
-    checkStateAction(ACTION.SET_EMOJI),
-    changeUserEmoji,
-    saveUserPersonalData,
-    enterProfileScene
+    RegexUtils.matchEmojis(),
+    CommonMiddleware.checkStateAction([PROSTAVA.ACTION.PROFILE_EMOJI]),
+    UserMiddleware.changeUserEmoji,
+    UserMiddleware.saveUser,
+    CommonController.enterScene(PROSTAVA.COMMAND.PROFILE)
 );
 
 //Birthday
-profileScene.action(new RegExp(`${ACTION.SET_BIRTHDAY}`), isMessageOrigin, saveActionDataToState, showBirthdayMessage);
+CommonScene.actionInputRequest(profileScene, PROSTAVA.ACTION.PROFILE_BIRTHDAY)
 profileScene.hears(
-    /^\d{4}-\d{2}-\d{2}$/,
-    checkStateAction(ACTION.SET_BIRTHDAY),
-    // checkDate,
-    changeUserBirthday,
-    saveUserPersonalData,
-    enterProfileScene
+    RegexUtils.matchDate(),
+    CommonMiddleware.checkStateAction([PROSTAVA.ACTION.PROFILE_BIRTHDAY]),
+    UserMiddleware.changeUserBirthday,
+    UserMiddleware.saveUser,
+    CommonController.enterScene(PROSTAVA.COMMAND.PROFILE)
 );
 
-profileScene.leave(hideScene);
-
-profileScene.action(/./, forbidAction);
+profileScene.leave(CommonController.hideScene);

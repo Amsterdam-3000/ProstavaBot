@@ -1,13 +1,12 @@
-import { Model, model, Schema } from "mongoose";
-import { DB_COLLECTION, DEFAULT_CODE } from "../commons/constants";
-import { PersonalData, User, UserDocument, UserModel } from "../types";
-import { GroupCollection } from "./group";
+import { model, Schema, Types } from "mongoose";
+import { PROSTAVA, CODE } from "../constants";
+import { UserDocument, UserModel } from "../types";
 
 const PersonalDataSchema = new Schema(
     {
         emoji: {
             type: String,
-            default: DEFAULT_CODE.EMOJI,
+            default: CODE.ACTION.PROFILE_EMOJI,
             minLength: 2,
             maxLength: 8
         },
@@ -17,42 +16,22 @@ const PersonalDataSchema = new Schema(
 );
 
 const UserSchema = new Schema<UserDocument, UserModel>({
-    _id: Schema.Types.ObjectId,
-    user_id: Number,
+    _id: {
+        type: Schema.Types.ObjectId,
+        default: new Types.ObjectId()
+    },
+    user_id: {
+        type: Number,
+        required: true
+    },
     group_id: {
         type: Number,
-        require: true
+        required: true
     },
-    personal_data: PersonalDataSchema
+    personal_data: {
+        type: PersonalDataSchema,
+        default: {}
+    }
 });
 
-UserSchema.statics.upsertUser = async function (
-    this: Model<UserDocument>,
-    userId: User["user_id"],
-    groupId: User["group_id"]
-) {
-    return this.findOneAndUpdate(
-        { user_id: userId, group_id: groupId },
-        {},
-        { upsert: true, setDefaultsOnInsert: true }
-    );
-};
-
-UserSchema.post("findOneAndUpdate", (user: User) => {
-    GroupCollection.pushUser(user.group_id, user._id);
-});
-
-UserSchema.statics.updatePersonalData = async function (
-    this: Model<UserDocument>,
-    userId: User["user_id"],
-    groupId: User["group_id"],
-    personal_data: PersonalData
-) {
-    return this.updateOne({ user_id: userId, group_id: groupId }, { $set: { personal_data: personal_data } });
-};
-
-UserSchema.post("findOneAndDelete", (user: User) => {
-    GroupCollection.popUser(user.group_id, user._id);
-});
-
-export const UserCollection = model<UserDocument, UserModel>(DB_COLLECTION.USER, UserSchema);
+export const UserCollection = model<UserDocument, UserModel>(PROSTAVA.COLLECTION.USER, UserSchema);
