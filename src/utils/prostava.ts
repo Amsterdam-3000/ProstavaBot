@@ -1,9 +1,20 @@
 import { Types } from "mongoose";
+import { Venue } from "telegraf/typings/core/types/typegram";
 import { CODE } from "../constants";
 import { Group, Prostava, ProstavaStatus, UpdateContext, User } from "../types";
+import { StringUtils } from "./string";
 import { TelegramUtils } from "./telegram";
 
 export class ProstavaUtils {
+    static isProstavaPendingCompleted(prostava: Prostava) {
+        if (prostava?.participants?.length === prostava?.participants_max_count) {
+            return true;
+        }
+        if (prostava?.closing_date?.getTime() <= Date.now()) {
+            return true;
+        }
+        return false;
+    }
     static isProstavaPending(prostava: Prostava) {
         return prostava?.status === ProstavaStatus.Pending;
     }
@@ -20,6 +31,8 @@ export class ProstavaUtils {
         const commandText = TelegramUtils.getCommandText(ctx);
         const prostavaData = commandText?.split("|") || [];
         return {
+            //TODO Why
+            _id: Types.ObjectId(),
             group_id: chat.id,
             author: ctx.user,
             prostava_data: {
@@ -58,7 +71,7 @@ export class ProstavaUtils {
 
     static populateGroupProstavas(group: Group) {
         //TODO Autopopulate via mongo mb???
-        (group.prostavas as [Prostava]).forEach((prostava) => {
+        (group.prostavas as [Prostava]).forEach(async (prostava) => {
             prostava.author = ProstavaUtils.findUserById(group.users, prostava.author) || prostava.author;
             prostava.participants?.forEach((participant) => {
                 participant.user = ProstavaUtils.findUserById(group.users, participant.user) || participant.user;
@@ -111,12 +124,27 @@ export class ProstavaUtils {
     static getParticipantsVotesString(participantsString: Prostava["participants_string"], chatMembersCount: number) {
         return participantsString + `/` + (chatMembersCount - 1).toString();
     }
+    static getVenueDisplayString(venue: Venue) {
+        return (
+            StringUtils.displayValue(venue?.title) +
+            StringUtils.displayValue(venue?.location ? CODE.ACTION.PROSTAVA_LOCATION : "")
+        );
+    }
 
     static filterParticipantsWere(participants: Prostava["participants"]) {
         return participants.filter((participant) => participant.rating > 0);
     }
     static filterUserProstavas(prostavas: Group["prostavas"], userId: number) {
         return (prostavas as [Prostava]).filter((prostava) => this.isUserAuthorOfPrastava(prostava, userId));
+    }
+    static filterProstavasByQuery(prostavas: Group["prostavas"], query: string) {
+        return (prostavas as [Prostava]).filter((prostava) => this.matchProstavaByQuery(prostava, query));
+    }
+    static matchProstavaByQuery(prostava: Prostava, query: string) {
+        if (prostava.prostava_data.title.match(query)) {
+            return true;
+        }
+        return false;
     }
     static isUserAuthorOfPrastava(prostava: Prostava, userId: number) {
         return (prostava.author as User).user_id === userId;

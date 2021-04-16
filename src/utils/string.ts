@@ -23,12 +23,15 @@ export class StringUtils {
         return action.replace(CALENDAR.ACTION.CALENDAR_DATE, "");
     }
 
-    static concatSessionKey(fromId: number, chatId?: number) {
+    static concatSessionKey(fromId?: number, chatId?: number) {
         if (fromId && chatId) {
             return `${fromId}:${chatId}`;
         }
         if (fromId) {
             return `${fromId}`;
+        }
+        if (chatId) {
+            return `${chatId}`;
         }
         return undefined;
     }

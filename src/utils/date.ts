@@ -41,4 +41,12 @@ export class DateUtils {
         }
         return null;
     }
+    static getHoursFromDateToNow(date: Date) {
+        return (new Date().getTime() - date.getTime()) / 36e5;
+    }
+    static getNowDatePlusHours(hours: number) {
+        const date = new Date();
+        date.setTime(date.getTime() + hours * 36e5);
+        return date;
+    }
 }

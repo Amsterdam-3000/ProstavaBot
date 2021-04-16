@@ -1,13 +1,22 @@
 import { CODE, PROSTAVA } from "../constants";
 import { ProstavaCollection } from "../models";
 import { Prostava, ProstavaDocument, ProstavaStatus, UpdateContext } from "../types";
-import { LocaleUtils, ObjectUtils, ProstavaUtils, StringUtils, TelegramUtils } from "../utils";
+import { DateUtils, LocaleUtils, ObjectUtils, ProstavaUtils, StringUtils, TelegramUtils } from "../utils";
 
 export class ProstavaMiddleware {
     static async addPendingProstavaToContext(ctx: UpdateContext, next: Function) {
-        const user = TelegramUtils.getUserFromContext(ctx);
-        ctx.prostava = ProstavaUtils.filterUserProstavas(ctx.group.prostavas, user.id).find((prostava) =>
-            ProstavaUtils.isProstavaPending(prostava)
+        if (!ProstavaUtils.getProstavaFromContext(ctx)) {
+            const user = TelegramUtils.getUserFromContext(ctx);
+            ctx.prostava = ProstavaUtils.filterUserProstavas(ctx.group.prostavas, user.id).find((prostava) =>
+                ProstavaUtils.isProstavaPending(prostava)
+            );
+        }
+        await next();
+    }
+    static async addProstavaFromActionToContext(ctx: UpdateContext, next: Function) {
+        const actionData = ObjectUtils.parseActionData(TelegramUtils.getCbQueryData(ctx));
+        ctx.prostava = (ctx.group.prostavas as [Prostava]).find(
+            (prostava) => (prostava as ProstavaDocument).id === actionData.id
         );
         await next();
     }
@@ -17,11 +26,11 @@ export class ProstavaMiddleware {
         }
         await next();
     }
-    static async addProstavaFromActionToContext(ctx: UpdateContext, next: Function) {
-        const actionData = ObjectUtils.parseActionData(TelegramUtils.getCbQueryData(ctx));
-        ctx.prostava = (ctx.group.prostavas as [Prostava]).find(
-            (prostava) => (prostava as ProstavaDocument).id === actionData.id
-        );
+    static async deleteProstavaFromContext(ctx: UpdateContext, next: Function) {
+        delete ctx.prostava;
+        if (ctx.session?.prostava) {
+            delete ctx.session.prostava;
+        }
         await next();
     }
 
@@ -61,15 +70,34 @@ export class ProstavaMiddleware {
         );
         await next();
     }
-    static async changeProstavaStatus(ctx: UpdateContext, next: Function) {
-        const actionData = ObjectUtils.parseActionData(TelegramUtils.getCbQueryData(ctx));
+
+    static async isProstavaDataFull(ctx: UpdateContext, next: Function) {
         const prostava = ProstavaUtils.getProstavaFromContext(ctx);
-        if (ProstavaUtils.isProstavaNew(prostava)) {
-            prostava.participants_min_count = ctx.group.settings.participants_min_count;
-            prostava.chat_members_count = ctx.group.settings.chat_members_count;
-            ctx.group.prostavas.push(prostava);
+        if ((prostava as ProstavaDocument).validateSync()) {
+            ctx.answerCbQuery(LocaleUtils.getErrorText(ctx.i18n, CODE.ERROR.NOT_CREATE));
+            return;
         }
-        prostava.status = actionData.value as ProstavaStatus;
+        await next();
+    }
+    static async announceProstava(ctx: UpdateContext, next: Function) {
+        const prostava = ProstavaUtils.getProstavaFromContext(ctx);
+        prostava.participants_min_count = Math.ceil(
+            (ctx.group.settings.chat_members_count * ctx.group.settings.participants_min_percent) / 100
+        );
+        prostava.participants_max_count = ctx.group.settings.chat_members_count - 1;
+        prostava.status = ProstavaStatus.Pending;
+        prostava.closing_date = DateUtils.getNowDatePlusHours(ctx.group.settings.pending_hours);
+        ctx.group.prostavas.push(prostava);
+        await next();
+    }
+
+    static async isUserParticipantOfProstava(ctx: UpdateContext, next: Function) {
+        const prostava = ProstavaUtils.getProstavaFromContext(ctx);
+        const user = TelegramUtils.getUserFromContext(ctx);
+        if (ProstavaUtils.isUserAuthorOfPrastava(prostava, user.id)) {
+            ctx.answerCbQuery(LocaleUtils.getErrorText(ctx.i18n, CODE.ERROR.NOT_RATE));
+            return;
+        }
         await next();
     }
     static async changeProstavaParticipantRating(ctx: UpdateContext, next: Function) {
@@ -90,23 +118,46 @@ export class ProstavaMiddleware {
         await next();
     }
 
-    static async isParticipantOfProstava(ctx: UpdateContext, next: Function) {
+    static async isProstavaPendingCompleted(ctx: UpdateContext, next: Function) {
         const prostava = ProstavaUtils.getProstavaFromContext(ctx);
-        const user = TelegramUtils.getUserFromContext(ctx);
-        if (ProstavaUtils.isUserAuthorOfPrastava(prostava, user.id)) {
-            ctx.answerCbQuery(LocaleUtils.getErrorText(ctx.i18n, CODE.ERROR.NOT_CREATE));
+        if (!ProstavaUtils.isProstavaPendingCompleted(prostava)) {
             return;
         }
         await next();
     }
-    static async checkProstava(ctx: UpdateContext, next: Function) {
+    static async publishProstava(ctx: UpdateContext, next: Function) {
         const prostava = ProstavaUtils.getProstavaFromContext(ctx);
-        if ((prostava as ProstavaDocument).validateSync()) {
-            ctx.answerCbQuery(LocaleUtils.getErrorText(ctx.i18n, CODE.ERROR.NOT_CREATE));
+        if (ProstavaUtils.filterParticipantsWere(prostava.participants)?.length < prostava.participants_min_count) {
+            prostava.status = ProstavaStatus.Rejected;
+        } else {
+            prostava.status = ProstavaStatus.Approved;
+        }
+        prostava.closing_date = new Date();
+        await next();
+    }
+
+    static async hasUserPendingProstava(ctx: UpdateContext, next: Function) {
+        const prostava = ProstavaUtils.getProstavaFromContext(ctx);
+        if (!ProstavaUtils.isProstavaPending(prostava)) {
             return;
         }
         await next();
     }
+    static async withdrawProstava(ctx: UpdateContext, next: Function) {
+        const prostava = ProstavaUtils.getProstavaFromContext(ctx);
+        try {
+            await (prostava as ProstavaDocument).delete();
+        } catch {
+            //TODO Logger
+            return;
+        }
+        ctx.group.prostavas = ProstavaUtils.deleteProstavaById(ctx.group.prostavas, prostava);
+        prostava.status = ProstavaStatus.New;
+        ctx.session.prostava = new ProstavaCollection(ProstavaUtils.fillProstavaFromDeleted(prostava));
+        delete ctx.prostava;
+        await next();
+    }
+
     static async saveProstava(ctx: UpdateContext, next: Function) {
         const prostava = ProstavaUtils.getProstavaFromContext(ctx);
         if ((prostava as ProstavaDocument).isModified()) {
@@ -116,29 +167,6 @@ export class ProstavaMiddleware {
                 //TODO Logger
                 return;
             }
-        }
-        await next();
-    }
-    static async withdrawProstava(ctx: UpdateContext, next: Function) {
-        const prostava = ProstavaUtils.getProstavaFromContext(ctx);
-        if (ProstavaUtils.isProstavaPending(prostava)) {
-            try {
-                await (prostava as ProstavaDocument).delete();
-            } catch {
-                //TODO Logger
-                return;
-            }
-            ctx.group.prostavas = ProstavaUtils.deleteProstavaById(ctx.group.prostavas, prostava);
-            prostava.status = ProstavaStatus.New;
-            ctx.session.prostava = new ProstavaCollection(ProstavaUtils.fillProstavaFromDeleted(prostava));
-            delete ctx.prostava;
-        }
-        await next();
-    }
-
-    static async deleteProstavaFromSession(ctx: UpdateContext, next: Function) {
-        if (ctx.session?.prostava) {
-            delete ctx.session.prostava;
         }
         await next();
     }

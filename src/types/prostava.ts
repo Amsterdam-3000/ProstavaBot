@@ -18,7 +18,7 @@ export interface ProstavaCost {
     string?: string;
 }
 export interface ProstavaVenue extends Venue {
-    string?: string;
+    url?: string;
 }
 export interface ProstavaData {
     title?: string;
@@ -43,7 +43,8 @@ export interface Prostava {
     participants?: [ProstavaParticipant];
     participants_string?: string;
     participants_min_count?: number;
-    chat_members_count?: number;
+    participants_max_count?: number;
+    closing_date?: Date;
 }
 
 export interface ProstavaDocument extends Prostava, Document {

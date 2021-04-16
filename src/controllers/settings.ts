@@ -15,19 +15,19 @@ export class SettingsController {
         ctx.editMessageText(
             LocaleUtils.getActionReplyText(ctx.i18n, PROSTAVA.ACTION.SETTINGS_LANGUAGE),
             SettingsView.getLanguageKeyboard(ctx.i18n)
-        );
+        ).catch((err) => console.log(err));
     }
     static async showCurrencies(ctx: UpdateContext) {
         ctx.editMessageText(
             LocaleUtils.getActionReplyText(ctx.i18n, PROSTAVA.ACTION.SETTINGS_CURRENCY),
             SettingsView.getCurrencyKeyboard(ctx.i18n, ctx.group?.settings?.currency)
-        );
+        ).catch((err) => console.log(err));
     }
 
     static async backToSettings(ctx: UpdateContext) {
         ctx.editMessageText(
             LocaleUtils.getCommandText(ctx.i18n, PROSTAVA.COMMAND.SETTINGS),
             SettingsView.getSettingsKeyboard(ctx.i18n, ctx.group?.settings)
-        );
+        ).catch((err) => console.log(err));
     }
 }

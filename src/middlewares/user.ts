@@ -9,7 +9,13 @@ export class UserMiddleware {
         const user = TelegramUtils.getUserFromContext(ctx);
         ctx.user = ProstavaUtils.findUserByUserId(ctx.group.users, user.id);
         if (!ctx.user) {
-            ctx.user = new UserCollection({ user_id: user.id, group_id: chat.id });
+            ctx.user = new UserCollection({
+                user_id: user.id,
+                group_id: chat.id,
+                personal_data: {
+                    name: TelegramUtils.getUserString(user)
+                }
+            });
             ctx.group.users.push(ctx.user);
         }
         await next();
@@ -22,7 +28,7 @@ export class UserMiddleware {
             return;
         }
         await next();
-    }  
+    }
 
     static async saveUser(ctx: UpdateContext, next: Function) {
         if ((ctx.user as UserDocument).isModified()) {

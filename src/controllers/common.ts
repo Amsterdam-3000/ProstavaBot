@@ -1,6 +1,6 @@
 import { CODE } from "../constants";
 import { LocaleUtils, TelegramUtils } from "../utils";
-import { SceneState, UpdateContext } from "../types";
+import { UpdateContext } from "../types";
 
 export class CommonController {
     static enterScene(scene: string) {
@@ -9,7 +9,7 @@ export class CommonController {
     static async hideScene(ctx: UpdateContext) {
         const sceneState = TelegramUtils.getSceneState(ctx);
         if (sceneState.message) {
-            ctx.deleteMessage(sceneState.message.message_id);
+            ctx.deleteMessage(sceneState.message.message_id).catch((err) => console.log(err));
         }
         TelegramUtils.setSceneStateToContext(ctx, {});
     }

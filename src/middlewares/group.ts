@@ -11,7 +11,7 @@ export class GroupMiddleware {
             ctx.group = new GroupCollection({
                 _id: chat.id,
                 settings: {
-                    participants_count: (await ctx.getChatMembersCount()) - 1
+                    chat_members_count: (await ctx.getChatMembersCount()) - 1
                 }
             });
         } else {

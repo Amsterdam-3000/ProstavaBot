@@ -38,9 +38,6 @@ const GroupSettinsSchema = new Schema(
     },
     { _id: false }
 );
-GroupSettinsSchema.virtual("participants_min_count").get(function () {
-    return Math.ceil(this.chat_members_count * this.participants_min_percent / 100);
-});
 
 const GroupSchema = new Schema<GroupDocument, GroupModel>(
     {

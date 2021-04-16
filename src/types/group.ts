@@ -8,7 +8,6 @@ export interface GroupSettings {
     create_days_ago?: number;
     chat_members_count?: number;
     participants_min_percent?: number;
-    participants_min_count?: number;
     pending_hours?: number;
 }
 

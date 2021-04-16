@@ -13,9 +13,8 @@ import {
     TelegramUtils
 } from "../utils";
 import { CODE, PROSTAVA } from "../constants";
-import { GroupSettings, Prostava, ProstavaData, ProstavaDocument, ProstavaStatus } from "../types";
+import { GroupSettings, Prostava, ProstavaData, ProstavaDocument } from "../types";
 import { prostavaCalendar } from "../scenes";
-import { User } from "telegraf/typings/core/types/typegram";
 
 export class ProstavaView {
     static getProstavaCreateKeyboard(i18n: I18nContext, prostavaData: ProstavaData, canCreate: boolean) {
@@ -41,7 +40,7 @@ export class ProstavaView {
                     LocaleUtils.getActionText(
                         i18n,
                         PROSTAVA.ACTION.PROSTAVA_VENUE,
-                        StringUtils.displayValue(prostavaData.venue?.string)
+                        ProstavaUtils.getVenueDisplayString(prostavaData.venue)
                     ),
                     ObjectUtils.stringifyActionData(PROSTAVA.ACTION.PROSTAVA_VENUE)
                 ),
@@ -59,7 +58,7 @@ export class ProstavaView {
                         PROSTAVA.ACTION.PROSTAVA_CREATE,
                         ConstantUtils.getCheckedCode(canCreate)
                     ),
-                    ObjectUtils.stringifyActionData(PROSTAVA.ACTION.PROSTAVA_CREATE, ProstavaStatus.Pending)
+                    ObjectUtils.stringifyActionData(PROSTAVA.ACTION.PROSTAVA_CREATE)
                 )
             ],
             {
@@ -68,7 +67,7 @@ export class ProstavaView {
         );
     }
 
-    static getProstavaRatingKeyboard(i18n: I18nContext, prostava: Prostava) {
+    static getProstavaRatingKeyboard(prostava: Prostava) {
         return Markup.inlineKeyboard(this.getRatingButtons(prostava));
     }
     private static getRatingButtons(prostava: Prostava) {
@@ -93,11 +92,10 @@ export class ProstavaView {
             .getCalendar(new Date());
     }
 
-    static getProstavaHtml(i18n: I18nContext, prostava: Prostava, user: User) {
+    static getProstavaHtml(i18n: I18nContext, prostava: Prostava) {
         return renderFile(resolve(process.cwd(), "src/views", "prostava.ejs"), {
             i18n: i18n,
             prostava: prostava,
-            user: user,
             ACTION: PROSTAVA.ACTION,
             LocaleUtils: LocaleUtils,
             DateUtils: DateUtils,

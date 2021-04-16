@@ -44,16 +44,18 @@ error:
     app_wrong: "${code} Something went wrong!"
     are_going: "${code} Where are you going!?"
     not_create: "${code} Send me all prostava data!"
+    not_rate: "${code} You can not rate for yourself!"
 header:
     help: "I can help you control prostavas. Here are my commands:"
 command:
-    start: "${code} start Prostava"
-    help: "${code} show Prostava help"
-    settings: "${code} change Prostava settings"
-    profile: "${code} complete Your profile ${value}"
-    prostava: "${code} announce new prostava ${value}"
-    prostava_off: "${code} withdraw announced prostava"
-    search: "${code} search for prostavas"
+    start: "${code} Start Prostava"
+    help: "${code} Show Prostava help"
+    settings: "${code} Change Prostava settings"
+    profile: "${code} Complete Your profile ${value}"
+    prostava: "${code} Announce new prostava ${value}"
+    prostava_undo: "${code} Withdraw announced prostava"
+    prostava_save: "${code} Save announced prostava"
+    search: "${code} Search for prostavas"
 command_text:
     prostava: "title|date|venue|cost"
 command_group:

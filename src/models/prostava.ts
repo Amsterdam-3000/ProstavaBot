@@ -48,12 +48,15 @@ const VenueSchema = new Schema(
     },
     { _id: false }
 );
-VenueSchema.virtual("string").get(function () {
-    //TODO Not good
-    return (
-        (this.title || CODE.SELECTED.NOT_SELECTED) +
-        (this.location ? CODE.ACTION.PROSTAVA_LOCATION : CODE.SELECTED.NOT_SELECTED)
-    );
+VenueSchema.virtual("url").get(function () {
+    if (this.location) {
+        return (
+            `https://static-maps.yandex.ru/1.x/?&size=384,216&z=13&l=map` +
+            `&ll=${this.location.longitude},${this.location.latitude}` +
+            `&pt=${this.location.longitude},${this.location.latitude},pm2dirm`
+        );
+    }
+    return undefined;
 });
 
 const ProstavaDataSchema = new Schema(
@@ -127,7 +130,8 @@ const ProstavaSchema = new Schema<ProstavaDocument, ProstavaModel>({
     },
     participants: [ProstavaParticipantSchema],
     participants_min_count: Number,
-    chat_members_count: Number
+    participants_max_count: Number,
+    closing_date: Date
 });
 ProstavaSchema.virtual("rating_string").get(function () {
     return this.rating.toString();

@@ -21,8 +21,9 @@ export const CODE = {
         NOT_GROUP: "🚫",
         NOT_ADMIN: "🔞",
         APP_WRONG: "📵",
-        ARE_GOING: "🚳",
-        NOT_CREATE: "🚱"
+        ARE_GOING: "🚷",
+        NOT_CREATE: "🚱",
+        NOT_RATE: "🚯"
     },
     LANGUAGE: {
         RU: "🇷🇺",
@@ -40,7 +41,7 @@ export const CODE = {
         NEW: "🥚",
         PENDING: "⏳",
         APPROVED: "✅",
-        REJECTED:"❌"
+        REJECTED: "❌"
     },
     CURRENCY: {
         RUBLE: "₽",
@@ -62,7 +63,8 @@ export const CODE = {
         SETTINGS: "🛠",
         PROFILE: "👤",
         PROSTAVA: "🍺",
-        PROSTAVA_OFF: "🥛",
+        PROSTAVA_UNDO: "🔚",
+        PROSTAVA_SAVE: "💾",
         SEARCH: "🔎"
     }
 };

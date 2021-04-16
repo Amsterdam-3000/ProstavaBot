@@ -22,9 +22,6 @@ export class TelegramUtils {
         }
         return user.last_name ? `${user.first_name} ${user.last_name}` : user.first_name;
     }
-    static getUserLink(user: User): string {
-        return `tg://user?id=${user.id}`;
-    }
 
     static getChatFromContext(ctx: UpdateContext) {
         return ctx.chat || ctx.session?.chat;

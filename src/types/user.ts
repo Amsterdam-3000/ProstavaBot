@@ -1,6 +1,7 @@
 import { Document, Model, Types } from "mongoose";
 
 export interface PersonalData {
+    name: string;
     emoji?: string;
     birthday?: Date;
 }
@@ -10,6 +11,7 @@ export interface User {
     user_id: number;
     group_id: number;
     personal_data: PersonalData;
+    user_link?: string;
 }
 
 export interface UserDocument extends User, Document {

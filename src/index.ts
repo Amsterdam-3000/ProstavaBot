@@ -6,7 +6,6 @@ import { CommonController, ProstavaController } from "./controllers";
 import { RegexUtils } from "./utils";
 
 db.on("error", (err) => {
-    //TODO Logger
     console.log(err);
     process.exit(1);
 });
@@ -35,18 +34,30 @@ db.once("open", () => {
     bot.start(CommonController.enterScene(PROSTAVA.COMMAND.START));
     bot.help(CommonController.enterScene(PROSTAVA.COMMAND.HELP));
     bot.settings(CommonController.enterScene(PROSTAVA.COMMAND.SETTINGS));
+
     bot.command(PROSTAVA.COMMAND.PROFILE, CommonController.enterScene(PROSTAVA.COMMAND.PROFILE));
+
     bot.command(PROSTAVA.COMMAND.PROSTAVA, CommonController.enterScene(PROSTAVA.COMMAND.PROSTAVA));
     bot.command(
-        PROSTAVA.COMMAND.PROSTAVA_OFF,
+        PROSTAVA.COMMAND.PROSTAVA_UNDO,
         ProstavaMiddleware.addPendingProstavaToContext,
+        ProstavaMiddleware.hasUserPendingProstava,
         ProstavaMiddleware.withdrawProstava,
         GroupMiddleware.saveGroup,
         CommonController.enterScene(PROSTAVA.COMMAND.PROSTAVA)
     );
+    bot.command(
+        PROSTAVA.COMMAND.PROSTAVA_SAVE,
+        ProstavaMiddleware.addPendingProstavaToContext,
+        ProstavaMiddleware.hasUserPendingProstava,
+        ProstavaMiddleware.isProstavaPendingCompleted,
+        ProstavaMiddleware.publishProstava,
+        ProstavaMiddleware.saveProstava,
+        CommonController.enterScene(PROSTAVA.COMMAND.PROSTAVA)
+    );
+    bot.on("inline_query", ProstavaController.showProstavas);
 
     bot.launch();
-    //TODO Logger
     bot.catch((err) => console.log(err));
 
     //Enable graceful stop

@@ -62,11 +62,11 @@ prostavaScene.hears(
 prostavaScene.action(
     RegexUtils.matchAction(PROSTAVA.ACTION.PROSTAVA_CREATE),
     CommonMiddleware.isCbMessageOrigin,
-    ProstavaMiddleware.checkProstava,
-    ProstavaMiddleware.changeProstavaStatus,
+    ProstavaMiddleware.isProstavaDataFull,
+    ProstavaMiddleware.announceProstava,
     ProstavaMiddleware.saveProstava,
     GroupMiddleware.saveGroup,
-    ProstavaMiddleware.deleteProstavaFromSession,
+    ProstavaMiddleware.deleteProstavaFromContext,
     CommonController.enterScene(PROSTAVA.COMMAND.PROSTAVA)
 );
 

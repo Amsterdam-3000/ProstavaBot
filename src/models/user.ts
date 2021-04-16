@@ -4,6 +4,7 @@ import { UserDocument, UserModel } from "../types";
 
 const PersonalDataSchema = new Schema(
     {
+        name: String,
         emoji: {
             type: String,
             default: CODE.ACTION.PROFILE_EMOJI,
@@ -32,6 +33,9 @@ const UserSchema = new Schema<UserDocument, UserModel>({
         type: PersonalDataSchema,
         default: {}
     }
+});
+UserSchema.virtual("user_link").get(function () {
+    return `tg://user?id=${this.user_id}`;
 });
 
 export const UserCollection = model<UserDocument, UserModel>(PROSTAVA.COLLECTION.USER, UserSchema);
