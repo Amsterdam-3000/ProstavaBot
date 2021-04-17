@@ -1,0 +1,16 @@
+<%= i18n.t('header.help') %>
+
+<b><%= i18n.t('command_group.bot') %></b>
+/<%= COMMAND.START %> - <%= LocaleUtils.getCommandText(i18n, COMMAND.START) %>
+/<%= COMMAND.HELP %> - <%= LocaleUtils.getCommandText(i18n, COMMAND.HELP) %>
+/<%= COMMAND.SETTINGS %> - <%= LocaleUtils.getCommandText(i18n, COMMAND.SETTINGS) %>
+
+<b><%= i18n.t('command_group.user') %></b>
+/<%= COMMAND.PROFILE %> - <%= LocaleUtils.getCommandText(i18n, COMMAND.PROFILE) %>
+
+<b><%= i18n.t('command_group.prostava') %></b>
+/<%= COMMAND.PROSTAVA %> <%= LocaleUtils.getCommandPlaceholder(i18n, COMMAND.PROSTAVA) %> - <%= LocaleUtils.getCommandText(i18n, COMMAND.PROSTAVA) %>
+/<%= COMMAND.PROSTAVA_UNDO %> - <%= LocaleUtils.getCommandText(i18n, COMMAND.PROSTAVA_UNDO) %>
+/<%= COMMAND.PROSTAVA_SAVE %> - <%= LocaleUtils.getCommandText(i18n, COMMAND.PROSTAVA_SAVE) %>
+
+@ProstavaBot <%= LocaleUtils.getCommandPlaceholder(i18n, COMMAND.PROSTAVA) %> - <%= LocaleUtils.getCommandText(i18n, COMMAND.SEARCH) %>

@@ -1,5 +1,5 @@
 import { Telegraf } from "telegraf";
-import { UpdateContext } from "./interfaces";
+import { UpdateContext } from "../types";
 import { CONFIG } from "./config";
 
 //Create bot instance

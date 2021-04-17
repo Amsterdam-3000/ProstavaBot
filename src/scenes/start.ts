@@ -1,10 +1,9 @@
 import { Scenes } from "telegraf";
-import { SCENE } from "../commons/constants";
-import { UpdateContext } from "../commons/interfaces";
+import { PROSTAVA } from "../constants";
+import { CommonController } from "../controllers";
+import { UpdateContext } from "../types";
 
-export const startScene = new Scenes.BaseScene<UpdateContext>(SCENE.START);
+export const startScene = new Scenes.BaseScene<UpdateContext>(PROSTAVA.COMMAND.START);
 
-//TODO controllers
-//TEST
-startScene.enter((ctx) => ctx.reply("Hi"));
-startScene.leave((ctx) => ctx.reply("Bye"));
+//Redirect to Help Scene
+startScene.enter(CommonController.enterScene(PROSTAVA.COMMAND.HELP));

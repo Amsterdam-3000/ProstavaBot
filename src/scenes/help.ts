@@ -1,7 +1,8 @@
 import { Scenes } from "telegraf";
-import { SCENE } from "../commons/constants";
-import { UpdateContext } from "../commons/interfaces";
+import { PROSTAVA } from "../constants";
+import { HelpController } from "../controllers";
+import { UpdateContext } from "../types";
 
-export const helpScene = new Scenes.BaseScene<UpdateContext>(SCENE.HELP);
+export const helpScene = new Scenes.BaseScene<UpdateContext>(PROSTAVA.COMMAND.HELP);
 
-//TODO controllers
+helpScene.enter(HelpController.showHelp);
