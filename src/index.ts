@@ -18,13 +18,13 @@ db.once("open", () => {
     bot.use(UserMiddleware.addUserToContext);
     bot.use(UserMiddleware.saveUser, GroupMiddleware.saveGroup);
     bot.use(GlobalMiddleware.addStageToContext);
-    // bot.use(GlobalMiddleware.addLoggingContext);
+    bot.use(GlobalMiddleware.addLoggingContext);
     bot.use(GlobalMiddleware.addChatToUserSession);
 
     bot.action(
         RegexUtils.matchSubAction(PROSTAVA.ACTION.PROSTAVA_RATING),
         ProstavaMiddleware.addProstavaFromActionToContext,
-        // ProstavaMiddleware.isParticipantOfProstava,
+        ProstavaMiddleware.isUserParticipantOfProstava,
         ProstavaMiddleware.changeProstavaParticipantRating,
         ProstavaMiddleware.saveProstava,
         ProstavaController.refreshProstava
@@ -55,7 +55,7 @@ db.once("open", () => {
         ProstavaMiddleware.saveProstava,
         CommonController.enterScene(PROSTAVA.COMMAND.PROSTAVA)
     );
-    bot.on("inline_query", ProstavaController.showProstavas);
+    bot.on("inline_query", ProstavaController.showQueryProstavas);
 
     bot.launch();
     bot.catch((err) => console.log(err));

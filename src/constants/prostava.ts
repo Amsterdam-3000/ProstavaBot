@@ -9,6 +9,7 @@ export const PROSTAVA = {
         SETTINGS_HOURS: "prostava-settings-hours",
         PROFILE_EMOJI: "prostava-profile-emoji",
         PROFILE_BIRTHDAY: "prostava-profile-birthday",
+        PROFILE_USERNAME: "prostava-profile-username",
         PROSTAVA_TITLE: "prostava-prostava-title",
         PROSTAVA_DATE: "prostava-prostava-date",
         PROSTAVA_VENUE: "prostava-prostava-venue",

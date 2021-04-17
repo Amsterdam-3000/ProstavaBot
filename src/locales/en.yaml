@@ -1,6 +1,6 @@
 reply:
     settings:
-        language: "${code} поменять язык Проставы"
+        language: "${code} Change Prostava language"
         currency: "${code} Change Prostava currency"
         days: "${code} Send me expiration date of prostava in days (0-∞)"
         count: "${code} Send me chat members count (0-∞)"
@@ -9,6 +9,7 @@ reply:
     profile:
         emoji: "${code} Send me Your emoji"
         birthday: "${code} Send me Your date of birth (YYYY-MM-DD)"
+        username: "${code} Send me Your username"
     prostava:
         title: "${code} Send me prostava title"
         date: "${code} Select prostava date"
@@ -26,6 +27,7 @@ action:
     profile:
         emoji: "Emoji: ${value}"
         birthday: "Birthday: ${value}"
+        username: "Username: ${value}"
     prostava:
         title: "Title: ${value}"
         date: "${code} Date: ${value}"

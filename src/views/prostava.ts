@@ -97,6 +97,7 @@ export class ProstavaView {
             i18n: i18n,
             prostava: prostava,
             ACTION: PROSTAVA.ACTION,
+            CODE: CODE.ACTION,
             LocaleUtils: LocaleUtils,
             DateUtils: DateUtils,
             TelegramUtils: TelegramUtils,

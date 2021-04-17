@@ -30,4 +30,15 @@ profileScene.hears(
     CommonController.enterScene(PROSTAVA.COMMAND.PROFILE)
 );
 
+//Username
+CommonScene.actionInputRequest(profileScene, PROSTAVA.ACTION.PROFILE_USERNAME)
+profileScene.hears(
+    RegexUtils.matchTitle(),
+    CommonMiddleware.checkStateAction([PROSTAVA.ACTION.PROFILE_USERNAME]),
+    UserMiddleware.changeUserName,
+    UserMiddleware.saveUser,
+    CommonController.enterScene(PROSTAVA.COMMAND.PROFILE)
+);
+
+
 profileScene.leave(CommonController.hideScene);

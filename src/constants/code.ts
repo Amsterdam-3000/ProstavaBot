@@ -9,6 +9,7 @@ export const CODE = {
         SETTINGS_HOURS: "⏱",
         PROFILE_EMOJI: "🤡",
         PROFILE_BIRTHDAY: "🎂",
+        PROFILE_USERNAME: "@",
         PROSTAVA_TITLE: "💬",
         PROSTAVA_VENUE: "📍",
         PROSTAVA_LOCATION: "📌",

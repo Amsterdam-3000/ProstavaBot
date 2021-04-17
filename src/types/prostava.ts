@@ -19,6 +19,7 @@ export interface ProstavaCost {
 }
 export interface ProstavaVenue extends Venue {
     url?: string;
+    thumb?: string;
 }
 export interface ProstavaData {
     title?: string;

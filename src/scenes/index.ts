@@ -2,7 +2,7 @@ import { Scenes } from "telegraf";
 import { UpdateContext } from "../types";
 import { helpScene } from "./help";
 import { profileScene } from "./profile";
-import { prostavaScene, prostavaCalendar } from "./prostava";
+import { prostavaScene } from "./prostava";
 import { settingsScene } from "./settings";
 import { startScene } from "./start";
 

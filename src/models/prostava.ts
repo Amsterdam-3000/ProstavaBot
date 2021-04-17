@@ -1,5 +1,5 @@
 import { model, Schema, Types } from "mongoose";
-import { CODE, PROSTAVA } from "../constants";
+import { PROSTAVA } from "../constants";
 import { ProstavaDocument, ProstavaModel, ProstavaStatus } from "../types";
 
 const CostSchema = new Schema(
@@ -51,7 +51,17 @@ const VenueSchema = new Schema(
 VenueSchema.virtual("url").get(function () {
     if (this.location) {
         return (
-            `https://static-maps.yandex.ru/1.x/?&size=384,216&z=13&l=map` +
+            `https://yandex.ru/maps/?z=13&l=map` +
+            `&ll=${this.location.longitude},${this.location.latitude}` +
+            `&pt=${this.location.longitude},${this.location.latitude},pm2dirm`
+        );
+    }
+    return undefined;
+});
+VenueSchema.virtual("thumb").get(function () {
+    if (this.location) {
+        return (
+            `https://static-maps.yandex.ru/1.x/?size=384,216&z=13&l=map` +
             `&ll=${this.location.longitude},${this.location.latitude}` +
             `&pt=${this.location.longitude},${this.location.latitude},pm2dirm`
         );

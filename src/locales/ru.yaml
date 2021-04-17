@@ -1,7 +1,7 @@
 reply:
     settings:
-        language: "${code} поменять язык Проставы"
-        currency: "${code} поменять валюту Проставы"
+        language: "${code} Поменять язык Проставы"
+        currency: "${code} Поменять валюту Проставы"
         days: "${code} Отправь мне дату истечения проставы (0-∞)"
         count: "${code} Отправь мне количество участников чата (0-∞)"
         percentage: "${code} Отправь мне минимальный процент участников проставы (0-100)"
@@ -9,6 +9,7 @@ reply:
     profile:
         emoji: "${code} Отправь мне свой эмодзи"
         birthday: "${code} Отправь мне свою дату рождения (ГГГГ-ММ-ДД)"
+        username: "${code} Отправь мне свое имя пользователя"
     prostava:
         title: "${code} Отправь мне название проставы"
         date: "${code} Выбери дату проставы"
@@ -26,6 +27,7 @@ action:
     profile:
         emoji: "Эмодзи: ${value}"
         birthday: "День рождения: ${value}"
+        username: "Имя пользователя: ${value}"
     prostava:
         title: "Название: ${value}"
         date: "${code} Дата: ${value}"
@@ -43,19 +45,19 @@ error:
     not_admin: "${code} Ты не админ в этой группе!"
     app_wrong: "${code} Что-то пошло не так!"
     are_going: "${code} Куда ты лезешь!?"
-    not_create: "${code} Отправь мне все данные проставы"
+    not_create: "${code} Отправь мне все данные проставы!"
     not_rate: "${code} Ты не можешь оценивать сам себя!"
 header:
     help: "Я помогаю контроллировать проставы. Вот мои команды:"
 command:
-    start: "${code} запустить Проставу"
-    help: "${code} показать команды Проставы"
-    settings: "${code} изменить настройки Проставы"
-    profile: "${code} заполнить свой профиль ${value}"
-    prostava: "${code} объявить новую проставу ${value}"
-    prostava_undo: "${code} вернуть на доработку проставу"
-    prostava_save: "${code} сохранить объявленную проставу"
-    search: "${code} поиск простав"
+    start: "${code} Запустить Проставу"
+    help: "${code} Показать команды Проставы"
+    settings: "${code} Изменить настройки Проставы"
+    profile: "${code} Заполнить свой профиль ${value}"
+    prostava: "${code} Объявить новую проставу ${value}"
+    prostava_undo: "${code} Вернуть на доработку проставу"
+    prostava_save: "${code} Сохранить объявленную проставу"
+    search: "${code} Поиск простав"
 command_text:
     prostava: "название|дата|место|стоимость"
 command_group:

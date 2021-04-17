@@ -22,6 +22,10 @@ export class ProfileView {
                         )
                     ),
                     ObjectUtils.stringifyActionData(PROSTAVA.ACTION.PROFILE_BIRTHDAY)
+                ),
+                Markup.button.callback(
+                    LocaleUtils.getActionText(i18n, PROSTAVA.ACTION.PROFILE_USERNAME, personalData.name),
+                    ObjectUtils.stringifyActionData(PROSTAVA.ACTION.PROFILE_USERNAME)
                 )
             ],
             {

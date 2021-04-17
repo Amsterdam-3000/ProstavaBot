@@ -4,7 +4,7 @@
 
 <%= LocaleUtils.getActionText(i18n, ACTION.PROSTAVA_DATE, DateUtils.getDateString(i18n.languageCode, prostava.prostava_data.date)) %>
 
-<%= LocaleUtils.getActionText(i18n, ACTION.PROSTAVA_VENUE, prostava.prostava_data.venue.title) %>
+<%= LocaleUtils.getActionText(i18n, ACTION.PROSTAVA_VENUE) %> <a href="<%= prostava.prostava_data.venue.thumb %>"><%= CODE.PROSTAVA_LOCATION %></a><a href="<%= prostava.prostava_data.venue.url %>"><%= prostava.prostava_data.venue.title %></a>
 
 <%= LocaleUtils.getActionText(i18n, ACTION.PROSTAVA_COST, prostava.prostava_data.cost.string) %>
 

@@ -6,22 +6,6 @@ import { StringUtils } from "./string";
 import { TelegramUtils } from "./telegram";
 
 export class ProstavaUtils {
-    static isProstavaPendingCompleted(prostava: Prostava) {
-        if (prostava?.participants?.length === prostava?.participants_max_count) {
-            return true;
-        }
-        if (prostava?.closing_date?.getTime() <= Date.now()) {
-            return true;
-        }
-        return false;
-    }
-    static isProstavaPending(prostava: Prostava) {
-        return prostava?.status === ProstavaStatus.Pending;
-    }
-    static isProstavaNew(prostava: Prostava) {
-        return prostava?.status === ProstavaStatus.New;
-    }
-
     static getProstavaFromContext(ctx: UpdateContext) {
         return ctx.prostava || ctx.session?.prostava;
     }
@@ -121,13 +105,13 @@ export class ProstavaUtils {
         }
         return participantsString;
     }
-    static getParticipantsVotesString(participantsString: Prostava["participants_string"], chatMembersCount: number) {
-        return participantsString + `/` + (chatMembersCount - 1).toString();
+    static getParticipantsVotesString(participantsCount: Prostava["participants_string"], participantsMaxCount: number) {
+        return participantsCount + `/` + participantsMaxCount.toString();
     }
     static getVenueDisplayString(venue: Venue) {
         return (
-            StringUtils.displayValue(venue?.title) +
-            StringUtils.displayValue(venue?.location ? CODE.ACTION.PROSTAVA_LOCATION : "")
+            StringUtils.displayValue(venue?.location ? CODE.ACTION.PROSTAVA_LOCATION : "") +
+            StringUtils.displayValue(venue?.title)
         );
     }
 
@@ -138,7 +122,12 @@ export class ProstavaUtils {
         return (prostavas as [Prostava]).filter((prostava) => this.isUserAuthorOfPrastava(prostava, userId));
     }
     static filterProstavasByQuery(prostavas: Group["prostavas"], query: string) {
-        return (prostavas as [Prostava]).filter((prostava) => this.matchProstavaByQuery(prostava, query));
+        return this.filterCompletedProstavas(prostavas).filter((prostava) =>
+            this.matchProstavaByQuery(prostava, query)
+        );
+    }
+    static filterCompletedProstavas(prostavas: Group["prostavas"]) {
+        return (prostavas as [Prostava]).filter((prostava) => this.isProstavaCompleted(prostava));
     }
     static matchProstavaByQuery(prostava: Prostava, query: string) {
         if (prostava.prostava_data.title.match(query)) {
@@ -148,5 +137,23 @@ export class ProstavaUtils {
     }
     static isUserAuthorOfPrastava(prostava: Prostava, userId: number) {
         return (prostava.author as User).user_id === userId;
+    }
+    static isProstavaPendingCompleted(prostava: Prostava) {
+        if (prostava?.participants?.length === prostava?.participants_max_count) {
+            return true;
+        }
+        if (prostava?.closing_date?.getTime() <= Date.now()) {
+            return true;
+        }
+        return false;
+    }
+    static isProstavaCompleted(prostava: Prostava) {
+        return prostava?.status === ProstavaStatus.Approved || prostava?.status === ProstavaStatus.Rejected;
+    }
+    static isProstavaPending(prostava: Prostava) {
+        return prostava?.status === ProstavaStatus.Pending;
+    }
+    static isProstavaNew(prostava: Prostava) {
+        return prostava?.status === ProstavaStatus.New;
     }
 }

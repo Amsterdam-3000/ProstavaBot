@@ -50,4 +50,8 @@ export class UserMiddleware {
         ctx.user.personal_data.birthday = new Date(TelegramUtils.getTextMessage(ctx).text);
         await next();
     }
+    static async changeUserName(ctx: UpdateContext, next: Function) {
+        ctx.user.personal_data.name = TelegramUtils.getTextMessage(ctx).text;
+        await next();
+    }
 }
