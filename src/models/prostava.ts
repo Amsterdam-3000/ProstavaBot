@@ -1,6 +1,6 @@
 import { model, Schema, Types } from "mongoose";
 import { PROSTAVA } from "../constants";
-import { ProstavaDocument, ProstavaModel, ProstavaStatus } from "../types";
+import { ProstavaCost, ProstavaDocument, ProstavaModel, ProstavaStatus, ProstavaVenue } from "../types";
 
 const CostSchema = new Schema(
     {
@@ -17,9 +17,12 @@ const CostSchema = new Schema(
     },
     { _id: false }
 );
-CostSchema.virtual("string").get(function () {
-    if (this.amount) {
+CostSchema.virtual("string").get(function (this: ProstavaCost) {
+    if (this.amount && this.currency) {
         return this.amount + this.currency;
+    }
+    if (this.amount) {
+        return this.amount;
     }
     return undefined;
 });
@@ -39,7 +42,10 @@ const LocationSchema = new Schema(
 );
 const VenueSchema = new Schema(
     {
-        title: String,
+        title: {
+            type: String,
+            required: true
+        },
         address: String,
         location: {
             type: LocationSchema,
@@ -48,20 +54,20 @@ const VenueSchema = new Schema(
     },
     { _id: false }
 );
-VenueSchema.virtual("url").get(function () {
+VenueSchema.virtual("url").get(function (this: ProstavaVenue) {
     if (this.location) {
         return (
-            `https://yandex.ru/maps/?z=13&l=map` +
+            "https://yandex.ru/maps/?z=13&l=map" +
             `&ll=${this.location.longitude},${this.location.latitude}` +
             `&pt=${this.location.longitude},${this.location.latitude},pm2dirm`
         );
     }
     return undefined;
 });
-VenueSchema.virtual("thumb").get(function () {
+VenueSchema.virtual("thumb").get(function (this: ProstavaVenue) {
     if (this.location) {
         return (
-            `https://static-maps.yandex.ru/1.x/?size=384,216&z=13&l=map` +
+            "https://static-maps.yandex.ru/1.x/?size=256,144&z=13&l=map" +
             `&ll=${this.location.longitude},${this.location.latitude}` +
             `&pt=${this.location.longitude},${this.location.latitude},pm2dirm`
         );
@@ -138,16 +144,19 @@ const ProstavaSchema = new Schema<ProstavaDocument, ProstavaModel>({
         type: ProstavaDataSchema,
         required: true
     },
-    participants: [ProstavaParticipantSchema],
+    participants: {
+        type: [ProstavaParticipantSchema],
+        default: []
+    },
     participants_min_count: Number,
     participants_max_count: Number,
     closing_date: Date
 });
-ProstavaSchema.virtual("rating_string").get(function () {
-    return this.rating.toString();
+ProstavaSchema.virtual("rating_string").get(function (this: ProstavaDocument) {
+    return this.rating?.toFixed(1);
 });
-ProstavaSchema.virtual("participants_string").get(function () {
-    return this.participants.length.toString();
+ProstavaSchema.virtual("participants_string").get(function (this: ProstavaDocument) {
+    return this.participants?.length.toString();
 });
 
 export const ProstavaCollection = model<ProstavaDocument, ProstavaModel>(PROSTAVA.COLLECTION.PROSTAVA, ProstavaSchema);

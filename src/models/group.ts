@@ -1,7 +1,7 @@
 import { model, Schema } from "mongoose";
 import { PROSTAVA, LOCALE, CODE } from "../constants";
 import { GroupModel, GroupDocument } from "../types";
-import * as mongooseAutoPopulate from "mongoose-autopopulate";
+const mongooseAutoPopulate = require("mongoose-autopopulate");
 
 const GroupSettinsSchema = new Schema(
     {
@@ -29,7 +29,7 @@ const GroupSettinsSchema = new Schema(
             type: Number,
             default: 0,
             min: 0,
-            max: 100,
+            max: 100
         },
         pending_hours: {
             type: Number,

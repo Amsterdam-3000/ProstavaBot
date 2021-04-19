@@ -3,12 +3,12 @@ import { Prostava } from "./prostava";
 import { User } from "./user";
 
 export interface GroupSettings {
-    language?: string;
-    currency?: string;
-    create_days_ago?: number;
-    chat_members_count?: number;
-    participants_min_percent?: number;
-    pending_hours?: number;
+    language: string;
+    currency: string;
+    create_days_ago: number;
+    chat_members_count: number;
+    participants_min_percent: number;
+    pending_hours: number;
 }
 
 export interface Group {

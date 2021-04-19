@@ -10,14 +10,25 @@ export class ProstavaUtils {
         return ctx.prostava || ctx.session?.prostava;
     }
 
+    static fillNewUser(ctx: UpdateContext) {
+        const chat = TelegramUtils.getChatFromContext(ctx);
+        const user = TelegramUtils.getUserFromContext(ctx);
+        return {
+            _id: Types.ObjectId(),
+            user_id: user?.id,
+            group_id: chat?.id,
+            personal_data: {
+                name: TelegramUtils.getUserString(user)
+            }
+        };
+    }
     static fillProstavaFromText(ctx: UpdateContext) {
         const chat = TelegramUtils.getChatFromContext(ctx);
         const commandText = TelegramUtils.getCommandText(ctx);
         const prostavaData = commandText?.split("|") || [];
         return {
-            //TODO Why
             _id: Types.ObjectId(),
-            group_id: chat.id,
+            group_id: chat?.id,
             author: ctx.user,
             prostava_data: {
                 title: prostavaData[0],
@@ -45,11 +56,13 @@ export class ProstavaUtils {
     }
 
     static updateTotalRating(participants: Prostava["participants"]) {
+        const participantsWere = this.filterParticipantsWere(participants);
+        if (!participantsWere) {
+            return 0;
+        }
         return (
-            this.filterParticipantsWere(participants).reduce(
-                (ratingSum, participant) => ratingSum + participant.rating,
-                0
-            ) / participants.length
+            participantsWere.reduce((ratingSum, participant) => ratingSum + participant.rating, 0) /
+            participantsWere.length
         );
     }
 
@@ -65,11 +78,11 @@ export class ProstavaUtils {
     static findUserById(users: Group["users"], userId: Prostava["author"]) {
         return (users as [User]).find((user) => user._id.equals(userId as Types.ObjectId));
     }
-    static findUserByUserId(users: Group["users"], userId: number) {
+    static findUserByUserId(users: Group["users"], userId: number | undefined) {
         return (users as [User]).find((user) => user.user_id === userId);
     }
-    static findParticipantByUserId(participants: Prostava["participants"], userId: number) {
-        return participants.find((participant) => (participant.user as User).user_id === userId);
+    static findParticipantByUserId(participants: Prostava["participants"], userId: number | undefined) {
+        return participants?.find((participant) => (participant.user as User).user_id === userId);
     }
     static deleteProstavaById(prostavas: Group["prostavas"], deletedProstava: Prostava | Types.ObjectId) {
         return prostavas.filter(
@@ -93,22 +106,28 @@ export class ProstavaUtils {
     }
     static getParticipantsString(participants: Prostava["participants"], minCount: Prostava["participants_min_count"]) {
         const participantsWere = this.filterParticipantsWere(participants);
-        let participantsString = participantsWere.reduce(
+        let participantsString = participantsWere?.reduce(
             (participantsString, participant) =>
                 participantsString + (participant.user as User).personal_data.emoji + participant.rating,
             ""
         );
-        if (participantsWere.length < minCount) {
-            for (let i = 0; i < minCount - participantsWere.length; i++) {
+        if (!minCount) {
+            return participantsString;
+        }
+        if (!participantsWere?.length || participantsWere.length < minCount) {
+            for (let i = 0; i < minCount - (participantsWere?.length || 0); i++) {
                 participantsString = participantsString + CODE.COMMAND.PROFILE + "0";
             }
         }
         return participantsString;
     }
-    static getParticipantsVotesString(participantsCount: Prostava["participants_string"], participantsMaxCount: number) {
-        return participantsCount + `/` + participantsMaxCount.toString();
+    static getParticipantsVotesString(
+        participantsCount: Prostava["participants_string"],
+        participantsMaxCount: number
+    ) {
+        return participantsCount + "/" + participantsMaxCount.toString();
     }
-    static getVenueDisplayString(venue: Venue) {
+    static getVenueDisplayString(venue: Venue | undefined) {
         return (
             StringUtils.displayValue(venue?.location ? CODE.ACTION.PROSTAVA_LOCATION : "") +
             StringUtils.displayValue(venue?.title)
@@ -116,12 +135,12 @@ export class ProstavaUtils {
     }
 
     static filterParticipantsWere(participants: Prostava["participants"]) {
-        return participants.filter((participant) => participant.rating > 0);
+        return participants?.filter((participant) => participant.rating > 0);
     }
-    static filterUserProstavas(prostavas: Group["prostavas"], userId: number) {
+    static filterUserProstavas(prostavas: Group["prostavas"], userId: number | undefined) {
         return (prostavas as [Prostava]).filter((prostava) => this.isUserAuthorOfPrastava(prostava, userId));
     }
-    static filterProstavasByQuery(prostavas: Group["prostavas"], query: string) {
+    static filterProstavasByQuery(prostavas: Group["prostavas"], query: string | undefined) {
         return this.filterCompletedProstavas(prostavas).filter((prostava) =>
             this.matchProstavaByQuery(prostava, query)
         );
@@ -129,31 +148,31 @@ export class ProstavaUtils {
     static filterCompletedProstavas(prostavas: Group["prostavas"]) {
         return (prostavas as [Prostava]).filter((prostava) => this.isProstavaCompleted(prostava));
     }
-    static matchProstavaByQuery(prostava: Prostava, query: string) {
-        if (prostava.prostava_data.title.match(query)) {
+    static matchProstavaByQuery(prostava: Prostava, query: string | undefined) {
+        if (!query || prostava.prostava_data.title?.match(query)) {
             return true;
         }
         return false;
     }
-    static isUserAuthorOfPrastava(prostava: Prostava, userId: number) {
+    static isUserAuthorOfPrastava(prostava: Prostava, userId: number | undefined) {
         return (prostava.author as User).user_id === userId;
     }
     static isProstavaPendingCompleted(prostava: Prostava) {
         if (prostava?.participants?.length === prostava?.participants_max_count) {
             return true;
         }
-        if (prostava?.closing_date?.getTime() <= Date.now()) {
+        if (!prostava?.closing_date || prostava?.closing_date.getTime() <= Date.now()) {
             return true;
         }
         return false;
     }
-    static isProstavaCompleted(prostava: Prostava) {
+    static isProstavaCompleted(prostava: Prostava | undefined) {
         return prostava?.status === ProstavaStatus.Approved || prostava?.status === ProstavaStatus.Rejected;
     }
-    static isProstavaPending(prostava: Prostava) {
+    static isProstavaPending(prostava: Prostava | undefined) {
         return prostava?.status === ProstavaStatus.Pending;
     }
-    static isProstavaNew(prostava: Prostava) {
+    static isProstavaNew(prostava: Prostava | undefined) {
         return prostava?.status === ProstavaStatus.New;
     }
 }

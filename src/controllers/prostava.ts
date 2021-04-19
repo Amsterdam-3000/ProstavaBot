@@ -7,6 +7,9 @@ import { ProstavaView } from "../views";
 export class ProstavaController {
     static async showProstava(ctx: UpdateContext) {
         const prostava = ProstavaUtils.getProstavaFromContext(ctx);
+        if (!prostava) {
+            return;
+        }
         if (ProstavaUtils.isProstavaNew(prostava)) {
             ctx.reply(
                 LocaleUtils.getCommandText(ctx.i18n, PROSTAVA.COMMAND.PROSTAVA, ctx.user?.personal_data?.name),
@@ -32,16 +35,16 @@ export class ProstavaController {
     }
 
     static async showQueryProstavas(ctx: UpdateContext) {
-        let results: InlineQueryResultArticle[] = [];
-        const prostavas = ProstavaUtils.filterProstavasByQuery(ctx.group.prostavas, ctx.inlineQuery.query);
+        const results: InlineQueryResultArticle[] = [];
+        const prostavas = ProstavaUtils.filterProstavasByQuery(ctx.group.prostavas, ctx.inlineQuery?.query);
         for (let i = 0; i < prostavas?.length; i++) {
             const prostava = prostavas[i];
             const user = prostava.author as User;
             results.push({
                 type: "article",
                 id: (prostava as ProstavaDocument).id,
-                thumb_url: prostava.prostava_data.venue.thumb,
-                title: prostava.prostava_data.title,
+                thumb_url: prostava.prostava_data.venue?.thumb,
+                title: prostava.prostava_data.title!,
                 description: `${user.personal_data.emoji} ${user.personal_data.name}\n${DateUtils.getDateString(
                     ctx.i18n.languageCode,
                     prostava.prostava_data.date
@@ -66,6 +69,10 @@ export class ProstavaController {
 
     static async refreshProstava(ctx: UpdateContext) {
         const prostava = ProstavaUtils.getProstavaFromContext(ctx);
+        if (!prostava) {
+            ctx.answerCbQuery();
+            return;
+        }
         ctx.editMessageText(await ProstavaView.getProstavaHtml(ctx.i18n, prostava), {
             parse_mode: "HTML",
             reply_markup: ProstavaView.getProstavaRatingKeyboard(prostava).reply_markup
@@ -73,6 +80,10 @@ export class ProstavaController {
     }
     static async backToCreateProstava(ctx: UpdateContext) {
         const prostava = ProstavaUtils.getProstavaFromContext(ctx);
+        if (!prostava) {
+            ctx.answerCbQuery();
+            return;
+        }
         ctx.editMessageText(
             LocaleUtils.getCommandText(ctx.i18n, PROSTAVA.COMMAND.PROSTAVA, ctx.user?.personal_data?.name),
             ProstavaView.getProstavaCreateKeyboard(

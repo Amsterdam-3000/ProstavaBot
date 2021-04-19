@@ -23,25 +23,25 @@ export interface ProstavaVenue extends Venue {
 }
 export interface ProstavaData {
     title?: string;
-    date?: Date;
-    venue?: ProstavaVenue;
+    date: Date;
+    venue: ProstavaVenue;
     cost?: ProstavaCost;
 }
 
 export interface ProstavaParticipant {
     user: User["_id"] | User;
-    rating?: number;
+    rating: number;
 }
 
 export interface Prostava {
-    _id?: Types.ObjectId;
+    _id: Types.ObjectId;
     group_id: Group["_id"];
     author: User["_id"] | User;
     status: ProstavaStatus;
     rating: number;
     rating_string?: string;
-    prostava_data?: ProstavaData;
-    participants?: [ProstavaParticipant];
+    prostava_data: ProstavaData;
+    participants: [ProstavaParticipant];
     participants_string?: string;
     participants_min_count?: number;
     participants_max_count?: number;

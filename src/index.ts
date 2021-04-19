@@ -11,6 +11,8 @@ db.on("error", (err) => {
 });
 
 db.once("open", () => {
+    console.log("bot is ready");
+
     bot.use(GlobalMiddleware.addSessionToContext);
     bot.use(GlobalMiddleware.isGroupChat);
     bot.use(GlobalMiddleware.addI18nToContext);

@@ -5,24 +5,18 @@ import { LocaleUtils, ProstavaUtils, TelegramUtils } from "../utils";
 
 export class UserMiddleware {
     static async addUserToContext(ctx: UpdateContext, next: Function) {
-        const chat = TelegramUtils.getChatFromContext(ctx);
         const user = TelegramUtils.getUserFromContext(ctx);
-        ctx.user = ProstavaUtils.findUserByUserId(ctx.group.users, user.id);
+        ctx.user = ProstavaUtils.findUserByUserId(ctx.group.users, user?.id)!;
         if (!ctx.user) {
-            ctx.user = new UserCollection({
-                user_id: user.id,
-                group_id: chat.id,
-                personal_data: {
-                    name: TelegramUtils.getUserString(user)
-                }
-            });
+            ctx.user = new UserCollection(ProstavaUtils.fillNewUser(ctx));
             ctx.group.users.push(ctx.user);
         }
         await next();
     }
 
     static async isUserAdmin(ctx: UpdateContext, next: Function) {
-        const chatMember = await ctx.getChatMember(TelegramUtils.getUserFromContext(ctx).id);
+        const user = TelegramUtils.getUserFromContext(ctx);
+        const chatMember = await ctx.getChatMember(user?.id!);
         if (!TelegramUtils.isMemberAdmin(chatMember)) {
             ctx.answerCbQuery(LocaleUtils.getErrorText(ctx.i18n, CODE.ERROR.NOT_ADMIN));
             return;
@@ -34,8 +28,8 @@ export class UserMiddleware {
         if ((ctx.user as UserDocument).isModified()) {
             try {
                 await (ctx.user as UserDocument).save();
-            } catch {
-                //TOTO Logger
+            } catch (err) {
+                console.log(err);
                 return;
             }
         }

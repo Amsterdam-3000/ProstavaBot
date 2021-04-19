@@ -6,10 +6,10 @@ import { ObjectUtils, ProstavaUtils, TelegramUtils } from "../utils";
 export class GroupMiddleware {
     static async addGroupToContext(ctx: UpdateContext, next: Function) {
         const chat = TelegramUtils.getChatFromContext(ctx);
-        ctx.group = await GroupCollection.findById(chat.id).exec();
+        ctx.group = (await GroupCollection.findById(chat?.id).exec())!;
         if (!ctx.group) {
             ctx.group = new GroupCollection({
-                _id: chat.id,
+                _id: chat?.id,
                 settings: {
                     chat_members_count: (await ctx.getChatMembersCount()) - 1
                 }
@@ -29,8 +29,8 @@ export class GroupMiddleware {
             try {
                 await (ctx.group as GroupDocument).save();
                 ProstavaUtils.populateGroupProstavas(ctx.group);
-            } catch {
-                //TODO Logger
+            } catch (err) {
+                console.log(err);
                 return;
             }
         }
@@ -39,26 +39,26 @@ export class GroupMiddleware {
 
     static async changeLanguage(ctx: UpdateContext, next: Function) {
         const actionData = ObjectUtils.parseActionData(TelegramUtils.getCbQueryData(ctx));
-        if (actionData.value === ctx.i18n.languageCode) {
+        if (actionData?.value === ctx.i18n.languageCode) {
             ctx.answerCbQuery();
             return;
         }
-        ctx.group.settings.language = actionData.value;
+        ctx.group.settings.language = actionData?.value!;
         await next();
     }
     static async changeCurrency(ctx: UpdateContext, next: Function) {
         const actionData = ObjectUtils.parseActionData(TelegramUtils.getCbQueryData(ctx));
-        if (actionData.value === ctx.group.settings.currency) {
+        if (actionData?.value === ctx.group.settings.currency) {
             ctx.answerCbQuery();
             return;
         }
-        ctx.group.settings.currency = actionData.value;
+        ctx.group.settings.currency = actionData?.value!;
         await next();
     }
     static async changeSettings(ctx: UpdateContext, next: Function) {
         const sceneState = TelegramUtils.getSceneState(ctx);
         const inputNumber = Number(TelegramUtils.getTextMessage(ctx).text);
-        switch (ObjectUtils.parseActionData(sceneState.actionData)?.action) {
+        switch (ObjectUtils.parseActionData(sceneState?.actionData)?.action) {
             case PROSTAVA.ACTION.SETTINGS_DAYS:
                 ctx.group.settings.create_days_ago = inputNumber;
                 break;

@@ -6,7 +6,7 @@ export class StringUtils {
     static displaySelectedValue(value: string, selected: boolean) {
         return `${value} ${ConstantUtils.getSelectedCode(selected)}`;
     }
-    static displayValue(value: string, code = CODE.SELECTED.NOT_SELECTED) {
+    static displayValue(value: string | undefined, code = CODE.SELECTED.NOT_SELECTED) {
         if (value) {
             return value;
         }

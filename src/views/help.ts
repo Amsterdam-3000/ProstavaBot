@@ -6,7 +6,7 @@ import { LocaleUtils } from "../utils";
 
 export class HelpView {
     static getHelpHtml(i18n: I18nContext) {
-        return renderFile(resolve(process.cwd(), "src/views", "help.ejs"), {
+        return renderFile(resolve(__dirname, "help.ejs"), {
             i18n: i18n,
             COMMAND: PROSTAVA.COMMAND,
             LocaleUtils: LocaleUtils

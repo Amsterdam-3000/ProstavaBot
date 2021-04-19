@@ -11,7 +11,7 @@ export const profileScene = new Scenes.BaseScene<UpdateContext>(PROSTAVA.COMMAND
 profileScene.enter(ProfileController.showProfile);
 
 //Emoji
-CommonScene.actionInputRequest(profileScene, PROSTAVA.ACTION.PROFILE_EMOJI)
+CommonScene.actionInputRequest(profileScene, PROSTAVA.ACTION.PROFILE_EMOJI);
 profileScene.hears(
     RegexUtils.matchEmojis(),
     CommonMiddleware.checkStateAction([PROSTAVA.ACTION.PROFILE_EMOJI]),
@@ -21,7 +21,7 @@ profileScene.hears(
 );
 
 //Birthday
-CommonScene.actionInputRequest(profileScene, PROSTAVA.ACTION.PROFILE_BIRTHDAY)
+CommonScene.actionInputRequest(profileScene, PROSTAVA.ACTION.PROFILE_BIRTHDAY);
 profileScene.hears(
     RegexUtils.matchDate(),
     CommonMiddleware.checkStateAction([PROSTAVA.ACTION.PROFILE_BIRTHDAY]),
@@ -31,7 +31,7 @@ profileScene.hears(
 );
 
 //Username
-CommonScene.actionInputRequest(profileScene, PROSTAVA.ACTION.PROFILE_USERNAME)
+CommonScene.actionInputRequest(profileScene, PROSTAVA.ACTION.PROFILE_USERNAME);
 profileScene.hears(
     RegexUtils.matchTitle(),
     CommonMiddleware.checkStateAction([PROSTAVA.ACTION.PROFILE_USERNAME]),
@@ -39,6 +39,5 @@ profileScene.hears(
     UserMiddleware.saveUser,
     CommonController.enterScene(PROSTAVA.COMMAND.PROFILE)
 );
-
 
 profileScene.leave(CommonController.hideScene);

@@ -34,7 +34,7 @@ const UserSchema = new Schema<UserDocument, UserModel>({
         default: {}
     }
 });
-UserSchema.virtual("user_link").get(function () {
+UserSchema.virtual("user_link").get(function (this: UserDocument) {
     return `tg://user?id=${this.user_id}`;
 });
 

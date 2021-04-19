@@ -1,4 +1,4 @@
-export const CODE = {
+export const CODE: { [index: string]: { [index: string]: string } } = {
     ACTION: {
         BACK: "🔙",
         SETTINGS_LANGUAGE: "👅",

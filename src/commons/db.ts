@@ -2,7 +2,7 @@ import { connect, connection, set } from "mongoose";
 import { CONFIG } from "./config";
 
 //Connect to MongoDB
-connect(CONFIG.MONGODB_URI, {
+connect(CONFIG.MONGODB_URI!, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 });
