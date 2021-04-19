@@ -1,7 +1,7 @@
 import { I18nContext } from "@edjopato/telegraf-i18n/dist/source";
 import { Markup } from "telegraf";
 import { PROSTAVA, LOCALE, CODE } from "../constants";
-import { ConstantUtils, FunctionUtils, LocaleUtils, ObjectUtils, StringUtils } from "../utils";
+import { ConstantUtils, LocaleUtils, ObjectUtils, StringUtils } from "../utils";
 import { GroupSettings } from "../types";
 import { CommonView } from "./common";
 
@@ -47,7 +47,7 @@ export class SettingsView {
                 )
             ],
             {
-                wrap: FunctionUtils.oneColumn
+                wrap: (btn, index, row) => row.length === 1
             }
         );
     }
@@ -55,7 +55,7 @@ export class SettingsView {
     //Language
     static getLanguageKeyboard(i18n: I18nContext) {
         return Markup.inlineKeyboard([...this.getLanguageCodeButtons(i18n), CommonView.getBackButton(i18n)], {
-            wrap: FunctionUtils.oneColumn
+            wrap: (btn, index, row) => row.length === 1
         });
     }
     private static getLanguageCodeButtons(i18n: I18nContext) {
@@ -75,7 +75,7 @@ export class SettingsView {
         return Markup.inlineKeyboard(
             [...this.getCurrencyCodeButtons(i18n, currencyNow), CommonView.getBackButton(i18n)],
             {
-                wrap: FunctionUtils.oneColumn
+                wrap: (btn, index, row) => row.length === 1
             }
         );
     }

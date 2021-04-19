@@ -1,4 +1,4 @@
-export const PROSTAVA = {
+export const PROSTAVA: { [index: string]: { [index: string]: string } } = {
     ACTION: {
         BACK: "prostava-back",
         SETTINGS_LANGUAGE: "prostava-settings-language",

@@ -12,7 +12,7 @@ export class CommonMiddleware {
     }
     static checkStateAction = (actions: Array<string>) => async (ctx: UpdateContext, next: Function) => {
         const sceneState = TelegramUtils.getSceneState(ctx);
-        if (!actions.join("").includes(ObjectUtils.parseActionData(sceneState.actionData)?.action)) {
+        if (!actions.join("").includes(ObjectUtils.parseActionData(sceneState?.actionData)?.action!)) {
             return;
         }
         await next();
@@ -20,7 +20,7 @@ export class CommonMiddleware {
 
     static async isCbMessageOrigin(ctx: UpdateContext, next: Function) {
         const sceneState = TelegramUtils.getSceneState(ctx);
-        if (ctx.callbackQuery && ctx.callbackQuery.message.message_id !== sceneState.message?.message_id) {
+        if (ctx.callbackQuery && ctx.callbackQuery?.message?.message_id !== sceneState.message?.message_id) {
             ctx.answerCbQuery(LocaleUtils.getErrorText(ctx.i18n, CODE.ERROR.ARE_GOING));
             return;
         }

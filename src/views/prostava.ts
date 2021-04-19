@@ -5,7 +5,6 @@ import { resolve } from "path";
 import {
     ConstantUtils,
     DateUtils,
-    FunctionUtils,
     LocaleUtils,
     ObjectUtils,
     ProstavaUtils,
@@ -62,7 +61,7 @@ export class ProstavaView {
                 )
             ],
             {
-                wrap: FunctionUtils.oneColumn
+                wrap: (btn, index, row) => row.length === 1
             }
         );
     }
@@ -93,7 +92,7 @@ export class ProstavaView {
     }
 
     static getProstavaHtml(i18n: I18nContext, prostava: Prostava) {
-        return renderFile(resolve(process.cwd(), "src/views", "prostava.ejs"), {
+        return renderFile(resolve(__dirname, "prostava.ejs"), {
             i18n: i18n,
             prostava: prostava,
             ACTION: PROSTAVA.ACTION,

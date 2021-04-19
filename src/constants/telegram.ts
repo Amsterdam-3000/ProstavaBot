@@ -1,4 +1,4 @@
-export const TELEGRAM = {
+export const TELEGRAM: { [index: string]: { [index: string]: string } } = {
     CHAT_TYPE: {
         GROUP: "group",
         PRIVATE: "private",

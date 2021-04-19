@@ -2,7 +2,7 @@ import { I18nContext } from "@edjopato/telegraf-i18n/dist/source";
 import { Markup } from "telegraf";
 import { PROSTAVA, CODE } from "../constants";
 import { PersonalData } from "../types";
-import { DateUtils, FunctionUtils, LocaleUtils, ObjectUtils, StringUtils } from "../utils";
+import { DateUtils, LocaleUtils, ObjectUtils, StringUtils } from "../utils";
 
 export class ProfileView {
     static getProfileKeyboard(i18n: I18nContext, personalData: PersonalData) {
@@ -29,7 +29,7 @@ export class ProfileView {
                 )
             ],
             {
-                wrap: FunctionUtils.oneColumn
+                wrap: (btn, index, row) => row.length === 1
             }
         );
     }

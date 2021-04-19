@@ -1,6 +1,6 @@
 export class DateUtils {
     static getWeekDayNames(language: string) {
-        let dates: Array<Date> = [];
+        const dates: Array<Date> = [];
         for (let i = 0; i < 7; i++) {
             const date = new Date();
             date.setDate(date.getDate() + i);
@@ -10,7 +10,7 @@ export class DateUtils {
     }
 
     static getMonthNames(language: string) {
-        let dates: Array<Date> = [];
+        const dates: Array<Date> = [];
         for (let i = 0; i < 12; i++) {
             const date = new Date();
             date.setMonth(date.getMonth() + i);
@@ -19,7 +19,7 @@ export class DateUtils {
         return dates.sort((a, b) => a.getMonth() - b.getMonth()).map((date) => this.getMonthName(language, date));
     }
 
-    static getDateString(language: string, date: Date) {
+    static getDateString(language: string, date: Date | undefined) {
         return date?.toLocaleString(language, {
             year: "numeric",
             month: "short",

@@ -38,6 +38,6 @@ export class GlobalMiddleware {
         }
         await next();
         const user = TelegramUtils.getUserFromContext(ctx);
-        cache.set(StringUtils.concatSessionKey(user.id), ctx.session);
+        cache.set(StringUtils.concatSessionKey(user?.id)!, ctx.session);
     }
 }

@@ -6,7 +6,7 @@ import { StringUtils } from "./string";
 export class LocaleUtils {
     static getErrorText(i18n: I18nContext, errorCode: string) {
         const error = ConstantUtils.getErrorByCode(errorCode);
-        const errorKey = `error.${error.toLowerCase()}`;
+        const errorKey = `error.${error?.toLowerCase()}`;
         const variables = { code: errorCode };
         return i18n.t(errorKey, variables);
     }

@@ -4,7 +4,7 @@ import { LOCALE } from "../constants";
 
 //Load .yaml files from the locales folder
 export const i18n = new I18n({
-    directory: resolve(process.cwd(), "src/locales"),
+    directory: resolve(__dirname, "../", "locales"),
     defaultLanguage: LOCALE.LANGUAGE.EN,
     allowMissing: true,
     useSession: false,

@@ -1,9 +1,22 @@
 {
   "name": "prostavabot",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Я контролирую проставы твоих друзей",
   "scripts": {
-    "dev": "nodemon src/index.ts"
+    "start-dev": "nodemon src/index.ts",
+    "copy-static-assets": "ts-node copyStaticAssets.ts",
+    "lint": "eslint '*/**/*.ts' --quiet --fix",
+    "build-ts": "tsc",
+    "build": "npm run build-ts && npm run copy-static-assets",
+    "start": "node dist"
+  },
+  "nodemonConfig": {
+    "verbose": true,
+    "env": {
+      "NODE_ENV": "development"
+    },
+    "ext": "ts,json,yaml,ejs",
+    "delay": 3000
   },
   "repository": {
     "type": "git",
@@ -16,25 +29,29 @@
   },
   "homepage": "https://github.com/usebooz/ProstavaBot#readme",
   "dependencies": {
-    "@edjopato/telegraf-i18n": "^0.2.1",
+    "@edjopato/telegraf-i18n": "^0.2.2",
     "dotenv": "^8.2.0",
     "ejs": "^3.1.6",
-    "emoji-regex": "^8.0.0",
-    "mongoose": "^5.12.0",
-    "mongoose-autopopulate": "^0.12.3",
+    "emoji-regex": "^9.2.2",
+    "mongoose": "^5.12.4",
+    "mongoose-autopopulate": "^0.13.0",
     "telegraf": "^4.3.0",
     "telegraf-calendar-telegram": "^1.5.8"
   },
   "devDependencies": {
+    "@tsconfig/node14": "^1.0.0",
     "@types/ejs": "^3.0.6",
-    "@types/mongoose": "^5.10.4",
     "@types/node": "^14.14.41",
-    "@typescript-eslint/eslint-plugin": "^4.18.0",
-    "@typescript-eslint/parser": "^4.18.0",
-    "eslint": "^7.22.0",
+    "@types/shelljs": "^0.8.8",
+    "@typescript-eslint/eslint-plugin": "^4.22.0",
+    "@typescript-eslint/parser": "^4.22.0",
+    "eslint": "^7.24.0",
+    "eslint-config-prettier": "^8.2.0",
+    "eslint-plugin-prettier": "^3.4.0",
     "nodemon": "^2.0.7",
     "prettier": "^2.2.1",
+    "shelljs": "^0.8.4",
     "ts-node": "^9.1.1",
-    "typescript": "^4.2.3"
+    "typescript": "^4.2.4"
   }
 }

@@ -16,7 +16,10 @@ export class TelegramUtils {
         );
     }
 
-    static getUserString(user: User): string {
+    static getUserString(user: User | undefined) {
+        if (!user) {
+            return "";
+        }
         if (user.username) {
             return user.username;
         }

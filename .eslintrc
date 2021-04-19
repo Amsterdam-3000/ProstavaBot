@@ -1,6 +1,10 @@
 {
     "parser": "@typescript-eslint/parser",
-    "extends": ["plugin:@typescript-eslint/recommended", "prettier/@typescript-eslint", "plugin:prettier/recommended"],
+    "extends": [
+        "plugin:@typescript-eslint/recommended",
+        "plugin:prettier/recommended"
+    ],
+    "plugins": ["@typescript-eslint", "prettier"],
     "parserOptions": {
         "ecmaVersion": 2021,
         "sourceType": "module"
@@ -17,7 +21,7 @@
             }
         ],
         "@typescript-eslint/no-unused-vars": "warn",
-        "@typescript-eslint/restrict-template-expressions": false,
-        "@typescript-eslint/no-floating-promises": false
+        "@typescript-eslint/restrict-template-expressions": 0,
+        "@typescript-eslint/no-floating-promises": 0
     }
 }

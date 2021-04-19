@@ -5,7 +5,7 @@ export class ObjectUtils {
     static stringifyActionData(action: string, value?: string, id?: string): string {
         return action + "|" + value + "|" + id;
     }
-    static parseActionData(data: string) {
+    static parseActionData(data: string | undefined) {
         if (!data) {
             return undefined;
         }
@@ -23,7 +23,7 @@ export class ObjectUtils {
         };
     }
     static addActionToState(oldState: SceneState, actionData: string): SceneState {
-        let newState = { ...oldState };
+        const newState = { ...oldState };
         newState.actionData = actionData;
         return newState;
     }
