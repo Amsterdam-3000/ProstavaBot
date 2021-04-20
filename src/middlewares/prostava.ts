@@ -178,8 +178,8 @@ export class ProstavaMiddleware {
         if (prostava) {
             try {
                 await (prostava as ProstavaDocument).delete();
-            } catch {
-                //TODO Logger
+            } catch (err){
+                console.log(err);
                 return;
             }
             ctx.group.prostavas = ProstavaUtils.deleteProstavaById(ctx.group.prostavas, prostava);
@@ -195,8 +195,8 @@ export class ProstavaMiddleware {
         if (prostava && (prostava as ProstavaDocument).isModified()) {
             try {
                 await (prostava as ProstavaDocument).save();
-            } catch {
-                //TODO Logger
+            } catch (err) {
+                console.log(err);
                 return;
             }
         }

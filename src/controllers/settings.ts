@@ -5,10 +5,11 @@ import { LocaleUtils, ObjectUtils, TelegramUtils } from "../utils";
 
 export class SettingsController {
     static async showSettings(ctx: UpdateContext) {
-        ctx.reply(
+        const message = await ctx.reply(
             LocaleUtils.getCommandText(ctx.i18n, PROSTAVA.COMMAND.SETTINGS),
             SettingsView.getSettingsKeyboard(ctx.i18n, ctx.group?.settings)
-        ).then((message) => TelegramUtils.setSceneStateToContext(ctx, ObjectUtils.initializeState(message)));
+        );
+        TelegramUtils.setSceneStateToContext(ctx, ObjectUtils.initializeState(message));
     }
 
     static async showLanguages(ctx: UpdateContext) {

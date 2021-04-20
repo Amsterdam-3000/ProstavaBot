@@ -11,5 +11,5 @@ export const i18n = new I18n({
     templateData: {
         pluralize,
         uppercase: (value: string) => value.toUpperCase()
-    }
+    },
 });

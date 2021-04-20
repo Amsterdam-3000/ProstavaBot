@@ -11,24 +11,24 @@ export class ProstavaController {
             return;
         }
         if (ProstavaUtils.isProstavaNew(prostava)) {
-            ctx.reply(
+            const message = await ctx.reply(
                 LocaleUtils.getCommandText(ctx.i18n, PROSTAVA.COMMAND.PROSTAVA, ctx.user?.personal_data?.name),
                 ProstavaView.getProstavaCreateKeyboard(
                     ctx.i18n,
                     prostava.prostava_data,
                     !(prostava as ProstavaDocument).validateSync()
                 )
-            ).then((message) => TelegramUtils.setSceneStateToContext(ctx, ObjectUtils.initializeState(message)));
+            );
+            TelegramUtils.setSceneStateToContext(ctx, ObjectUtils.initializeState(message));
         } else if (ProstavaUtils.isProstavaPending(prostava)) {
-            ctx.reply(await ProstavaView.getProstavaHtml(ctx.i18n, prostava), {
+            const message = await ctx.reply(await ProstavaView.getProstavaHtml(ctx.i18n, prostava), {
                 parse_mode: "HTML",
                 reply_markup: ProstavaView.getProstavaRatingKeyboard(prostava).reply_markup
-            }).then((message) => {
-                TelegramUtils.setSceneStateToContext(ctx, ObjectUtils.initializeState(message));
-                ctx.pinChatMessage(message.message_id).catch((err) => console.log(err));
             });
+            TelegramUtils.setSceneStateToContext(ctx, ObjectUtils.initializeState(message));
+            ctx.pinChatMessage(message.message_id).catch((err) => console.log(err));
         } else {
-            ctx.reply(await ProstavaView.getProstavaHtml(ctx.i18n, prostava), {
+            await ctx.reply(await ProstavaView.getProstavaHtml(ctx.i18n, prostava), {
                 parse_mode: "HTML"
             });
         }

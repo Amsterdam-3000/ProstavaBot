@@ -1,7 +1,9 @@
 import { Types } from "mongoose";
 import { Venue } from "telegraf/typings/core/types/typegram";
 import { CODE } from "../constants";
-import { Group, Prostava, ProstavaStatus, UpdateContext, User } from "../types";
+import { Group, GroupSettings, Prostava, ProstavaStatus, UpdateContext, User } from "../types";
+import { DateUtils } from "./date";
+import { RegexUtils } from "./regex";
 import { StringUtils } from "./string";
 import { TelegramUtils } from "./telegram";
 
@@ -31,10 +33,10 @@ export class ProstavaUtils {
             group_id: chat?.id,
             author: ctx.user,
             prostava_data: {
-                title: prostavaData[0],
-                date: new Date(prostavaData[1] || Date.now()),
+                title: RegexUtils.matchTitle().test(prostavaData[0]) ? prostavaData[0] : "",
+                date: this.fillProstavaDateFromText(prostavaData[1], ctx.group.settings),
                 venue: {
-                    title: prostavaData[2]
+                    title: RegexUtils.matchTitle().test(prostavaData[2]) ? prostavaData[0] : ""
                 },
                 cost: this.fillProstavaCostFromText(prostavaData[3], ctx.group.settings.currency)
             }
@@ -46,6 +48,18 @@ export class ProstavaUtils {
             amount: Number(cost[0]),
             currency: cost[1] || currency
         };
+    }
+    static fillProstavaDateFromText(dateText: string, settings: GroupSettings) {
+        const dateNow = new Date(Date.now());
+        if (!dateText || !RegexUtils.matchDate().test(dateText)) {
+            return dateNow;
+        }
+        const dateIn = new Date(dateText);
+        const dateAgo = DateUtils.getDateDaysAgo(settings.create_days_ago);
+        if ((dateAgo && dateIn.getTime() < dateAgo.getTime()) || dateIn.getTime() > dateNow.getTime()) {
+            return dateNow;
+        }
+        return dateIn;
     }
     static fillProstavaFromDeleted(prostava: Prostava) {
         return {

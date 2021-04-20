@@ -1,5 +1,4 @@
-import { session, Telegraf } from "telegraf";
-import { Context } from "telegraf";
+import { Telegraf } from "telegraf";
 import { cache } from "../commons/cache";
 import { i18n } from "../commons/locale";
 import { CODE } from "../constants";
@@ -8,17 +7,10 @@ import { mainStage } from "../scenes";
 import { LocaleUtils, StringUtils, TelegramUtils } from "../utils";
 
 export class GlobalMiddleware {
-    //TODO Redis session
-    static addSessionToContext = session({
-        store: cache,
-        getSessionKey: async (ctx: Context): Promise<string | undefined> =>
-            StringUtils.concatSessionKey(ctx.from?.id, ctx.chat?.id)
-    });
 
+    static addSessionToContext = cache.middleware();
     static addI18nToContext = i18n.middleware();
-
     static addLoggingContext = Telegraf.log();
-
     static addStageToContext = mainStage.middleware();
 
     static async isGroupChat(ctx: UpdateContext, next: Function) {
@@ -37,7 +29,8 @@ export class GlobalMiddleware {
             ctx.session.chat = ctx.chat;
         }
         await next();
-        const user = TelegramUtils.getUserFromContext(ctx);
-        cache.set(StringUtils.concatSessionKey(user?.id)!, ctx.session);
+        const user = TelegramUtils.getUserFromContext(ctx);        
+        //Save chat id for future inline queries
+        cache.saveSession(StringUtils.concatSessionKey(user?.id)!, ctx.session);
     }
 }
