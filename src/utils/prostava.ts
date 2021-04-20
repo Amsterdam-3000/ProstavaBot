@@ -1,7 +1,8 @@
 import { Types } from "mongoose";
+import { ProstavaCollection } from "../models";
 import { Venue } from "telegraf/typings/core/types/typegram";
 import { CODE } from "../constants";
-import { Group, GroupSettings, Prostava, ProstavaStatus, UpdateContext, User } from "../types";
+import { Group, GroupSettings, Prostava, ProstavaDocument, ProstavaStatus, UpdateContext, User } from "../types";
 import { DateUtils } from "./date";
 import { RegexUtils } from "./regex";
 import { StringUtils } from "./string";
@@ -9,7 +10,16 @@ import { TelegramUtils } from "./telegram";
 
 export class ProstavaUtils {
     static getProstavaFromContext(ctx: UpdateContext) {
-        return ctx.prostava || ctx.session?.prostava;
+        if (ctx.prostava) {
+            return ctx.prostava;
+        }
+        if (!ctx.session?.prostava) {
+            return undefined;
+        }
+        if (!(ctx.session.prostava as ProstavaDocument).id) {
+            ctx.session.prostava = new ProstavaCollection(ctx.session.prostava);
+        }
+        return ctx.session.prostava;
     }
 
     static fillNewUser(ctx: UpdateContext) {
