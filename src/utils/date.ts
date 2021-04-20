@@ -35,11 +35,12 @@ export class DateUtils {
     }
 
     static getDateDaysAgo(days: number) {
-        if (days > 0) {
-            const date = new Date();
-            return date.setDate(date.getDate() - days);
+        if (!days) {
+            return null;
         }
-        return null;
+        const date = new Date();
+        date.setDate(date.getDate() - days);
+        return date;
     }
     static getHoursFromDateToNow(date: Date) {
         return (new Date().getTime() - date.getTime()) / 36e5;

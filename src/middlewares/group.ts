@@ -63,6 +63,10 @@ export class GroupMiddleware {
                 ctx.group.settings.create_days_ago = inputNumber;
                 break;
             case PROSTAVA.ACTION.SETTINGS_COUNT:
+                const chatMembersCount = await ctx.getChatMembersCount();
+                if (inputNumber > chatMembersCount) {
+                    return;
+                }
                 ctx.group.settings.chat_members_count = inputNumber;
                 break;
             case PROSTAVA.ACTION.SETTINGS_PERCENTAGE:

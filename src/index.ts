@@ -11,8 +11,6 @@ db.on("error", (err) => {
 });
 
 db.once("open", () => {
-    console.log("bot is ready");
-
     bot.use(GlobalMiddleware.addSessionToContext);
     bot.use(GlobalMiddleware.isGroupChat);
     bot.use(GlobalMiddleware.addI18nToContext);
@@ -60,8 +58,9 @@ db.once("open", () => {
     bot.on("inline_query", ProstavaController.showQueryProstavas);
 
     bot.launch();
+    console.log("Prostava is polling");
     bot.catch((err) => console.log(err));
-
+     
     //Enable graceful stop
     process.once("SIGINT", () => bot.stop("SIGINT"));
     process.once("SIGTERM", () => bot.stop("SIGTERM"));

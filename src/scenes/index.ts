@@ -6,13 +6,11 @@ import { prostavaScene } from "./prostava";
 import { settingsScene } from "./settings";
 import { startScene } from "./start";
 
-//TODO ttl for stage
-export const mainStage = new Scenes.Stage<UpdateContext>([
-    startScene,
-    helpScene,
-    settingsScene,
-    profileScene,
-    prostavaScene
-]);
+export const mainStage = new Scenes.Stage<UpdateContext>(
+    [startScene, helpScene, settingsScene, profileScene, prostavaScene],
+    {
+        // ttl: 90000
+    }
+);
 
 export * from "./prostava";

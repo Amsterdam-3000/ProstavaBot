@@ -36,7 +36,8 @@
     "mongoose": "^5.12.4",
     "mongoose-autopopulate": "^0.13.0",
     "telegraf": "^4.3.0",
-    "telegraf-calendar-telegram": "^1.5.8"
+    "telegraf-calendar-telegram": "^1.5.8",
+    "telegraf-session-redis": "^5.1.0"
   },
   "devDependencies": {
     "@tsconfig/node14": "^1.0.0",
