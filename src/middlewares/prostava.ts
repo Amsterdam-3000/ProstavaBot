@@ -178,7 +178,7 @@ export class ProstavaMiddleware {
         if (prostava) {
             try {
                 await (prostava as ProstavaDocument).delete();
-            } catch (err){
+            } catch (err) {
                 console.log(err);
                 return;
             }
