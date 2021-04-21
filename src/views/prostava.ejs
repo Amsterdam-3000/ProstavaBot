@@ -1,6 +1,6 @@
-<b><%= prostava.prostava_data.title %></b> <%= LocaleUtils.getStatusText(i18n, prostava.status, ProstavaUtils.getParticipantsVotesString(prostava.participants_string, prostava.participants_max_count)) %>
+<%= LocaleUtils.getStatusText(i18n, prostava.status, ProstavaUtils.getParticipantsVotesString(prostava.participants_string, prostava.participants_max_count)) %> <b><%= prostava.prostava_data.title %></b>
 <%= prostava.author.personal_data.emoji %> <a href="<%= prostava.author.user_link %>"><%= prostava.author.personal_data.name %></a> • <%= DateUtils.getDateString(i18n.languageCode, prostava.prostava_data.date) %>
 <%= LocaleUtils.getActionText(i18n, ACTION.PROSTAVA_VENUE) %> <a href="<%= prostava.prostava_data.venue.thumb %>"><%= CODE.PROSTAVA_LOCATION %></a><a href="<%= prostava.prostava_data.venue.url %>"><%= prostava.prostava_data.venue.title %></a>
 <%= LocaleUtils.getActionText(i18n, ACTION.PROSTAVA_COST, prostava.prostava_data.cost.string) %>
-<%= LocaleUtils.getActionText(i18n, ACTION.PROSTAVA_PARTICIPANTS, ProstavaUtils.getParticipantsString(prostava.participants, prostava.participants_min_count)) %>
-<%= LocaleUtils.getActionText(i18n, ACTION.PROSTAVA_RATING, ProstavaUtils.getRatingString(prostava.rating, prostava.rating_string)) %>
+<%= ProstavaUtils.getParticipantsString(prostava.participants, prostava.participants_min_count) %>
+<%= ProstavaUtils.getRatingString(prostava.rating, prostava.rating_string) %>

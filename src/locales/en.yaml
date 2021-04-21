@@ -37,9 +37,9 @@ action:
         participants: "${code} Participants: ${value}"
         rating: "${code} Rating: ${value}"
 status:
-    pending: "${code} Pending ${value}"
-    rejected: "${code} Rejected"
-    approved: "${code} Approved"
+    pending: "${code} ${value}"
+    rejected: "${code}"
+    approved: "${code}"
 error:
     not_group: "${code} I only work in groups!"
     not_admin: "${code} You are not admin in this group!"
