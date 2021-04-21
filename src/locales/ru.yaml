@@ -37,9 +37,9 @@ action:
         participants: "${code} Участники: ${value}"
         rating: "${code} Рейтинг: ${value}"
 status:
-    pending: "${code} На согласовании ${value}"
-    rejected: "${code} Отклонено"
-    approved: "${code} Подтверждено"
+    pending: "${code} ${value}"
+    rejected: "${code}"
+    approved: "${code}"
 error:
     not_group: "${code} Работаю только в группах!"
     not_admin: "${code} Ты не админ в этой группе!"
