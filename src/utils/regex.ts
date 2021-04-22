@@ -45,6 +45,7 @@ export class RegexUtils {
     }
 
     static matchEmojis() {
-        return new RegExp(`^(${require("emoji-regex")().source})$`);
+        //TODO Delete \\u{1F6CD} after emoji-regex update
+        return new RegExp(`^(${require("emoji-regex/es2015/RGI_Emoji")().source}|\\u{1F6CD})$`, "u");
     }
 }
