@@ -4,7 +4,7 @@ import { UserCollection } from "../models";
 import { LocaleUtils, ProstavaUtils, TelegramUtils } from "../utils";
 
 export class UserMiddleware {
-    static async addUserToContext(ctx: UpdateContext, next: Function) {
+    static async addUserToContext(ctx: UpdateContext, next: () => Promise<void>) {
         const user = TelegramUtils.getUserFromContext(ctx);
         ctx.user = ProstavaUtils.findUserByUserId(ctx.group.users, user?.id)!;
         if (!ctx.user) {
@@ -14,9 +14,12 @@ export class UserMiddleware {
         await next();
     }
 
-    static async isUserAdmin(ctx: UpdateContext, next: Function) {
+    static async isUserAdmin(ctx: UpdateContext, next: () => Promise<void>) {
         const user = TelegramUtils.getUserFromContext(ctx);
-        const chatMember = await ctx.getChatMember(user?.id!);
+        if (!user) {
+            return;
+        }
+        const chatMember = await ctx.getChatMember(user?.id);
         if (!TelegramUtils.isMemberAdmin(chatMember)) {
             ctx.answerCbQuery(LocaleUtils.getErrorText(ctx.i18n, CODE.ERROR.NOT_ADMIN));
             return;
@@ -24,7 +27,7 @@ export class UserMiddleware {
         await next();
     }
 
-    static async saveUser(ctx: UpdateContext, next: Function) {
+    static async saveUser(ctx: UpdateContext, next: () => Promise<void>) {
         if ((ctx.user as UserDocument).isModified()) {
             try {
                 await (ctx.user as UserDocument).save();
@@ -36,15 +39,15 @@ export class UserMiddleware {
         await next();
     }
 
-    static async changeUserEmoji(ctx: UpdateContext, next: Function) {
+    static async changeUserEmoji(ctx: UpdateContext, next: () => Promise<void>) {
         ctx.user.personal_data.emoji = TelegramUtils.getTextMessage(ctx).text;
         await next();
     }
-    static async changeUserBirthday(ctx: UpdateContext, next: Function) {
+    static async changeUserBirthday(ctx: UpdateContext, next: () => Promise<void>) {
         ctx.user.personal_data.birthday = new Date(TelegramUtils.getTextMessage(ctx).text);
         await next();
     }
-    static async changeUserName(ctx: UpdateContext, next: Function) {
+    static async changeUserName(ctx: UpdateContext, next: () => Promise<void>) {
         ctx.user.personal_data.name = TelegramUtils.getTextMessage(ctx).text;
         await next();
     }

@@ -81,7 +81,7 @@ export class ProstavaUtils {
 
     static updateTotalRating(participants: Prostava["participants"]) {
         const participantsWere = this.filterParticipantsWere(participants);
-        if (!participantsWere) {
+        if (!participantsWere?.length) {
             return 0;
         }
         return (
@@ -157,7 +157,25 @@ export class ProstavaUtils {
             StringUtils.displayValue(venue?.title)
         );
     }
+    static getUsersLinkMarkdown(users: Group["users"]) {
+        return users
+            .reduce(
+                (usersLinkString, user) =>
+                    `${usersLinkString} [${(user as User).personal_data.name}](${(user as User).user_link})`,
+                ""
+            )
+            .trim();
+    }
 
+    static filterUsersPendingToRateProstava(users: Group["users"], prostava: Prostava) {
+        return users.filter(
+            (user) =>
+                (user as User).user_id !== (prostava.author as User).user_id &&
+                !prostava.participants.find(
+                    (participant) => (user as User).user_id === (participant.user as User).user_id
+                )
+        );
+    }
     static filterParticipantsWere(participants: Prostava["participants"]) {
         return participants?.filter((participant) => participant.rating > 0);
     }

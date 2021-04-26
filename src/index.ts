@@ -4,6 +4,8 @@ import { PROSTAVA } from "./constants";
 import { UserMiddleware, GroupMiddleware, GlobalMiddleware, CommonMiddleware, ProstavaMiddleware } from "./middlewares";
 import { CommonController, ProstavaController } from "./controllers";
 import { RegexUtils } from "./utils";
+import { prostavaQueue } from "./commons/queue";
+import { ProstavaProcess } from "./processes";
 
 db.on("error", (err) => {
     console.log(err);
@@ -13,6 +15,7 @@ db.on("error", (err) => {
 db.once("open", () => {
     bot.use(GlobalMiddleware.addSessionToContext);
     bot.use(GlobalMiddleware.isGroupChat);
+    bot.use(GlobalMiddleware.isUserReal);
     bot.use(GlobalMiddleware.addI18nToContext);
     bot.use(GroupMiddleware.addGroupToContext, GroupMiddleware.applyGroupSettings);
     bot.use(UserMiddleware.addUserToContext);
@@ -60,7 +63,11 @@ db.once("open", () => {
     bot.launch();
     console.log("Prostava is polling");
     bot.catch((err) => console.log(err));
-     
+
+    //Background jobs
+    prostavaQueue.process(PROSTAVA.JOB.PROSTAVA_AUTO_PUBLISH, ProstavaProcess.publishCompletedProstavas);
+    prostavaQueue.process(PROSTAVA.JOB.PROSTAVA_RATE_REMINDER, ProstavaProcess.remindUsersRateProstavas);
+
     //Enable graceful stop
     process.once("SIGINT", () => bot.stop("SIGINT"));
     process.once("SIGTERM", () => bot.stop("SIGTERM"));

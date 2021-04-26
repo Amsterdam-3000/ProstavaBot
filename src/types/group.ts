@@ -14,8 +14,8 @@ export interface GroupSettings {
 export interface Group {
     _id: number;
     settings: GroupSettings;
-    users: [User["_id"] | User];
-    prostavas: [Prostava["_id"] | Prostava];
+    users: (User["_id"] | User)[];
+    prostavas: (Prostava["_id"] | Prostava)[];
 }
 
 interface GroupBaseDocument extends Group, Document {
@@ -23,13 +23,13 @@ interface GroupBaseDocument extends Group, Document {
 }
 
 export interface GroupDocument extends GroupBaseDocument {
-    users: [User["_id"]];
-    prostavas: [Prostava["_id"]];
+    users: User["_id"][];
+    prostavas: Prostava["_id"][];
 }
 
 export interface GroupPopulatedDocument extends GroupBaseDocument {
-    users: [User];
-    prostavas: [Prostava];
+    users: User[];
+    prostavas: Prostava[];
 }
 
 export interface GroupModel extends Model<GroupDocument> {}

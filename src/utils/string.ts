@@ -1,4 +1,4 @@
-import { CALENDAR, CODE } from "../constants";
+import { CALENDAR, CODE, PROSTAVA } from "../constants";
 import { ConstantUtils } from "./constant";
 import { RegexUtils } from "./regex";
 
@@ -24,15 +24,14 @@ export class StringUtils {
     }
 
     static concatSessionKey(fromId?: number, chatId?: number) {
-        if (fromId && chatId) {
-            return `${fromId}:${chatId}`;
-        }
+        //TODO Need local redis for dev
+        let sessionKey = `${process.env.NODE_ENV}:${PROSTAVA.COLLECTION.SESSION}`;
         if (fromId) {
-            return `${fromId}`;
+            sessionKey = `${sessionKey}:${fromId}`;
         }
         if (chatId) {
-            return `${chatId}`;
+            sessionKey = `${sessionKey}:${chatId}`;
         }
-        return undefined;
+        return sessionKey;
     }
 }

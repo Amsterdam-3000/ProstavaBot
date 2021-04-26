@@ -41,7 +41,7 @@ export interface Prostava {
     rating: number;
     rating_string?: string;
     prostava_data: ProstavaData;
-    participants: [ProstavaParticipant];
+    participants: ProstavaParticipant[];
     participants_string?: string;
     participants_min_count?: number;
     participants_max_count?: number;

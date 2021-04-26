@@ -1,4 +1,4 @@
-export const PROSTAVA: { [index: string]: { [index: string]: string } } = {
+export const PROSTAVA = {
     ACTION: {
         BACK: "prostava-back",
         SETTINGS_LANGUAGE: "prostava-settings-language",
@@ -31,6 +31,15 @@ export const PROSTAVA: { [index: string]: { [index: string]: string } } = {
     COLLECTION: {
         GROUP: "Group",
         USER: "User",
-        PROSTAVA: "Prostava"
+        PROSTAVA: "Prostava",
+        SESSION: "Session",
+        QUEUE: "Queue"
+    },
+    QUEUE: {
+        PROSTAVA: "prostavaQueue"
+    },
+    JOB: {
+        PROSTAVA_AUTO_PUBLISH: "prostavaAutoPublishJob",
+        PROSTAVA_RATE_REMINDER: "prostavaRateReminderJob"
     }
 };
