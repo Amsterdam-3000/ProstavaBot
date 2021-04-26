@@ -37,18 +37,13 @@ export class ProstavaController {
     static async showQueryProstavas(ctx: UpdateContext) {
         const results: InlineQueryResultArticle[] = [];
         const prostavas = ProstavaUtils.filterProstavasByQuery(ctx.group.prostavas, ctx.inlineQuery?.query);
-        for (let i = 0; i < prostavas?.length; i++) {
-            const prostava = prostavas[i];
-            const user = prostava.author as User;
+        for (const prostava of prostavas) {
             results.push({
                 type: "article",
                 id: (prostava as ProstavaDocument).id,
                 thumb_url: prostava.prostava_data.venue?.thumb,
-                title: prostava.prostava_data.title!,
-                description: `${user.personal_data.emoji} ${user.personal_data.name}\n${DateUtils.getDateString(
-                    ctx.i18n.languageCode,
-                    prostava.prostava_data.date
-                )}`,
+                title: ProstavaView.getProstavaTitle(ctx.i18n, prostava),
+                description: ProstavaView.getProstavaDescription(ctx.i18n, prostava),
                 input_message_content: {
                     message_text: await ProstavaView.getProstavaHtml(ctx.i18n, prostava),
                     parse_mode: "HTML"

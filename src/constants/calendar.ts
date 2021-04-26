@@ -1,4 +1,4 @@
-export const CALENDAR: { [index: string]: { [index: string]: string } } = {
+export const CALENDAR = {
     ACTION: {
         CALENDAR_DATE: "calendar-telegram-date-",
         CALENDAR_PREV: "calendar-telegram-prev-",

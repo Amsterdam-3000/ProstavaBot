@@ -15,6 +15,7 @@ reply:
         date: "${code} Select prostava date"
         venue: "${code} Send me prostava location and title"
         cost: "${code} Send me prostava cost amount with currency"
+        rating: "${code} Please, rate prostava: ${value}"
 action:
     back: "${code} Back"
     settings:

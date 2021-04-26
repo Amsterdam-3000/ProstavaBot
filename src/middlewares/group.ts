@@ -4,7 +4,7 @@ import { GroupDocument, UpdateContext } from "../types";
 import { ObjectUtils, ProstavaUtils, TelegramUtils } from "../utils";
 
 export class GroupMiddleware {
-    static async addGroupToContext(ctx: UpdateContext, next: Function) {
+    static async addGroupToContext(ctx: UpdateContext, next: () => Promise<void>) {
         const chat = TelegramUtils.getChatFromContext(ctx);
         ctx.group = (await GroupCollection.findById(chat?.id).exec())!;
         if (!ctx.group) {
@@ -20,11 +20,11 @@ export class GroupMiddleware {
         await next();
     }
 
-    static async applyGroupSettings(ctx: UpdateContext, next: Function) {
+    static async applyGroupSettings(ctx: UpdateContext, next: () => Promise<void>) {
         ctx.i18n.locale(ctx.group.settings.language);
         await next();
     }
-    static async saveGroup(ctx: UpdateContext, next: Function) {
+    static async saveGroup(ctx: UpdateContext, next: () => Promise<void>) {
         if ((ctx.group as GroupDocument).isModified()) {
             try {
                 await (ctx.group as GroupDocument).save();
@@ -37,25 +37,25 @@ export class GroupMiddleware {
         await next();
     }
 
-    static async changeLanguage(ctx: UpdateContext, next: Function) {
+    static async changeLanguage(ctx: UpdateContext, next: () => Promise<void>) {
         const actionData = ObjectUtils.parseActionData(TelegramUtils.getCbQueryData(ctx));
         if (actionData?.value === ctx.i18n.languageCode) {
             ctx.answerCbQuery();
             return;
         }
-        ctx.group.settings.language = actionData?.value!;
+        ctx.group.settings.language = actionData?.value || "";
         await next();
     }
-    static async changeCurrency(ctx: UpdateContext, next: Function) {
+    static async changeCurrency(ctx: UpdateContext, next: () => Promise<void>) {
         const actionData = ObjectUtils.parseActionData(TelegramUtils.getCbQueryData(ctx));
         if (actionData?.value === ctx.group.settings.currency) {
             ctx.answerCbQuery();
             return;
         }
-        ctx.group.settings.currency = actionData?.value!;
+        ctx.group.settings.currency = actionData?.value || "";
         await next();
     }
-    static async changeSettings(ctx: UpdateContext, next: Function) {
+    static async changeSettings(ctx: UpdateContext, next: () => Promise<void>) {
         const sceneState = TelegramUtils.getSceneState(ctx);
         const inputNumber = Number(TelegramUtils.getTextMessage(ctx).text);
         switch (ObjectUtils.parseActionData(sceneState?.actionData)?.action) {

@@ -4,7 +4,7 @@ import { Prostava, ProstavaDocument, ProstavaStatus, UpdateContext } from "../ty
 import { DateUtils, LocaleUtils, ObjectUtils, ProstavaUtils, StringUtils, TelegramUtils } from "../utils";
 
 export class ProstavaMiddleware {
-    static async addPendingProstavaToContext(ctx: UpdateContext, next: Function) {
+    static async addPendingProstavaToContext(ctx: UpdateContext, next: () => Promise<void>) {
         if (!ProstavaUtils.getProstavaFromContext(ctx)) {
             const user = TelegramUtils.getUserFromContext(ctx);
             ctx.prostava = ProstavaUtils.filterUserProstavas(ctx.group.prostavas, user?.id).find((prostava) =>
@@ -13,20 +13,20 @@ export class ProstavaMiddleware {
         }
         await next();
     }
-    static async addProstavaFromActionToContext(ctx: UpdateContext, next: Function) {
+    static async addProstavaFromActionToContext(ctx: UpdateContext, next: () => Promise<void>) {
         const actionData = ObjectUtils.parseActionData(TelegramUtils.getCbQueryData(ctx));
         ctx.prostava = (ctx.group.prostavas as [Prostava]).find(
             (prostava) => (prostava as ProstavaDocument).id === actionData?.id
         );
         await next();
     }
-    static async addNewProstavaToSession(ctx: UpdateContext, next: Function) {
+    static async addNewProstavaToSession(ctx: UpdateContext, next: () => Promise<void>) {
         if (!ProstavaUtils.getProstavaFromContext(ctx)) {
             ctx.session.prostava = new ProstavaCollection(ProstavaUtils.fillProstavaFromText(ctx));
         }
         await next();
     }
-    static async deleteProstavaFromContext(ctx: UpdateContext, next: Function) {
+    static async deleteProstavaFromContext(ctx: UpdateContext, next: () => Promise<void>) {
         delete ctx.prostava;
         if (ctx.session?.prostava) {
             delete ctx.session.prostava;
@@ -34,7 +34,7 @@ export class ProstavaMiddleware {
         await next();
     }
 
-    static async changeProstavaOrVenueTitle(ctx: UpdateContext, next: Function) {
+    static async changeProstavaOrVenueTitle(ctx: UpdateContext, next: () => Promise<void>) {
         const sceneState = TelegramUtils.getSceneState(ctx);
         const prostava = ProstavaUtils.getProstavaFromContext(ctx);
         if (prostava) {
@@ -49,7 +49,7 @@ export class ProstavaMiddleware {
         }
         await next();
     }
-    static async changeProstavaDate(ctx: UpdateContext, next: Function) {
+    static async changeProstavaDate(ctx: UpdateContext, next: () => Promise<void>) {
         const prostava = ProstavaUtils.getProstavaFromContext(ctx);
         if (prostava) {
             prostava.prostava_data.date = new Date(
@@ -58,21 +58,21 @@ export class ProstavaMiddleware {
         }
         await next();
     }
-    static async changeProstavaVenue(ctx: UpdateContext, next: Function) {
+    static async changeProstavaVenue(ctx: UpdateContext, next: () => Promise<void>) {
         const prostava = ProstavaUtils.getProstavaFromContext(ctx);
         if (prostava) {
             prostava.prostava_data.venue = TelegramUtils.getVenueMessage(ctx).venue;
         }
         await next();
     }
-    static async changeProstavaLocation(ctx: UpdateContext, next: Function) {
+    static async changeProstavaLocation(ctx: UpdateContext, next: () => Promise<void>) {
         const prostava = ProstavaUtils.getProstavaFromContext(ctx);
         if (prostava) {
             prostava.prostava_data.venue.location = TelegramUtils.getLocationMessage(ctx).location;
         }
         await next();
     }
-    static async changeProstavaCost(ctx: UpdateContext, next: Function) {
+    static async changeProstavaCost(ctx: UpdateContext, next: () => Promise<void>) {
         const prostava = ProstavaUtils.getProstavaFromContext(ctx);
         if (prostava) {
             prostava.prostava_data.cost = ProstavaUtils.fillProstavaCostFromText(
@@ -83,7 +83,7 @@ export class ProstavaMiddleware {
         await next();
     }
 
-    static async isProstavaDataFull(ctx: UpdateContext, next: Function) {
+    static async isProstavaDataFull(ctx: UpdateContext, next: () => Promise<void>) {
         const prostava = ProstavaUtils.getProstavaFromContext(ctx);
         if (!prostava || (prostava as ProstavaDocument).validateSync()) {
             ctx.answerCbQuery(LocaleUtils.getErrorText(ctx.i18n, CODE.ERROR.NOT_CREATE));
@@ -91,13 +91,13 @@ export class ProstavaMiddleware {
         }
         await next();
     }
-    static async announceProstava(ctx: UpdateContext, next: Function) {
+    static async announceProstava(ctx: UpdateContext, next: () => Promise<void>) {
         const prostava = ProstavaUtils.getProstavaFromContext(ctx);
         if (prostava) {
-            prostava.participants_min_count = Math.ceil(
-                (ctx.group.settings.chat_members_count * ctx.group.settings.participants_min_percent) / 100
-            );
             prostava.participants_max_count = ctx.group.settings.chat_members_count - 1;
+            prostava.participants_min_count = Math.ceil(
+                (prostava.participants_max_count * ctx.group.settings.participants_min_percent) / 100
+            );
             prostava.status = ProstavaStatus.Pending;
             prostava.closing_date = DateUtils.getNowDatePlusHours(ctx.group.settings.pending_hours);
             ctx.group.prostavas.push(prostava);
@@ -105,7 +105,7 @@ export class ProstavaMiddleware {
         await next();
     }
 
-    static async isUserParticipantOfProstava(ctx: UpdateContext, next: Function) {
+    static async isUserParticipantOfProstava(ctx: UpdateContext, next: () => Promise<void>) {
         const prostava = ProstavaUtils.getProstavaFromContext(ctx);
         const user = TelegramUtils.getUserFromContext(ctx);
         if (!prostava) {
@@ -118,7 +118,7 @@ export class ProstavaMiddleware {
         }
         await next();
     }
-    static async changeProstavaParticipantRating(ctx: UpdateContext, next: Function) {
+    static async changeProstavaParticipantRating(ctx: UpdateContext, next: () => Promise<void>) {
         const prostava = ProstavaUtils.getProstavaFromContext(ctx);
         if (!prostava) {
             ctx.answerCbQuery();
@@ -142,14 +142,14 @@ export class ProstavaMiddleware {
         await next();
     }
 
-    static async isProstavaPendingCompleted(ctx: UpdateContext, next: Function) {
+    static async isProstavaPendingCompleted(ctx: UpdateContext, next: () => Promise<void>) {
         const prostava = ProstavaUtils.getProstavaFromContext(ctx);
         if (!prostava || !ProstavaUtils.isProstavaPendingCompleted(prostava)) {
             return;
         }
         await next();
     }
-    static async publishProstava(ctx: UpdateContext, next: Function) {
+    static async publishProstava(ctx: UpdateContext, next: () => Promise<void>) {
         const prostava = ProstavaUtils.getProstavaFromContext(ctx);
         if (!prostava) {
             return;
@@ -166,14 +166,14 @@ export class ProstavaMiddleware {
         await next();
     }
 
-    static async hasUserPendingProstava(ctx: UpdateContext, next: Function) {
+    static async hasUserPendingProstava(ctx: UpdateContext, next: () => Promise<void>) {
         const prostava = ProstavaUtils.getProstavaFromContext(ctx);
         if (!ProstavaUtils.isProstavaPending(prostava)) {
             return;
         }
         await next();
     }
-    static async withdrawProstava(ctx: UpdateContext, next: Function) {
+    static async withdrawProstava(ctx: UpdateContext, next: () => Promise<void>) {
         const prostava = ProstavaUtils.getProstavaFromContext(ctx);
         if (prostava) {
             try {
@@ -190,7 +190,7 @@ export class ProstavaMiddleware {
         await next();
     }
 
-    static async saveProstava(ctx: UpdateContext, next: Function) {
+    static async saveProstava(ctx: UpdateContext, next: () => Promise<void>) {
         const prostava = ProstavaUtils.getProstavaFromContext(ctx);
         if (prostava && (prostava as ProstavaDocument).isModified()) {
             try {
