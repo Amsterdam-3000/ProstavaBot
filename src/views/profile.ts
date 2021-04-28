@@ -47,29 +47,13 @@ export class ProfileView {
         });
     }
 
-    //TODO move to view
-    static getUsersListMD(i18n: I18nContext, users: Group["users"]) {
-        const usersList =
-            "\n" +
-            users
-                .reduce(
-                    (usersLinkString, user) =>
-                        usersLinkString +
-                        "\n" +
-                        (user as User).personal_data.emoji +
-                        " " +
-                        `\[${(user as User).personal_data.name}\]` +
-                        `\(${(user as User).user_link}\)`,
-                    ""
-                )
-                .trim();
-        return (
-            `/${PROSTAVA.COMMAND.PROFILE}` +
-            " " +
-            LocaleUtils.getCommandPlaceholder(i18n, PROSTAVA.COMMAND.PROFILE) +
-            " " +
-            LocaleUtils.getCommandText(i18n, PROSTAVA.COMMAND.PROFILE_SHOW) +
-            usersList
-        );
+    static getProfilesHtml(i18n: I18nContext, users: Group["users"]) {
+        return renderFile(resolve(__dirname, "pending.ejs"), {
+            i18n: i18n,
+            users: users,
+            COMMAND: PROSTAVA.COMMAND,
+            ACTION: PROSTAVA.ACTION,
+            LocaleUtils: LocaleUtils
+        });
     }
 }

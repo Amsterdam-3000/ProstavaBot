@@ -104,19 +104,15 @@ export class ProstavaView {
         });
     }
 
-    //TODO move to view
-    static getPendingUsersMD(i18n: I18nContext, users: Group["users"]) {
-        const usersLink =
-            "\n" +
-            users
-                .reduce(
-                    (usersLinkString, user) =>
-                        `${usersLinkString} [${(user as User).personal_data.emoji}](${(user as User).user_link})`,
-                    ""
-                )
-                .trim();
-        return LocaleUtils.getActionReplyText(i18n, PROSTAVA.ACTION.PROSTAVA_RATING, usersLink);
+    static getPendingUsersHtml(i18n: I18nContext, users: Group["users"]) {
+        return renderFile(resolve(__dirname, "pending.ejs"), {
+            i18n: i18n,
+            users: users,
+            ACTION: PROSTAVA.ACTION,
+            LocaleUtils: LocaleUtils
+        });
     }
+
     static getProstavaTitle(i18n: I18nContext, prostava: Prostava) {
         return `${LocaleUtils.getStatusText(i18n, prostava.status)} ${prostava.prostava_data.title}`;
     }
