@@ -12,6 +12,7 @@ export interface User {
     group_id: number;
     personal_data: PersonalData;
     user_link?: string;
+    user_photo?: string;
 }
 
 export interface UserDocument extends User, Document {

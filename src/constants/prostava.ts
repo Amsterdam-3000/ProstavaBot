@@ -23,6 +23,8 @@ export const PROSTAVA = {
         HELP: "help",
         SETTINGS: "settings",
         PROFILE: "profile",
+        PROFILE_SHOW: "profile_show",
+        PROFILES: "profiles",
         PROSTAVA: "prostava",
         PROSTAVA_UNDO: "prostava_undo",
         PROSTAVA_SAVE: "prostava_save",

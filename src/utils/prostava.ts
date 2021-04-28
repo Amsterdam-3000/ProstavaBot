@@ -46,7 +46,7 @@ export class ProstavaUtils {
                 title: RegexUtils.matchTitle().test(prostavaData[0]) ? prostavaData[0] : "",
                 date: this.fillProstavaDateFromText(prostavaData[1], ctx.group.settings),
                 venue: {
-                    title: RegexUtils.matchTitle().test(prostavaData[2]) ? prostavaData[0] : ""
+                    title: RegexUtils.matchTitle().test(prostavaData[2]) ? prostavaData[2] : ""
                 },
                 cost: this.fillProstavaCostFromText(prostavaData[3], ctx.group.settings.currency)
             }
@@ -105,6 +105,9 @@ export class ProstavaUtils {
     static findUserByUserId(users: Group["users"], userId: number | undefined) {
         return (users as [User]).find((user) => user.user_id === userId);
     }
+    static findUserByEmoji(users: Group["users"], emoji: string) {
+        return (users as [User]).find((user) => user.personal_data.emoji === emoji);
+    }
     static findParticipantByUserId(participants: Prostava["participants"], userId: number | undefined) {
         return participants?.find((participant) => (participant.user as User).user_id === userId);
     }
@@ -156,15 +159,6 @@ export class ProstavaUtils {
             StringUtils.displayValue(venue?.location ? CODE.ACTION.PROSTAVA_LOCATION : "") +
             StringUtils.displayValue(venue?.title)
         );
-    }
-    static getUsersLinkMarkdown(users: Group["users"]) {
-        return users
-            .reduce(
-                (usersLinkString, user) =>
-                    `${usersLinkString} [${(user as User).personal_data.name}](${(user as User).user_link})`,
-                ""
-            )
-            .trim();
     }
 
     static filterUsersPendingToRateProstava(users: Group["users"], prostava: Prostava) {

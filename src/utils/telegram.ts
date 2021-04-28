@@ -52,7 +52,7 @@ export class TelegramUtils {
     }
 
     static getCommandText(ctx: UpdateContext) {
-        return this.getTextMessage(ctx).text?.replace(RegexUtils.matchCommand(), "");
+        return this.getTextMessage(ctx).text?.replace(RegexUtils.matchCommand(), "").trim();
     }
     static getCbQueryData(ctx: UpdateContext) {
         return (ctx.callbackQuery as CallbackQuery.DataCallbackQuery)?.data;

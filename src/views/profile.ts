@@ -1,7 +1,9 @@
 import { I18nContext } from "@edjopato/telegraf-i18n/dist/source";
+import { renderFile } from "ejs";
+import { resolve } from "path";
 import { Markup } from "telegraf";
 import { PROSTAVA, CODE } from "../constants";
-import { PersonalData } from "../types";
+import { Group, PersonalData, User } from "../types";
 import { DateUtils, LocaleUtils, ObjectUtils, StringUtils } from "../utils";
 
 export class ProfileView {
@@ -31,6 +33,43 @@ export class ProfileView {
             {
                 wrap: (btn, index, row) => row.length === 1
             }
+        );
+    }
+
+    static getProfileHtml(i18n: I18nContext, user: User) {
+        return renderFile(resolve(__dirname, "profile.ejs"), {
+            i18n: i18n,
+            user: user,
+            ACTION: PROSTAVA.ACTION,
+            CODE: CODE.ACTION,
+            LocaleUtils: LocaleUtils,
+            DateUtils: DateUtils
+        });
+    }
+
+    //TODO move to view
+    static getUsersListMD(i18n: I18nContext, users: Group["users"]) {
+        const usersList =
+            "\n" +
+            users
+                .reduce(
+                    (usersLinkString, user) =>
+                        usersLinkString +
+                        "\n" +
+                        (user as User).personal_data.emoji +
+                        " " +
+                        `[${(user as User).personal_data.name}]` +
+                        `(${(user as User).user_link})`,
+                    ""
+                )
+                .trim();
+        return (
+            `/${PROSTAVA.COMMAND.PROFILE}` +
+            " " +
+            LocaleUtils.getCommandPlaceholder(i18n, PROSTAVA.COMMAND.PROFILE) +
+            " " +
+            LocaleUtils.getCommandText(i18n, PROSTAVA.COMMAND.PROFILE_SHOW) +
+            usersList
         );
     }
 }

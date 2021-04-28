@@ -54,12 +54,15 @@ command:
     help: "${code} Показать команды Проставы"
     settings: "${code} Изменить настройки Проставы"
     profile: "${code} Заполнить свой профиль ${value}"
+    profile_show: "${code} Показать профиль пользователя"
+    profiles: "${code} Показать всех пользователей"
     prostava: "${code} Объявить новую проставу ${value}"
     prostava_undo: "${code} Вернуть на доработку проставу"
     prostava_save: "${code} Сохранить объявленную проставу"
     search: "${code} Поиск простав"
 command_text:
     prostava: "название|дата|место|стоимость"
+    profile: "эмодзи"
 command_group:
     bot: "Бот"
     user: "Пользователь"

@@ -12,7 +12,7 @@ import {
     TelegramUtils
 } from "../utils";
 import { CODE, PROSTAVA } from "../constants";
-import { GroupSettings, Prostava, ProstavaData, ProstavaDocument, User } from "../types";
+import { Group, GroupSettings, Prostava, ProstavaData, ProstavaDocument, User } from "../types";
 import { prostavaCalendar } from "../scenes";
 
 export class ProstavaView {
@@ -104,6 +104,19 @@ export class ProstavaView {
         });
     }
 
+    //TODO move to view
+    static getPendingUsersMD(i18n: I18nContext, users: Group["users"]) {
+        const usersLink =
+            "\n" +
+            users
+                .reduce(
+                    (usersLinkString, user) =>
+                        `${usersLinkString} [${(user as User).personal_data.emoji}](${(user as User).user_link})`,
+                    ""
+                )
+                .trim();
+        return LocaleUtils.getActionReplyText(i18n, PROSTAVA.ACTION.PROSTAVA_RATING, usersLink);
+    }
     static getProstavaTitle(i18n: I18nContext, prostava: Prostava) {
         return `${LocaleUtils.getStatusText(i18n, prostava.status)} ${prostava.prostava_data.title}`;
     }
