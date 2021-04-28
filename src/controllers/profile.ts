@@ -21,6 +21,6 @@ export class ProfileController {
     }
 
     static async showProfiles(ctx: UpdateContext) {
-        await ctx.replyWithMarkdownV2(ProfileView.getUsersListMD(ctx.i18n, ctx.group.users));
+        await ctx.replyWithHTML(await ProfileView.getProfilesHtml(ctx.i18n, ctx.group.users));
     }
 }

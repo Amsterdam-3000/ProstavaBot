@@ -58,9 +58,9 @@ export class ProstavaProcess {
             await cache.middleware()(ctx, async () => {});
             bot.telegram.sendMessage(
                 group._id,
-                ProstavaView.getPendingUsersMD(i18n.createContext(group.settings.language, {}), users),
+                await ProstavaView.getPendingUsersHtml(i18n.createContext(group.settings.language, {}), users),
                 {
-                    parse_mode: "MarkdownV2",
+                    parse_mode: "HTML",
                     //TODO bug in module typings getSession!
                     reply_to_message_id: ctx.session.__scenes.state.message.message_id
                 }
