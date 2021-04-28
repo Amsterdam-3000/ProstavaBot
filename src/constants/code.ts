@@ -63,6 +63,8 @@ export const CODE: { [index: string]: { [index: string]: string } } = {
         HELP: "🚑",
         SETTINGS: "🛠",
         PROFILE: "👤",
+        PROFILE_SHOW: "👤",
+        PROFILES: "👥",
         PROSTAVA: "🍺",
         PROSTAVA_UNDO: "🔚",
         PROSTAVA_SAVE: "💾",

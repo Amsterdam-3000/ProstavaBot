@@ -2,7 +2,7 @@ import { bot } from "./commons/bot";
 import { db } from "./commons/db";
 import { PROSTAVA } from "./constants";
 import { UserMiddleware, GroupMiddleware, GlobalMiddleware, CommonMiddleware, ProstavaMiddleware } from "./middlewares";
-import { CommonController, ProstavaController } from "./controllers";
+import { CommonController, HelpController, ProfileController, ProstavaController } from "./controllers";
 import { RegexUtils } from "./utils";
 import { prostavaQueue } from "./commons/queue";
 import { ProstavaProcess } from "./processes";
@@ -34,11 +34,12 @@ db.once("open", () => {
     );
     bot.use(CommonMiddleware.isCbMessageOrigin);
 
-    bot.start(CommonController.enterScene(PROSTAVA.COMMAND.START));
-    bot.help(CommonController.enterScene(PROSTAVA.COMMAND.HELP));
+    bot.start(HelpController.showHelp);
+    bot.help(HelpController.showHelp);
     bot.settings(CommonController.enterScene(PROSTAVA.COMMAND.SETTINGS));
 
     bot.command(PROSTAVA.COMMAND.PROFILE, CommonController.enterScene(PROSTAVA.COMMAND.PROFILE));
+    bot.command(PROSTAVA.COMMAND.PROFILES, ProfileController.showProfiles);
 
     bot.command(PROSTAVA.COMMAND.PROSTAVA, CommonController.enterScene(PROSTAVA.COMMAND.PROSTAVA));
     bot.command(

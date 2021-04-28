@@ -1,14 +1,15 @@
-import Bull from "bull";
+import Queue from "bull";
 import { Group, ProstavaStatus, User } from "../types";
 import { GroupCollection, ProstavaCollection } from "../models";
-import { LocaleUtils, ProstavaUtils, TelegramUtils } from "../utils";
+import { ProstavaView } from "../views";
+import { ProstavaUtils, TelegramUtils } from "../utils";
 import { PROSTAVA } from "../constants";
 import { bot } from "../commons/bot";
 import { i18n } from "../commons/locale";
 import { cache } from "../commons/cache";
 
 export class ProstavaProcess {
-    static async publishCompletedProstavas(job: Bull.Job) {
+    static async publishCompletedProstavas(job: Queue.Job) {
         const completedProstavas = await ProstavaCollection.find({
             $expr: {
                 $and: [
@@ -32,7 +33,7 @@ export class ProstavaProcess {
         }
     }
 
-    static async remindUsersRateProstavas(job: Bull.Job) {
+    static async remindUsersRateProstavas(job: Queue.Job) {
         const pendingProstavas = await ProstavaCollection.find({
             $expr: {
                 $and: [
@@ -57,11 +58,7 @@ export class ProstavaProcess {
             await cache.middleware()(ctx, async () => {});
             bot.telegram.sendMessage(
                 group._id,
-                LocaleUtils.getActionReplyText(
-                    i18n.createContext(group.settings.language, {}),
-                    PROSTAVA.ACTION.PROSTAVA_RATING,
-                    ProstavaUtils.getUsersLinkMarkdown(users)
-                ),
+                ProstavaView.getPendingUsersMD(i18n.createContext(group.settings.language, {}), users),
                 {
                     parse_mode: "MarkdownV2",
                     //TODO bug in module typings getSession!

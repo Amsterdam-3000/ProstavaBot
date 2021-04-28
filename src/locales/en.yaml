@@ -55,12 +55,15 @@ command:
     help: "${code} Show Prostava help"
     settings: "${code} Change Prostava settings"
     profile: "${code} Complete Your profile ${value}"
+    profile_show: "${code} Show user profile"
+    profiles: "${code} Show all users"
     prostava: "${code} Announce new prostava ${value}"
     prostava_undo: "${code} Withdraw announced prostava"
     prostava_save: "${code} Save announced prostava"
     search: "${code} Search for prostavas"
 command_text:
     prostava: "title|date|venue|cost"
+    profile: "emoji"
 command_group:
     bot: "Bot"
     user: "User"

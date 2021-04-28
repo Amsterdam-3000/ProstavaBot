@@ -1,7 +1,7 @@
 import { InlineQueryResultArticle } from "telegraf/typings/core/types/typegram";
 import { PROSTAVA } from "../constants";
-import { ProstavaDocument, UpdateContext, User } from "../types";
-import { DateUtils, LocaleUtils, ObjectUtils, ProstavaUtils, TelegramUtils } from "../utils";
+import { ProstavaDocument, UpdateContext } from "../types";
+import { LocaleUtils, ObjectUtils, ProstavaUtils, TelegramUtils } from "../utils";
 import { ProstavaView } from "../views";
 
 export class ProstavaController {
