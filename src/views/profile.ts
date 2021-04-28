@@ -48,11 +48,10 @@ export class ProfileView {
     }
 
     static getProfilesHtml(i18n: I18nContext, users: Group["users"]) {
-        return renderFile(resolve(__dirname, "pending.ejs"), {
+        return renderFile(resolve(__dirname, "profiles.ejs"), {
             i18n: i18n,
             users: users,
             COMMAND: PROSTAVA.COMMAND,
-            ACTION: PROSTAVA.ACTION,
             LocaleUtils: LocaleUtils
         });
     }
