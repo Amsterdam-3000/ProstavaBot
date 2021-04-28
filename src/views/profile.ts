@@ -58,8 +58,8 @@ export class ProfileView {
                         "\n" +
                         (user as User).personal_data.emoji +
                         " " +
-                        `[${(user as User).personal_data.name}]` +
-                        `(${(user as User).user_link})`,
+                        `\[${(user as User).personal_data.name}\]` +
+                        `\(${(user as User).user_link}\)`,
                     ""
                 )
                 .trim();
