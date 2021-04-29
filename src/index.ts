@@ -39,7 +39,7 @@ db.once("open", () => {
     bot.settings(CommonController.enterScene(PROSTAVA.COMMAND.SETTINGS));
 
     bot.command(PROSTAVA.COMMAND.PROFILE, CommonController.enterScene(PROSTAVA.COMMAND.PROFILE));
-    bot.command(PROSTAVA.COMMAND.PROFILES, ProfileController.showProfiles);
+    bot.command([PROSTAVA.COMMAND.PROFILES, PROSTAVA.COMMAND.PROFILES_ME], ProfileController.showProfiles);
 
     bot.command(PROSTAVA.COMMAND.PROSTAVA, CommonController.enterScene(PROSTAVA.COMMAND.PROSTAVA));
     bot.command(

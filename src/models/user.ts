@@ -2,7 +2,6 @@ import { model, Schema, Types } from "mongoose";
 import { PROSTAVA, CODE } from "../constants";
 import { UserDocument, UserModel } from "../types";
 import emojiUnicode from "emoji-unicode";
-import { DateUtils } from "../utils";
 
 const PersonalDataSchema = new Schema(
     {
@@ -43,14 +42,8 @@ UserSchema.virtual("user_photo").get(function (this: UserDocument) {
     if (this.personal_data.emoji) {
         return (
             "https://cdn.jsdelivr.net/joypixels/assets/6.5/png/unicode/128/" +
-            `${emojiUnicode(this.personal_data.emoji)}.png`
+            `${emojiUnicode(this.personal_data.emoji).replace(" ", "-")}.png`
         );
-    }
-    return undefined;
-});
-UserSchema.virtual("user_zodiac").get(function (this: UserDocument) {
-    if (this.personal_data.birthday) {
-        return DateUtils.getZodiacSignByBirthdate(this.personal_data.birthday);
     }
     return undefined;
 });

@@ -37,15 +37,18 @@
     "emoji-unicode": "^2.0.1",
     "mongoose": "^5.12.4",
     "mongoose-autopopulate": "^0.13.0",
+    "node-fetch": "^2.6.1",
     "telegraf": "^4.3.0",
     "telegraf-calendar-telegram": "^1.5.8",
-    "telegraf-session-redis": "^5.1.0"
+    "telegraf-session-redis": "^5.1.0",
+    "zodiac-signs": "^1.1.0"
   },
   "devDependencies": {
     "@tsconfig/node14": "^1.0.0",
     "@types/bull": "^3.15.1",
     "@types/ejs": "^3.0.6",
     "@types/node": "^14.14.41",
+    "@types/node-fetch": "^2.5.10",
     "@types/shelljs": "^0.8.8",
     "@typescript-eslint/eslint-plugin": "^4.22.0",
     "@typescript-eslint/parser": "^4.22.0",

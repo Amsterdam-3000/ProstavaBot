@@ -1,2 +1,10 @@
 <%= user.personal_data.emoji %> <a href="<%= user.user_link %>"><%= user.personal_data.name %></a> 
-<%= user.user_zodiac %> <%= DateUtils.getDateString(i18n.languageCode, user.personal_data.birthday) %>
+<%= CODE.PROFILE_BIRTHDAY %> <%= DateUtils.getDateString(i18n.languageCode, user.personal_data.birthday) %>
+
+<%= aztro?.symbol %> <%= aztro?.name %>
+<%= aztro?.description %> 
+<%= LocaleUtils.getAztroText(i18n, aztro, 'compatibility') %>
+<%= LocaleUtils.getAztroText(i18n, aztro, 'mood') %>
+<%= LocaleUtils.getAztroText(i18n, aztro, 'color') %>
+<%= LocaleUtils.getAztroText(i18n, aztro, 'lucky_number') %>
+<%= LocaleUtils.getAztroText(i18n, aztro, 'lucky_time') %>
