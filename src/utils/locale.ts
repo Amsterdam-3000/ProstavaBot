@@ -1,5 +1,5 @@
 import { I18nContext } from "@edjopato/telegraf-i18n/dist/source";
-import { ProstavaStatus } from "../types";
+import { Aztro, ProstavaStatus } from "../types";
 import { ConstantUtils } from "./constant";
 import { StringUtils } from "./string";
 
@@ -49,5 +49,13 @@ export class LocaleUtils {
             value: value || ""
         };
         return i18n.t(statusKey, variables);
+    }
+
+    static getAztroText(i18n: I18nContext, aztro: Aztro, key: string) {
+        const aztroKey = `aztro.${key}`;
+        const variables = {
+            value: aztro[key]
+        };
+        return i18n.t(aztroKey, variables);
     }
 }

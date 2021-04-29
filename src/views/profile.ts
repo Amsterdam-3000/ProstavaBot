@@ -3,7 +3,7 @@ import { renderFile } from "ejs";
 import { resolve } from "path";
 import { Markup } from "telegraf";
 import { PROSTAVA, CODE } from "../constants";
-import { Group, PersonalData, User } from "../types";
+import { Aztro, Group, PersonalData, User } from "../types";
 import { DateUtils, LocaleUtils, ObjectUtils, StringUtils } from "../utils";
 
 export class ProfileView {
@@ -36,11 +36,11 @@ export class ProfileView {
         );
     }
 
-    static getProfileHtml(i18n: I18nContext, user: User) {
+    static getProfileHtml(i18n: I18nContext, user: User, aztro: Aztro | undefined) {
         return renderFile(resolve(__dirname, "profile.ejs"), {
             i18n: i18n,
             user: user,
-            ACTION: PROSTAVA.ACTION,
+            aztro: aztro,
             CODE: CODE.ACTION,
             LocaleUtils: LocaleUtils,
             DateUtils: DateUtils
