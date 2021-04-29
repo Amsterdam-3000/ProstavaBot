@@ -34,6 +34,7 @@
     "dotenv": "^8.2.0",
     "ejs": "^3.1.6",
     "emoji-regex": "^9.2.2",
+    "emoji-toolkit": "^6.5.1",
     "emoji-unicode": "^2.0.1",
     "mongoose": "^5.12.4",
     "mongoose-autopopulate": "^0.13.0",

@@ -1,7 +1,7 @@
 import { model, Schema, Types } from "mongoose";
 import { PROSTAVA, CODE } from "../constants";
 import { UserDocument, UserModel } from "../types";
-import emojiUnicode from "emoji-unicode";
+import emojiToolkit from "emoji-toolkit";
 
 const PersonalDataSchema = new Schema(
     {
@@ -40,10 +40,10 @@ UserSchema.virtual("user_link").get(function (this: UserDocument) {
 });
 UserSchema.virtual("user_photo").get(function (this: UserDocument) {
     if (this.personal_data.emoji) {
-        return (
-            "https://cdn.jsdelivr.net/joypixels/assets/6.5/png/unicode/128/" +
-            `${emojiUnicode(this.personal_data.emoji).replace(" ", "-")}.png`
-        );
+        return emojiToolkit
+            .toImage(this.personal_data.emoji)
+            ?.match(/(?<=src=")[^"]+/)[0]
+            ?.replace("/32/", "/128/");
     }
     return undefined;
 });
