@@ -1,0 +1,9 @@
+start - 🎬 Start Prostava
+help - 🚑 Show Prostava help
+settings - 🛠 Change Prostava settings
+profile - 👤 Complete Your profile 
+profiles - 👥 Show all users
+profiles_me - 👤 Show Your profile
+prostava -🍺 Announce new prostava
+prostava_undo - 🔚 Withdraw announced prostava
+prostava_save - 💾 Save announced prostava
