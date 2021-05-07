@@ -1,6 +1,6 @@
 import { Context } from "telegraf";
 import RedisSession from "telegraf-session-redis";
-import { StringUtils } from "../utils";
+import { ConverterUtils } from "../utils";
 import { CONFIG } from "./config";
 
 export const cache = new RedisSession({
@@ -10,5 +10,5 @@ export const cache = new RedisSession({
         port: "",
         url: CONFIG.REDIS_URI
     },
-    getSessionKey: (ctx: Context) => StringUtils.concatSessionKey(ctx.from?.id, ctx.chat?.id)
+    getSessionKey: (ctx: Context) => ConverterUtils.concatSessionKey(ctx.from?.id, ctx.chat?.id)
 });

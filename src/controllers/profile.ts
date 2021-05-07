@@ -1,7 +1,7 @@
 import { AztroModel } from "../models";
 import { PROSTAVA } from "../constants";
 import { Aztro, UpdateContext } from "../types";
-import { LocaleUtils, ObjectUtils, ProstavaUtils, TelegramUtils } from "../utils";
+import { LocaleUtils, ConverterUtils, ProstavaUtils, TelegramUtils } from "../utils";
 import { ProfileView } from "../views";
 
 export class ProfileController {
@@ -10,7 +10,7 @@ export class ProfileController {
             LocaleUtils.getCommandText(ctx.i18n, PROSTAVA.COMMAND.PROFILE, ctx.user?.personal_data?.name),
             ProfileView.getProfileKeyboard(ctx.i18n, ctx.user?.personal_data)
         );
-        TelegramUtils.setSceneStateToContext(ctx, ObjectUtils.initializeState(message));
+        TelegramUtils.setSceneStateToContext(ctx, ConverterUtils.initializeState(message));
     }
 
     static async showProfiles(ctx: UpdateContext) {

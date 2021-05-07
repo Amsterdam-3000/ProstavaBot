@@ -2,18 +2,11 @@ import { I18nContext } from "@edjopato/telegraf-i18n/dist/source";
 import { Markup } from "telegraf";
 import { renderFile } from "ejs";
 import { resolve } from "path";
-import {
-    ConstantUtils,
-    DateUtils,
-    LocaleUtils,
-    ObjectUtils,
-    ProstavaUtils,
-    StringUtils,
-    TelegramUtils
-} from "../utils";
+import { ConstantUtils, DateUtils, LocaleUtils, ConverterUtils, ProstavaUtils, TelegramUtils } from "../utils";
 import { CODE, PROSTAVA } from "../constants";
-import { Group, GroupSettings, Prostava, ProstavaData, ProstavaDocument, User } from "../types";
+import { Group, GroupSettings, Prostava, ProstavaData, ProstavaDocument, ProstavaType, User } from "../types";
 import { prostavaCalendar } from "../scenes";
+import { CommonView } from "./common";
 
 export class ProstavaView {
     static getProstavaCreateKeyboard(i18n: I18nContext, prostavaData: ProstavaData, canCreate: boolean) {
@@ -22,18 +15,26 @@ export class ProstavaView {
                 Markup.button.callback(
                     LocaleUtils.getActionText(
                         i18n,
-                        PROSTAVA.ACTION.PROSTAVA_TITLE,
-                        StringUtils.displayValue(prostavaData.title)
+                        PROSTAVA.ACTION.PROSTAVA_TYPE,
+                        ConverterUtils.displayValue(prostavaData.type)
                     ),
-                    ObjectUtils.stringifyActionData(PROSTAVA.ACTION.PROSTAVA_TITLE)
+                    ConverterUtils.stringifyActionData(PROSTAVA.ACTION.PROSTAVA_TYPE)
+                ),
+                Markup.button.callback(
+                    LocaleUtils.getActionText(
+                        i18n,
+                        PROSTAVA.ACTION.PROSTAVA_TITLE,
+                        ConverterUtils.displayValue(prostavaData.title)
+                    ),
+                    ConverterUtils.stringifyActionData(PROSTAVA.ACTION.PROSTAVA_TITLE)
                 ),
                 Markup.button.callback(
                     LocaleUtils.getActionText(
                         i18n,
                         PROSTAVA.ACTION.PROSTAVA_DATE,
-                        StringUtils.displayValue(DateUtils.getDateString(i18n.languageCode, prostavaData.date))
+                        ConverterUtils.displayValue(DateUtils.getDateString(i18n.languageCode, prostavaData.date))
                     ),
-                    ObjectUtils.stringifyActionData(PROSTAVA.ACTION.PROSTAVA_DATE)
+                    ConverterUtils.stringifyActionData(PROSTAVA.ACTION.PROSTAVA_DATE)
                 ),
                 Markup.button.callback(
                     LocaleUtils.getActionText(
@@ -41,15 +42,15 @@ export class ProstavaView {
                         PROSTAVA.ACTION.PROSTAVA_VENUE,
                         ProstavaUtils.getVenueDisplayString(prostavaData.venue)
                     ),
-                    ObjectUtils.stringifyActionData(PROSTAVA.ACTION.PROSTAVA_VENUE)
+                    ConverterUtils.stringifyActionData(PROSTAVA.ACTION.PROSTAVA_VENUE)
                 ),
                 Markup.button.callback(
                     LocaleUtils.getActionText(
                         i18n,
                         PROSTAVA.ACTION.PROSTAVA_COST,
-                        StringUtils.displayValue(prostavaData.cost?.string)
+                        ConverterUtils.displayValue(prostavaData.cost?.string)
                     ),
-                    ObjectUtils.stringifyActionData(PROSTAVA.ACTION.PROSTAVA_COST)
+                    ConverterUtils.stringifyActionData(PROSTAVA.ACTION.PROSTAVA_COST)
                 ),
                 Markup.button.callback(
                     LocaleUtils.getActionText(
@@ -57,15 +58,15 @@ export class ProstavaView {
                         PROSTAVA.ACTION.PROSTAVA_CREATE,
                         ConstantUtils.getCheckedCode(canCreate)
                     ),
-                    ObjectUtils.stringifyActionData(PROSTAVA.ACTION.PROSTAVA_CREATE)
-                )
+                    ConverterUtils.stringifyActionData(PROSTAVA.ACTION.PROSTAVA_CREATE)
+                ),
+                CommonView.getExitButton(i18n)
             ],
-            {
-                wrap: (btn, index, row) => row.length === 1
-            }
+            { columns: 1 }
         );
     }
 
+    //Rating
     static getProstavaRatingKeyboard(prostava: Prostava) {
         return Markup.inlineKeyboard(this.getRatingButtons(prostava));
     }
@@ -73,10 +74,34 @@ export class ProstavaView {
         return Object.entries(CODE.RATING).map((ratingCode) =>
             Markup.button.callback(
                 ratingCode[1] + ratingCode[0],
-                ObjectUtils.stringifyActionData(
-                    StringUtils.getSubAction(PROSTAVA.ACTION.PROSTAVA_RATING),
+                ConverterUtils.stringifyActionData(
+                    ConverterUtils.getSubAction(PROSTAVA.ACTION.PROSTAVA_RATING),
                     ratingCode[0],
-                    (prostava as ProstavaDocument).id
+                    (prostava as ProstavaDocument).id,
+                    true
+                )
+            )
+        );
+    }
+
+    //Prostava type
+    static getProstavaTypeKeyboard(i18n: I18nContext, types: ProstavaType[], typeEmoji: string | undefined) {
+        return Markup.inlineKeyboard(
+            [
+                ...this.getProstavaTypeButtons(types, typeEmoji),
+                CommonView.getBackButton(i18n),
+                CommonView.getExitButton(i18n)
+            ],
+            { columns: 1 }
+        );
+    }
+    private static getProstavaTypeButtons(types: ProstavaType[], typeEmoji: string | undefined) {
+        return types.map((type) =>
+            Markup.button.callback(
+                ConverterUtils.displaySelectedValue(type.string!, type.emoji === typeEmoji),
+                ConverterUtils.stringifyActionData(
+                    ConverterUtils.getSubAction(PROSTAVA.ACTION.PROSTAVA_TYPE),
+                    type.emoji
                 )
             )
         );
@@ -113,8 +138,12 @@ export class ProstavaView {
         });
     }
 
+    //Inline Query
     static getProstavaTitle(i18n: I18nContext, prostava: Prostava) {
-        return `${LocaleUtils.getStatusText(i18n, prostava.status)} ${prostava.prostava_data.title}`;
+        return `${prostava.prostava_data.type} ${prostava.prostava_data.title} • ${LocaleUtils.getStatusText(
+            i18n,
+            prostava.status
+        )}`;
     }
     static getProstavaDescription(i18n: I18nContext, prostava: Prostava) {
         const author = prostava.author as User;

@@ -7,4 +7,7 @@ export class CommonView {
     static getBackButton(i18n: I18nContext) {
         return Markup.button.callback(LocaleUtils.getActionText(i18n, PROSTAVA.ACTION.BACK), PROSTAVA.ACTION.BACK);
     }
+    static getExitButton(i18n: I18nContext) {
+        return Markup.button.callback(LocaleUtils.getActionText(i18n, PROSTAVA.ACTION.EXIT), PROSTAVA.ACTION.EXIT);
+    }
 }

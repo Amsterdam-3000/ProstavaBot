@@ -1,25 +1,15 @@
 import { Types } from "mongoose";
-import { ProstavaCollection } from "../models";
 import { Venue } from "telegraf/typings/core/types/typegram";
 import { CODE } from "../constants";
-import { Group, GroupSettings, Prostava, ProstavaDocument, ProstavaStatus, UpdateContext, User } from "../types";
+import { Group, GroupSettings, Prostava, ProstavaStatus, ProstavaType, UpdateContext, User } from "../types";
 import { DateUtils } from "./date";
 import { RegexUtils } from "./regex";
-import { StringUtils } from "./string";
+import { ConverterUtils } from "./converter";
 import { TelegramUtils } from "./telegram";
 
 export class ProstavaUtils {
     static getProstavaFromContext(ctx: UpdateContext) {
-        if (ctx.prostava) {
-            return ctx.prostava;
-        }
-        if (!ctx.session?.prostava) {
-            return undefined;
-        }
-        if (!(ctx.session.prostava as ProstavaDocument).id) {
-            ctx.session.prostava = new ProstavaCollection(ctx.session.prostava);
-        }
-        return ctx.session.prostava;
+        return ctx.prostava;
     }
 
     static fillNewUser(ctx: UpdateContext) {
@@ -70,13 +60,6 @@ export class ProstavaUtils {
             return dateNow;
         }
         return dateIn;
-    }
-    static fillProstavaFromDeleted(prostava: Prostava) {
-        return {
-            group_id: prostava.group_id,
-            author: prostava.author,
-            prostava_data: prostava.prostava_data
-        };
     }
 
     static updateTotalRating(participants: Prostava["participants"]) {
@@ -156,9 +139,15 @@ export class ProstavaUtils {
     }
     static getVenueDisplayString(venue: Venue | undefined) {
         return (
-            StringUtils.displayValue(venue?.location ? CODE.ACTION.PROSTAVA_LOCATION : "") +
-            StringUtils.displayValue(venue?.title)
+            ConverterUtils.displayValue(venue?.location ? CODE.ACTION.PROSTAVA_LOCATION : "") +
+            ConverterUtils.displayValue(venue?.title)
         );
+    }
+    static getProstavaTypesString(types: ProstavaType[]) {
+        return types.reduce((typesString, type) => typesString + type.emoji, "");
+    }
+    static getRequiredProstavaTypes() {
+        return [{ emoji: CODE.COMMAND.PROSTAVA }, { emoji: CODE.ACTION.PROFILE_BIRTHDAY }];
     }
 
     static filterUsersPendingToRateProstava(users: Group["users"], prostava: Prostava) {
@@ -190,14 +179,27 @@ export class ProstavaUtils {
         }
         return false;
     }
+
+    static canDeleteProstavaType(typeOld: ProstavaType) {
+        return !this.getRequiredProstavaTypes().find((type) => type.emoji === typeOld.emoji);
+    }
     static isUserAuthorOfPrastava(prostava: Prostava, userId: number | undefined) {
         return (prostava.author as User).user_id === userId;
     }
-    static isProstavaPendingCompleted(prostava: Prostava) {
+    static canCompletePendingProstava(prostava: Prostava) {
         if (prostava?.participants?.length === prostava?.participants_max_count) {
             return true;
         }
         if (!prostava?.closing_date || prostava?.closing_date.getTime() <= Date.now()) {
+            return true;
+        }
+        return false;
+    }
+    static canApprovePendingProstava(prostava: Prostava) {
+        if (!prostava.participants_min_count) {
+            return true;
+        }
+        if (this.filterParticipantsWere(prostava.participants)?.length >= prostava.participants_min_count) {
             return true;
         }
         return false;

@@ -2,6 +2,9 @@ reply:
     settings:
         language: "${code} Change Prostava language"
         currency: "${code} Change Prostava currency"
+        type: "${code} Change Prostava types"
+        typenew: "${code} Send me emoji for type"
+        typedit: "${code} Send me text for type or ${value}"
         days: "${code} Send me expiration date of prostava in days (0-∞)"
         count: "${code} Send me chat members count (0-∞)"
         percentage: "${code} Send me minimum percent of participants (0-100)"
@@ -11,6 +14,7 @@ reply:
         birthday: "${code} Send me Your date of birth (YYYY-MM-DD)"
         username: "${code} Send me Your username"
     prostava:
+        type: "${code} Change prostava type"
         title: "${code} Send me prostava title"
         date: "${code} Select prostava date"
         venue: "${code} Send me prostava location and title"
@@ -18,9 +22,12 @@ reply:
         rating: "${code} Please, rate prostava: ${value}"
 action:
     back: "${code} Back"
+    exit: "${code} Exit"
     settings:
         language: "Language: ${value}"
         currency: "Currency: ${value}"
+        type: "Prostava types: ${value}"
+        typenew: "${code} New type"
         days: "${code} Prostava expiry days: ${value}"
         count: "${code} Chat members count: ${value}"
         percentage: "Minimum of participants: ${value}${code}"
@@ -30,6 +37,7 @@ action:
         birthday: "Birthday: ${value}"
         username: "Username: ${value}"
     prostava:
+        type: "Type: ${value}"
         title: "Title: ${value}"
         date: "${code} Date: ${value}"
         venue: "${code} Venue: ${value}"
@@ -64,6 +72,7 @@ command:
     search: "${code} Search for prostavas"
 command_text:
     prostava: "title|date|venue|cost"
+    search: "title|date"
     profiles: "emoji"
 command_group:
     bot: "Bot"

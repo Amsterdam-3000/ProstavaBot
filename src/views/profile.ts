@@ -4,7 +4,8 @@ import { resolve } from "path";
 import { Markup } from "telegraf";
 import { PROSTAVA, CODE } from "../constants";
 import { Aztro, Group, PersonalData, User } from "../types";
-import { DateUtils, LocaleUtils, ObjectUtils, StringUtils } from "../utils";
+import { DateUtils, LocaleUtils, ConverterUtils } from "../utils";
+import { CommonView } from "./common";
 
 export class ProfileView {
     static getProfileKeyboard(i18n: I18nContext, personalData: PersonalData) {
@@ -12,27 +13,26 @@ export class ProfileView {
             [
                 Markup.button.callback(
                     LocaleUtils.getActionText(i18n, PROSTAVA.ACTION.PROFILE_EMOJI, personalData.emoji),
-                    ObjectUtils.stringifyActionData(PROSTAVA.ACTION.PROFILE_EMOJI)
+                    ConverterUtils.stringifyActionData(PROSTAVA.ACTION.PROFILE_EMOJI)
                 ),
                 Markup.button.callback(
                     LocaleUtils.getActionText(
                         i18n,
                         PROSTAVA.ACTION.PROFILE_BIRTHDAY,
-                        StringUtils.displayValue(
+                        ConverterUtils.displayValue(
                             DateUtils.getDateString(i18n.languageCode, personalData.birthday),
                             CODE.ACTION.PROFILE_BIRTHDAY
                         )
                     ),
-                    ObjectUtils.stringifyActionData(PROSTAVA.ACTION.PROFILE_BIRTHDAY)
+                    ConverterUtils.stringifyActionData(PROSTAVA.ACTION.PROFILE_BIRTHDAY)
                 ),
                 Markup.button.callback(
                     LocaleUtils.getActionText(i18n, PROSTAVA.ACTION.PROFILE_USERNAME, personalData.name),
-                    ObjectUtils.stringifyActionData(PROSTAVA.ACTION.PROFILE_USERNAME)
-                )
+                    ConverterUtils.stringifyActionData(PROSTAVA.ACTION.PROFILE_USERNAME)
+                ),
+                CommonView.getExitButton(i18n)
             ],
-            {
-                wrap: (btn, index, row) => row.length === 1
-            }
+            { columns: 1 }
         );
     }
 

@@ -1,8 +1,12 @@
 export const PROSTAVA = {
     ACTION: {
         BACK: "prostava-back",
+        EXIT: "prostava-exit",
         SETTINGS_LANGUAGE: "prostava-settings-language",
         SETTINGS_CURRENCY: "prostava-settings-currency",
+        SETTINGS_TYPE: "prostava-settings-type",
+        SETTINGS_TYPENEW: "prostava-settings-typenew",
+        SETTINGS_TYPEDIT: "prostava-settings-typedit",
         SETTINGS_DAYS: "prostava-settings-days",
         SETTINGS_COUNT: "prostava-settings-count",
         SETTINGS_PERCENTAGE: "prostava-settings-percentage",
@@ -10,6 +14,7 @@ export const PROSTAVA = {
         PROFILE_EMOJI: "prostava-profile-emoji",
         PROFILE_BIRTHDAY: "prostava-profile-birthday",
         PROFILE_USERNAME: "prostava-profile-username",
+        PROSTAVA_TYPE: "prostava-prostava-type",
         PROSTAVA_TITLE: "prostava-prostava-title",
         PROSTAVA_DATE: "prostava-prostava-date",
         PROSTAVA_VENUE: "prostava-prostava-venue",

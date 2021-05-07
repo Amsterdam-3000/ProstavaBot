@@ -13,8 +13,24 @@ export const prostavaCalendar = new Calendar(prostavaScene, { startWeekDay: 1 })
 
 prostavaScene.enter(
     ProstavaMiddleware.addPendingProstavaToContext,
-    ProstavaMiddleware.addNewProstavaToSession,
-    ProstavaController.showProstava
+    ProstavaMiddleware.addNewProstavaToContext,
+    ProstavaMiddleware.saveProstava,
+    GroupMiddleware.saveGroup,
+    ProstavaController.showCreateOrRateProstava
+);
+prostavaScene.use(
+    CommonMiddleware.isCbMessageOrigin,
+    ProstavaMiddleware.addPendingProstavaToContext,
+    ProstavaMiddleware.addNewProstavaToContext,
+    ProstavaMiddleware.saveProstava
+);
+
+//Type
+prostavaScene.action(RegexUtils.matchAction(PROSTAVA.ACTION.PROSTAVA_TYPE), ProstavaController.showProstavaTypes);
+prostavaScene.action(
+    RegexUtils.matchSubAction(PROSTAVA.ACTION.PROSTAVA_TYPE),
+    ProstavaMiddleware.changeProstavaType,
+    ProstavaController.showProstavaTypes
 );
 
 //Title Venue
@@ -40,13 +56,11 @@ prostavaScene.on(
 );
 
 //Date
+prostavaScene.action(RegexUtils.matchAction(PROSTAVA.ACTION.PROSTAVA_DATE), ProstavaController.showProstavaCalendar);
 prostavaScene.action(
-    RegexUtils.matchAction(PROSTAVA.ACTION.PROSTAVA_DATE),
-    CommonMiddleware.isCbMessageOrigin,
-    ProstavaController.showProstavaCalendar
+    RegexUtils.matchCalendarAction(CALENDAR.ACTION.CALENDAR_DATE),
+    ProstavaMiddleware.changeProstavaDate
 );
-prostavaScene.action(RegexUtils.matchCalendarActions(), CommonMiddleware.isCbMessageOrigin);
-prostavaScene.action(RegexUtils.matchAction(CALENDAR.ACTION.CALENDAR_DATE), ProstavaMiddleware.changeProstavaDate);
 prostavaCalendar.setDateListener(ProstavaController.backToCreateProstava);
 
 //Cost
@@ -61,13 +75,14 @@ prostavaScene.hears(
 //Create prostava
 prostavaScene.action(
     RegexUtils.matchAction(PROSTAVA.ACTION.PROSTAVA_CREATE),
-    CommonMiddleware.isCbMessageOrigin,
     ProstavaMiddleware.isProstavaDataFull,
     ProstavaMiddleware.announceProstava,
-    ProstavaMiddleware.saveProstava,
-    GroupMiddleware.saveGroup,
-    ProstavaMiddleware.deleteProstavaFromContext,
     CommonController.enterScene(PROSTAVA.COMMAND.PROSTAVA)
 );
 
+//Back
+CommonScene.actionBack(prostavaScene, ProstavaController.backToCreateProstava);
+//Exit
+CommonScene.actionExit(prostavaScene);
+//Hide
 prostavaScene.leave(CommonController.hideScene);

@@ -1,7 +1,7 @@
 import { I18nContext } from "@edjopato/telegraf-i18n/dist/source";
 import { Aztro, ProstavaStatus } from "../types";
 import { ConstantUtils } from "./constant";
-import { StringUtils } from "./string";
+import { ConverterUtils } from "./converter";
 
 export class LocaleUtils {
     static getErrorText(i18n: I18nContext, errorCode: string) {
@@ -31,7 +31,7 @@ export class LocaleUtils {
         return this.getActionCommonText(i18n, "reply", action, value);
     }
     private static getActionCommonText(i18n: I18nContext, group: string, action: string, value?: string) {
-        const actionName = StringUtils.sliceProstavaAction(action);
+        const actionName = ConverterUtils.sliceProstavaAction(action);
         const actionKey = `${group}.${actionName.replace(/-/g, ".")}`;
         const actionCode = ConstantUtils.getActionCode(actionName.replace(/-/g, "_"));
         const variables = {

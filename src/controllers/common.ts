@@ -1,4 +1,3 @@
-import { CODE } from "../constants";
 import { LocaleUtils, TelegramUtils } from "../utils";
 import { UpdateContext } from "../types";
 
@@ -14,10 +13,7 @@ export class CommonController {
         TelegramUtils.setSceneStateToContext(ctx, {});
     }
 
-    static showActionCbMessage(action: string) {
-        return async (ctx: UpdateContext) => ctx.answerCbQuery(LocaleUtils.getActionReplyText(ctx.i18n, action));
-    }
-    static async catchUnknownAction(ctx: UpdateContext) {
-        return ctx.answerCbQuery(LocaleUtils.getErrorText(ctx.i18n, CODE.ERROR.ARE_GOING));
+    static showActionCbMessage(action: string, value?: string) {
+        return async (ctx: UpdateContext) => ctx.answerCbQuery(LocaleUtils.getActionReplyText(ctx.i18n, action, value));
     }
 }

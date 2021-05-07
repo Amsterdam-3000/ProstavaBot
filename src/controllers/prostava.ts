@@ -1,11 +1,11 @@
 import { InlineQueryResultArticle } from "telegraf/typings/core/types/typegram";
 import { PROSTAVA } from "../constants";
 import { ProstavaDocument, UpdateContext } from "../types";
-import { LocaleUtils, ObjectUtils, ProstavaUtils, TelegramUtils } from "../utils";
+import { LocaleUtils, ConverterUtils, ProstavaUtils, TelegramUtils } from "../utils";
 import { ProstavaView } from "../views";
 
 export class ProstavaController {
-    static async showProstava(ctx: UpdateContext) {
+    static async showCreateOrRateProstava(ctx: UpdateContext) {
         const prostava = ProstavaUtils.getProstavaFromContext(ctx);
         if (!prostava) {
             return;
@@ -19,19 +19,24 @@ export class ProstavaController {
                     !(prostava as ProstavaDocument).validateSync()
                 )
             );
-            TelegramUtils.setSceneStateToContext(ctx, ObjectUtils.initializeState(message));
+            TelegramUtils.setSceneStateToContext(ctx, ConverterUtils.initializeState(message));
         } else if (ProstavaUtils.isProstavaPending(prostava)) {
             const message = await ctx.reply(await ProstavaView.getProstavaHtml(ctx.i18n, prostava), {
                 parse_mode: "HTML",
                 reply_markup: ProstavaView.getProstavaRatingKeyboard(prostava).reply_markup
             });
-            TelegramUtils.setSceneStateToContext(ctx, ObjectUtils.initializeState(message));
+            TelegramUtils.setSceneStateToContext(ctx, ConverterUtils.initializeState(message));
             ctx.pinChatMessage(message.message_id).catch((err) => console.log(err));
-        } else {
-            await ctx.reply(await ProstavaView.getProstavaHtml(ctx.i18n, prostava), {
-                parse_mode: "HTML"
-            });
         }
+    }
+    static async showProstava(ctx: UpdateContext) {
+        const prostava = ProstavaUtils.getProstavaFromContext(ctx);
+        if (!prostava) {
+            return;
+        }
+        await ctx.reply(await ProstavaView.getProstavaHtml(ctx.i18n, prostava), {
+            parse_mode: "HTML"
+        });
     }
 
     static async showQueryProstavas(ctx: UpdateContext) {
@@ -55,6 +60,17 @@ export class ProstavaController {
         });
     }
 
+    static async showProstavaTypes(ctx: UpdateContext) {
+        const prostava = ProstavaUtils.getProstavaFromContext(ctx);
+        ctx.editMessageText(
+            LocaleUtils.getActionReplyText(ctx.i18n, PROSTAVA.ACTION.PROSTAVA_TYPE),
+            ProstavaView.getProstavaTypeKeyboard(
+                ctx.i18n,
+                ctx.group.settings.prostava_types,
+                prostava?.prostava_data.type
+            )
+        ).catch((err) => console.log(err));
+    }
     static async showProstavaCalendar(ctx: UpdateContext) {
         ctx.editMessageText(
             LocaleUtils.getActionReplyText(ctx.i18n, PROSTAVA.ACTION.PROSTAVA_DATE),

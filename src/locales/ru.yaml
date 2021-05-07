@@ -2,6 +2,9 @@ reply:
     settings:
         language: "${code} Поменять язык Проставы"
         currency: "${code} Поменять валюту Проставы"
+        type: "${code} Изменить варианты Проставы"
+        typenew: "${code} Отправь мне эмодзи для варианта"
+        typedit: "${code} Отправь мне текст для варианта или ${value}"
         days: "${code} Отправь мне дату истечения проставы (0-∞)"
         count: "${code} Отправь мне количество участников чата (0-∞)"
         percentage: "${code} Отправь мне минимальный процент участников проставы (0-100)"
@@ -11,15 +14,20 @@ reply:
         birthday: "${code} Отправь мне свою дату рождения (ГГГГ-ММ-ДД)"
         username: "${code} Отправь мне свое имя пользователя"
     prostava:
+        type: "${code} Поменять вариант проставы"
         title: "${code} Отправь мне название проставы"
         date: "${code} Выбери дату проставы"
         venue: "${code} Отправь мне навзвание места и координаты проставы"
         cost: "${code} Отправь мне стоимость с валютой проставы"
+        rating: "${code} Пожалуйста, оцените проставу: ${value}"
 action:
     back: "${code} Назад"
+    exit: "${code} Выход"
     settings:
         language: "Язык: ${value}"
         currency: "Валюта: ${value}"
+        type: "Варианты простав: ${value}"
+        typenew: "${code} Новый вариант"
         days: "${code} Дата истечения: ${value}"
         count: "${code} Количество участников: ${value}"
         percentage: "Минимальный процент: ${value}${code}"
@@ -29,6 +37,7 @@ action:
         birthday: "День рождения: ${value}"
         username: "Имя пользователя: ${value}"
     prostava:
+        type: "Вариант проставы: ${value}"
         title: "Название: ${value}"
         date: "${code} Дата: ${value}"
         venue: "${code} Место: ${value}"
@@ -63,6 +72,7 @@ command:
     search: "${code} Поиск простав"
 command_text:
     prostava: "название|дата|место|стоимость"
+    search: "название|дата"
     profiles: "эмодзи"
 command_group:
     bot: "Бот"

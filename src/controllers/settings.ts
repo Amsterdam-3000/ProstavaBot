@@ -1,7 +1,7 @@
 import { PROSTAVA } from "../constants";
 import { UpdateContext } from "../types";
 import { SettingsView } from "../views";
-import { LocaleUtils, ObjectUtils, TelegramUtils } from "../utils";
+import { LocaleUtils, ConverterUtils, TelegramUtils } from "../utils";
 
 export class SettingsController {
     static async showSettings(ctx: UpdateContext) {
@@ -9,7 +9,7 @@ export class SettingsController {
             LocaleUtils.getCommandText(ctx.i18n, PROSTAVA.COMMAND.SETTINGS),
             SettingsView.getSettingsKeyboard(ctx.i18n, ctx.group?.settings)
         );
-        TelegramUtils.setSceneStateToContext(ctx, ObjectUtils.initializeState(message));
+        TelegramUtils.setSceneStateToContext(ctx, ConverterUtils.initializeState(message));
     }
 
     static async showLanguages(ctx: UpdateContext) {
@@ -23,6 +23,18 @@ export class SettingsController {
             LocaleUtils.getActionReplyText(ctx.i18n, PROSTAVA.ACTION.SETTINGS_CURRENCY),
             SettingsView.getCurrencyKeyboard(ctx.i18n, ctx.group?.settings?.currency)
         ).catch((err) => console.log(err));
+    }
+    static async showProstavaTypes(ctx: UpdateContext) {
+        const sceneState = TelegramUtils.getSceneState(ctx);
+        ctx.telegram
+            .editMessageText(
+                sceneState.message?.chat.id,
+                sceneState.message?.message_id,
+                undefined,
+                LocaleUtils.getActionReplyText(ctx.i18n, PROSTAVA.ACTION.SETTINGS_TYPE),
+                SettingsView.getProstavaTypesKeyboard(ctx.i18n, ctx.group?.settings?.prostava_types)
+            )
+            .catch((err) => console.log(err));
     }
 
     static async backToSettings(ctx: UpdateContext) {

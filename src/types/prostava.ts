@@ -12,6 +12,12 @@ export enum ProstavaStatus {
 
 export type ProstavaRating = -1 | 0 | 1 | 2 | 3 | 4 | 5;
 
+export interface ProstavaType {
+    text?: string;
+    emoji: string;
+    string?: string;
+}
+
 export interface ProstavaCost {
     amount?: number;
     currency?: string;
@@ -22,6 +28,7 @@ export interface ProstavaVenue extends Venue {
     thumb?: string;
 }
 export interface ProstavaData {
+    type: string;
     title?: string;
     date: Date;
     venue: ProstavaVenue;

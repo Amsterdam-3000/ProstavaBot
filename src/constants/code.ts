@@ -1,8 +1,12 @@
 export const CODE: { [index: string]: { [index: string]: string } } = {
     ACTION: {
         BACK: "🔙",
+        EXIT: "🔝",
         SETTINGS_LANGUAGE: "👅",
         SETTINGS_CURRENCY: "💲",
+        SETTINGS_TYPE: "®",
+        SETTINGS_TYPENEW: "➕",
+        SETTINGS_TYPEDIT: "〰️",
         SETTINGS_DAYS: "📆",
         SETTINGS_COUNT: "👥",
         SETTINGS_PERCENTAGE: "%",
@@ -10,6 +14,7 @@ export const CODE: { [index: string]: { [index: string]: string } } = {
         PROFILE_EMOJI: "🤡",
         PROFILE_BIRTHDAY: "🎂",
         PROFILE_USERNAME: "@",
+        PROSTAVA_TYPE: "®",
         PROSTAVA_TITLE: "💬",
         PROSTAVA_VENUE: "📍",
         PROSTAVA_LOCATION: "📌",
@@ -70,5 +75,8 @@ export const CODE: { [index: string]: { [index: string]: string } } = {
         PROSTAVA_UNDO: "🔚",
         PROSTAVA_SAVE: "💾",
         SEARCH: "🔎"
+    },
+    TEXT_COMMAND: {
+        DELETE: "DELETE"
     }
 };

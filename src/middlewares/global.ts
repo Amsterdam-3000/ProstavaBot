@@ -4,7 +4,7 @@ import { i18n } from "../commons/locale";
 import { CODE } from "../constants";
 import { UpdateContext } from "../types";
 import { mainStage } from "../scenes";
-import { LocaleUtils, StringUtils, TelegramUtils } from "../utils";
+import { LocaleUtils, ConverterUtils, TelegramUtils } from "../utils";
 
 export class GlobalMiddleware {
     static addSessionToContext = cache.middleware();
@@ -31,13 +31,25 @@ export class GlobalMiddleware {
         }
         await next();
     }
-    static async addChatToUserSession(ctx: UpdateContext, next: () => Promise<void>) {
-        if (ctx.chat) {
-            ctx.session.chat = ctx.chat;
+    static async isUserAdmin(ctx: UpdateContext, next: () => Promise<void>) {
+        const user = TelegramUtils.getUserFromContext(ctx);
+        if (!user) {
+            return;
+        }
+        const chatMember = await ctx.getChatMember(user.id);
+        if (!TelegramUtils.isMemberAdmin(chatMember)) {
+            ctx.reply(LocaleUtils.getErrorText(ctx.i18n, CODE.ERROR.NOT_ADMIN));
+            return;
         }
         await next();
+    }
+    static async addChatToUserSession(ctx: UpdateContext, next: () => Promise<void>) {
+        await next();
+        if (!ctx.chat) {
+            return;
+        }
         const user = TelegramUtils.getUserFromContext(ctx);
         //Save chat id for future inline queries
-        cache.saveSession(StringUtils.concatSessionKey(user?.id)!, ctx.session);
+        cache.saveSession(ConverterUtils.concatSessionKey(user?.id)!, { chat: ctx.chat });
     }
 }

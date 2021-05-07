@@ -80,6 +80,9 @@ export class TelegramUtils {
         return user.last_name ? `${user.first_name} ${user.last_name}` : user.first_name;
     }
 
+    static isMessageCommand(ctx: UpdateContext, command?: string) {
+        return RegexUtils.matchCommand(command).test(this.getTextMessage(ctx)?.text);
+    }
     static isChatGroup(chat: Chat) {
         return chat.type === TELEGRAM.CHAT_TYPE.GROUP || chat.type === TELEGRAM.CHAT_TYPE.SUPERGROUP;
     }

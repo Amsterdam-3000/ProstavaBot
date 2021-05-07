@@ -13,7 +13,6 @@ export class AztroModel {
         const url = `https://aztro.sameerkumar.website/?sign=${aztro.name.toLowerCase()}&day=${day}`;
         const response = await fetch(url, { method: "POST" });
         aztro = { ...aztro, ...(await response.json()) };
-        console.log();
         return aztro;
     }
 

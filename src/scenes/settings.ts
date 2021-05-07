@@ -1,7 +1,7 @@
 import { Scenes } from "telegraf";
-import { PROSTAVA } from "../constants";
+import { CODE, PROSTAVA } from "../constants";
 import { CommonController, SettingsController } from "../controllers";
-import { CommonMiddleware, GroupMiddleware, UserMiddleware } from "../middlewares";
+import { CommonMiddleware, GroupMiddleware } from "../middlewares";
 import { UpdateContext } from "../types";
 import { RegexUtils } from "../utils";
 import { CommonScene } from "./common";
@@ -9,38 +9,40 @@ import { CommonScene } from "./common";
 export const settingsScene = new Scenes.BaseScene<UpdateContext>(PROSTAVA.COMMAND.SETTINGS);
 
 settingsScene.enter(SettingsController.showSettings);
+settingsScene.use(CommonMiddleware.isCbMessageOrigin, GroupMiddleware.saveGroup);
 
 //Language
-settingsScene.action(
-    RegexUtils.matchAction(PROSTAVA.ACTION.SETTINGS_LANGUAGE),
-    UserMiddleware.isUserAdmin,
-    CommonMiddleware.isCbMessageOrigin,
-    SettingsController.showLanguages
-);
+settingsScene.action(RegexUtils.matchAction(PROSTAVA.ACTION.SETTINGS_LANGUAGE), SettingsController.showLanguages);
 settingsScene.action(
     RegexUtils.matchSubAction(PROSTAVA.ACTION.SETTINGS_LANGUAGE),
-    UserMiddleware.isUserAdmin,
-    CommonMiddleware.isCbMessageOrigin,
     GroupMiddleware.changeLanguage,
     GroupMiddleware.applyGroupSettings,
-    GroupMiddleware.saveGroup,
     SettingsController.showLanguages
 );
 
 //Currency
-settingsScene.action(
-    RegexUtils.matchAction(PROSTAVA.ACTION.SETTINGS_CURRENCY),
-    UserMiddleware.isUserAdmin,
-    CommonMiddleware.isCbMessageOrigin,
-    SettingsController.showCurrencies
-);
+settingsScene.action(RegexUtils.matchAction(PROSTAVA.ACTION.SETTINGS_CURRENCY), SettingsController.showCurrencies);
 settingsScene.action(
     RegexUtils.matchSubAction(PROSTAVA.ACTION.SETTINGS_CURRENCY),
-    UserMiddleware.isUserAdmin,
-    CommonMiddleware.isCbMessageOrigin,
     GroupMiddleware.changeCurrency,
-    GroupMiddleware.saveGroup,
     SettingsController.showCurrencies
+);
+
+//Prostava types
+settingsScene.action(RegexUtils.matchAction(PROSTAVA.ACTION.SETTINGS_TYPE), SettingsController.showProstavaTypes);
+CommonScene.actionInputRequest(settingsScene, PROSTAVA.ACTION.SETTINGS_TYPENEW);
+settingsScene.hears(
+    RegexUtils.matchOneEmoji(),
+    CommonMiddleware.checkStateAction([PROSTAVA.ACTION.SETTINGS_TYPENEW]),
+    GroupMiddleware.addNewProstavaType,
+    SettingsController.showProstavaTypes
+);
+CommonScene.actionInputRequest(settingsScene, PROSTAVA.ACTION.SETTINGS_TYPEDIT, CODE.TEXT_COMMAND.DELETE);
+settingsScene.hears(
+    RegexUtils.matchTitle(),
+    CommonMiddleware.checkStateAction([PROSTAVA.ACTION.SETTINGS_TYPEDIT]),
+    GroupMiddleware.changeOrDeleteProstavaType,
+    SettingsController.showProstavaTypes
 );
 
 //Days Count Percentage Hours
@@ -57,16 +59,12 @@ settingsScene.hears(
         PROSTAVA.ACTION.SETTINGS_HOURS
     ]),
     GroupMiddleware.changeSettings,
-    GroupMiddleware.saveGroup,
     CommonController.enterScene(PROSTAVA.COMMAND.SETTINGS)
 );
 
 //Back
-settingsScene.action(
-    RegexUtils.matchAction(PROSTAVA.ACTION.BACK),
-    UserMiddleware.isUserAdmin,
-    CommonMiddleware.isCbMessageOrigin,
-    SettingsController.backToSettings
-);
-
+CommonScene.actionBack(settingsScene, SettingsController.backToSettings);
+//Exit
+CommonScene.actionExit(settingsScene);
+//Hide
 settingsScene.leave(CommonController.hideScene);
