@@ -156,9 +156,10 @@ export class ProstavaView {
         });
     }
 
-    static getPendingUsersHtml(i18n: I18nContext, users: Group["users"]) {
+    static getPendingUsersHtml(i18n: I18nContext, prostava: Prostava, users: Group["users"]) {
         return renderFile(resolve(__dirname, "pending.ejs"), {
             i18n: i18n,
+            prostava: prostava,
             users: users,
             ACTION: PROSTAVA.ACTION,
             LocaleUtils: LocaleUtils

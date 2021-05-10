@@ -1,2 +1,2 @@
-<%= LocaleUtils.getActionReplyText(i18n, ACTION.PROSTAVA_RATING) %>
+<% if (prostava.is_request) { %><%= LocaleUtils.getActionReplyText(i18n, ACTION.PROSTAVA_POLLING) %><%} else { %><%= LocaleUtils.getActionReplyText(i18n, ACTION.PROSTAVA_RATING) %><% } %>
 <% users.forEach(function(user){ %><a href="<%= user.user_link %>"><%= user.personal_data.emoji %></a><% }); %>

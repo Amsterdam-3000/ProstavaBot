@@ -141,7 +141,7 @@ export class ProstavaController {
         if (!users?.length) {
             return;
         }
-        await ctx.reply(await ProstavaView.getPendingUsersHtml(ctx.i18n, users), {
+        await ctx.reply(await ProstavaView.getPendingUsersHtml(ctx.i18n, prostava, users), {
             parse_mode: "HTML",
             reply_to_message_id: TelegramUtils.getSceneState(ctx).messageId
         });

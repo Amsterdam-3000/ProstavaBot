@@ -22,6 +22,7 @@ reply:
         venue: "${code} Send me prostava location and title"
         cost: "${code} Send me prostava cost amount with currency"
         rating: "${code} Please, rate prostava: ${value}"
+        polling: "${code} Please, vote for prostava: ${value}"
 action:
     back: "${code} Back"
     exit: "${code} Exit"

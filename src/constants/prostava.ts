@@ -24,6 +24,7 @@ export const PROSTAVA = {
         PROSTAVA_COST: "prostava-prostava-cost",
         PROSTAVA_CREATE: "prostava-prostava-create",
         PROSTAVA_RATING: "prostava-prostava-rating",
+        PROSTAVA_POLLING: "prostava-prostava-polling",
         PROSTAVA_PARTICIPANTS: "prostava-prostava-participants"
     },
     COMMAND: {
