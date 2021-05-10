@@ -12,6 +12,12 @@ export enum ProstavaStatus {
 
 export type ProstavaRating = -1 | 0 | 1 | 2 | 3 | 4 | 5;
 
+export interface ProstavaType {
+    text?: string;
+    emoji: string;
+    string?: string;
+}
+
 export interface ProstavaCost {
     amount?: number;
     currency?: string;
@@ -22,6 +28,7 @@ export interface ProstavaVenue extends Venue {
     thumb?: string;
 }
 export interface ProstavaData {
+    type: string;
     title?: string;
     date: Date;
     venue: ProstavaVenue;
@@ -38,8 +45,11 @@ export interface Prostava {
     group_id: Group["_id"];
     author: User["_id"] | User;
     status: ProstavaStatus;
+    creator: User["_id"] | User;
+    is_request: boolean;
     rating: number;
     rating_string?: string;
+    title?: string;
     prostava_data: ProstavaData;
     participants: ProstavaParticipant[];
     participants_string?: string;

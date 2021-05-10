@@ -1,56 +1,30 @@
-import { Types } from "mongoose";
-import { ProstavaCollection } from "../models";
+import { Types, Error } from "mongoose";
 import { Venue } from "telegraf/typings/core/types/typegram";
-import { CODE } from "../constants";
-import { Group, GroupSettings, Prostava, ProstavaDocument, ProstavaStatus, UpdateContext, User } from "../types";
+import { CODE, PROSTAVA } from "../constants";
+import { Group, Prostava, ProstavaDocument, ProstavaStatus, ProstavaType, User } from "../types";
 import { DateUtils } from "./date";
 import { RegexUtils } from "./regex";
-import { StringUtils } from "./string";
-import { TelegramUtils } from "./telegram";
+import { ConverterUtils } from "./converter";
+import { ProstavaCollection } from "../models";
 
 export class ProstavaUtils {
-    static getProstavaFromContext(ctx: UpdateContext) {
-        if (ctx.prostava) {
-            return ctx.prostava;
-        }
-        if (!ctx.session?.prostava) {
-            return undefined;
-        }
-        if (!(ctx.session.prostava as ProstavaDocument).id) {
-            ctx.session.prostava = new ProstavaCollection(ctx.session.prostava);
-        }
-        return ctx.session.prostava;
-    }
-
-    static fillNewUser(ctx: UpdateContext) {
-        const chat = TelegramUtils.getChatFromContext(ctx);
-        const user = TelegramUtils.getUserFromContext(ctx);
-        return {
+    static createProstavaFromText(group: Group, user: User, text: string, isRequest = false) {
+        const prostavaData = text?.split("|") || [];
+        return new ProstavaCollection({
             _id: Types.ObjectId(),
-            user_id: user?.id,
-            group_id: chat?.id,
-            personal_data: {
-                name: TelegramUtils.getUserString(user)
-            }
-        };
-    }
-    static fillProstavaFromText(ctx: UpdateContext) {
-        const chat = TelegramUtils.getChatFromContext(ctx);
-        const commandText = TelegramUtils.getCommandText(ctx);
-        const prostavaData = commandText?.split("|") || [];
-        return {
-            _id: Types.ObjectId(),
-            group_id: chat?.id,
-            author: ctx.user,
+            group_id: group._id,
+            author: isRequest ? undefined : user,
+            creator: user,
+            is_request: isRequest,
             prostava_data: {
                 title: RegexUtils.matchTitle().test(prostavaData[0]) ? prostavaData[0] : "",
-                date: this.fillProstavaDateFromText(prostavaData[1], ctx.group.settings),
+                date: this.fillProstavaDateFromText(prostavaData[1], group.settings),
                 venue: {
                     title: RegexUtils.matchTitle().test(prostavaData[2]) ? prostavaData[2] : ""
                 },
-                cost: this.fillProstavaCostFromText(prostavaData[3], ctx.group.settings.currency)
+                cost: this.fillProstavaCostFromText(prostavaData[3], group.settings.currency)
             }
-        };
+        });
     }
     static fillProstavaCostFromText(costText: string, currency?: string) {
         const cost = costText?.split(/(?=\p{Sc})/u) || [];
@@ -59,7 +33,7 @@ export class ProstavaUtils {
             currency: cost[1] || currency
         };
     }
-    static fillProstavaDateFromText(dateText: string, settings: GroupSettings) {
+    static fillProstavaDateFromText(dateText: string, settings: Group["settings"]) {
         const dateNow = new Date(Date.now());
         if (!dateText || !RegexUtils.matchDate().test(dateText)) {
             return dateNow;
@@ -71,14 +45,56 @@ export class ProstavaUtils {
         }
         return dateIn;
     }
-    static fillProstavaFromDeleted(prostava: Prostava) {
-        return {
-            group_id: prostava.group_id,
-            author: prostava.author,
-            prostava_data: prostava.prostava_data
-        };
+    static getProstavaId(prostava: Prostava) {
+        return (prostava as ProstavaDocument).id;
     }
 
+    static announceProstava(prostava: Prostava, settings: Group["settings"]) {
+        prostava.status = ProstavaStatus.Pending;
+        prostava.participants_max_count = settings.chat_members_count - 1;
+        prostava.participants_min_count = Math.ceil(
+            (prostava.participants_max_count * settings.participants_min_percent) / 100
+        );
+        prostava.closing_date = DateUtils.getNowDatePlusHours(settings.pending_hours);
+    }
+    static publishProstava(prostava: Prostava) {
+        if (ProstavaUtils.canApprovePendingProstava(prostava)) {
+            this.approveProstava(prostava);
+        } else {
+            this.rejectProstava(prostava);
+        }
+        prostava.closing_date = new Date();
+    }
+    static approveProstava(prostava: Prostava) {
+        if (prostava.is_request) {
+            prostava.is_request = false;
+            this.withdrawProstava(prostava);
+        } else {
+            prostava.status = ProstavaStatus.Approved;
+        }
+    }
+    static rejectProstava(prostava: Prostava) {
+        prostava.status = ProstavaStatus.Rejected;
+    }
+    static withdrawProstava(prostava: Prostava) {
+        prostava.status = ProstavaStatus.New;
+        prostava.participants = [];
+        prostava.rating = 0;
+        prostava.closing_date = new Date();
+        prostava.participants_max_count = 0;
+        prostava.participants_min_count = 0;
+    }
+    static updateParticipantRating(prostava: Prostava, user: User, rating: number) {
+        let participant = ProstavaUtils.findParticipantByUserId(prostava.participants, user.user_id);
+        if (!participant) {
+            prostava.participants.push({ user: user, rating: 0 });
+            participant = ProstavaUtils.findParticipantByUserId(prostava.participants, user.user_id);
+        }
+        if (participant) {
+            participant.rating = rating;
+            prostava.rating = ProstavaUtils.updateTotalRating(prostava.participants);
+        }
+    }
     static updateTotalRating(participants: Prostava["participants"]) {
         const participantsWere = this.filterParticipantsWere(participants);
         if (!participantsWere?.length) {
@@ -89,35 +105,36 @@ export class ProstavaUtils {
             participantsWere.length
         );
     }
+    static isProstavaModified(prostava: Prostava) {
+        return (prostava as ProstavaDocument).isModified();
+    }
+    static saveProstava(prostava: Prostava) {
+        return (prostava as ProstavaDocument).save();
+    }
 
-    static populateGroupProstavas(group: Group) {
-        //TODO Autopopulate via mongo mb???
-        (group.prostavas as [Prostava]).forEach(async (prostava) => {
-            prostava.author = ProstavaUtils.findUserById(group.users, prostava.author) || prostava.author;
-            prostava.participants?.forEach((participant) => {
-                participant.user = ProstavaUtils.findUserById(group.users, participant.user) || participant.user;
-            });
-        });
-    }
-    static findUserById(users: Group["users"], userId: Prostava["author"]) {
-        return (users as [User]).find((user) => user._id.equals(userId as Types.ObjectId));
-    }
-    static findUserByUserId(users: Group["users"], userId: number | undefined) {
-        return (users as [User]).find((user) => user.user_id === userId);
-    }
-    static findUserByEmoji(users: Group["users"], emoji: string) {
-        return (users as [User]).find((user) => user.personal_data.emoji === emoji);
-    }
     static findParticipantByUserId(participants: Prostava["participants"], userId: number | undefined) {
         return participants?.find((participant) => (participant.user as User).user_id === userId);
+    }
+    static findProstavaById(prostavas: Group["prostavas"], prostavaId: Prostava["_id"] | string | undefined) {
+        return (prostavas as Prostava[]).find((prostava) => prostava._id.equals(prostavaId!));
     }
     static deleteProstavaById(prostavas: Group["prostavas"], deletedProstava: Prostava | Types.ObjectId) {
         return prostavas.filter(
             (prostava) => !(prostava as Prostava)._id.equals((deletedProstava as Prostava)._id)
-        ) as [Prostava | Types.ObjectId];
+        ) as (Prostava | Types.ObjectId)[];
+    }
+    static findUserPendingProstava(prostavas: Group["prostavas"], userId: number | undefined, withinRequests = false) {
+        return ProstavaUtils.filterUserProstavas(prostavas, userId, withinRequests).find((prostava) =>
+            ProstavaUtils.isProstavaPending(prostava)
+        );
+    }
+    static filterUserNewProstavas(prostavas: Group["prostavas"], userId: number | undefined, withinRequests = false) {
+        return ProstavaUtils.filterUserProstavas(prostavas, userId, withinRequests).filter((prostava) =>
+            ProstavaUtils.isProstavaNew(prostava)
+        );
     }
 
-    static getRatingString(rating: Prostava["rating"], ratingString: Prostava["rating_string"]) {
+    static getProstavaRatingString(rating: Prostava["rating"], ratingString: Prostava["rating_string"]) {
         const missCode = Object.values(CODE.RATING)[0];
         return (
             Object.entries(CODE.RATING)
@@ -131,11 +148,17 @@ export class ProstavaUtils {
             ratingString
         );
     }
-    static getParticipantsString(participants: Prostava["participants"], minCount: Prostava["participants_min_count"]) {
+    static getParticipantsString(
+        participants: Prostava["participants"],
+        minCount: Prostava["participants_min_count"],
+        withRating = true
+    ) {
         const participantsWere = this.filterParticipantsWere(participants);
         let participantsString = participantsWere?.reduce(
             (participantsString, participant) =>
-                participantsString + (participant.user as User).personal_data.emoji + participant.rating,
+                participantsString +
+                (participant.user as User).personal_data.emoji +
+                (withRating ? participant.rating : ""),
             ""
         );
         if (!minCount) {
@@ -143,7 +166,7 @@ export class ProstavaUtils {
         }
         if (!participantsWere?.length || participantsWere.length < minCount) {
             for (let i = 0; i < minCount - (participantsWere?.length || 0); i++) {
-                participantsString = participantsString + CODE.COMMAND.PROFILE + "0";
+                participantsString = participantsString + CODE.COMMAND.PROFILE + (withRating ? "0" : "");
             }
         }
         return participantsString;
@@ -156,15 +179,21 @@ export class ProstavaUtils {
     }
     static getVenueDisplayString(venue: Venue | undefined) {
         return (
-            StringUtils.displayValue(venue?.location ? CODE.ACTION.PROSTAVA_LOCATION : "") +
-            StringUtils.displayValue(venue?.title)
+            ConverterUtils.displayValue(venue?.location ? CODE.ACTION.PROSTAVA_LOCATION : "") +
+            ConverterUtils.displayValue(venue?.title)
         );
+    }
+    static getProstavaTypesString(types: ProstavaType[]) {
+        return types.reduce((typesString, type) => typesString + type.emoji, "");
+    }
+    static getProstavaCommand(prostava: Prostava) {
+        return prostava.is_request ? PROSTAVA.COMMAND.REQUEST : PROSTAVA.COMMAND.PROSTAVA;
     }
 
     static filterUsersPendingToRateProstava(users: Group["users"], prostava: Prostava) {
         return users.filter(
             (user) =>
-                (user as User).user_id !== (prostava.author as User).user_id &&
+                (user as User).user_id !== (prostava.author as User)?.user_id &&
                 !prostava.participants.find(
                     (participant) => (user as User).user_id === (participant.user as User).user_id
                 )
@@ -173,16 +202,23 @@ export class ProstavaUtils {
     static filterParticipantsWere(participants: Prostava["participants"]) {
         return participants?.filter((participant) => participant.rating > 0);
     }
-    static filterUserProstavas(prostavas: Group["prostavas"], userId: number | undefined) {
-        return (prostavas as [Prostava]).filter((prostava) => this.isUserAuthorOfPrastava(prostava, userId));
-    }
-    static filterProstavasByQuery(prostavas: Group["prostavas"], query: string | undefined) {
-        return this.filterCompletedProstavas(prostavas).filter((prostava) =>
-            this.matchProstavaByQuery(prostava, query)
+    static filterUserProstavas(prostavas: Group["prostavas"], userId: number | undefined, withinRequests = false) {
+        return this.filterProstavas(prostavas, withinRequests).filter((prostava) =>
+            withinRequests
+                ? this.isUserCreatorOfPrastava(prostava, userId)
+                : this.isUserAuthorOfPrastava(prostava, userId)
         );
     }
-    static filterCompletedProstavas(prostavas: Group["prostavas"]) {
-        return (prostavas as [Prostava]).filter((prostava) => this.isProstavaCompleted(prostava));
+    static filterProstavasByQuery(prostavas: Group["prostavas"], query: string | undefined) {
+        return this.filterApprovedProstavas(prostavas).filter((prostava) => this.matchProstavaByQuery(prostava, query));
+    }
+    static filterApprovedProstavas(prostavas: Group["prostavas"]) {
+        return this.filterProstavas(prostavas).filter((prostava) => this.isProstavaApproved(prostava));
+    }
+    static filterProstavas(prostavas: Group["prostavas"], withinRequests = false) {
+        return (prostavas as Prostava[]).filter((prostava) =>
+            withinRequests ? this.isRequest(prostava) : !this.isRequest(prostava)
+        );
     }
     static matchProstavaByQuery(prostava: Prostava, query: string | undefined) {
         if (!query || prostava.prostava_data.title?.match(query)) {
@@ -190,10 +226,15 @@ export class ProstavaUtils {
         }
         return false;
     }
+
     static isUserAuthorOfPrastava(prostava: Prostava, userId: number | undefined) {
-        return (prostava.author as User).user_id === userId;
+        return (prostava.author as User)?.user_id === userId;
     }
-    static isProstavaPendingCompleted(prostava: Prostava) {
+    static isUserCreatorOfPrastava(prostava: Prostava, userId: number | undefined) {
+        return (prostava.creator as User)?.user_id === userId;
+    }
+
+    static canCompletePendingProstava(prostava: Prostava) {
         if (prostava?.participants?.length === prostava?.participants_max_count) {
             return true;
         }
@@ -202,13 +243,73 @@ export class ProstavaUtils {
         }
         return false;
     }
-    static isProstavaCompleted(prostava: Prostava | undefined) {
-        return prostava?.status === ProstavaStatus.Approved || prostava?.status === ProstavaStatus.Rejected;
+    static canApprovePendingProstava(prostava: Prostava) {
+        if (!prostava.participants_min_count) {
+            return true;
+        }
+        if (this.filterParticipantsWere(prostava.participants)?.length >= prostava.participants_min_count) {
+            return true;
+        }
+        return false;
+    }
+
+    static isProstavaDataFull(prostava: Prostava | undefined) {
+        if (!prostava) {
+            return false;
+        }
+        const error = (prostava as ProstavaDocument).validateSync() as Error.ValidationError;
+        if (!error) {
+            return true;
+        }
+        if (prostava.is_request) {
+            return !error.errors["author"] && !error.errors["type"] && !error.errors["prostava_data.title"]
+                ? true
+                : false;
+        }
+        return false;
+    }
+    static isRequest(prostava: Prostava | undefined) {
+        return prostava?.is_request;
+    }
+    static isProstavaApproved(prostava: Prostava | undefined) {
+        return prostava?.status === ProstavaStatus.Approved;
     }
     static isProstavaPending(prostava: Prostava | undefined) {
         return prostava?.status === ProstavaStatus.Pending;
     }
     static isProstavaNew(prostava: Prostava | undefined) {
         return prostava?.status === ProstavaStatus.New;
+    }
+
+    static getPendingCompletedProstavasFromDB() {
+        return ProstavaCollection.find({
+            $expr: {
+                $and: [
+                    { $eq: ["$status", ProstavaStatus.Pending] },
+                    {
+                        $or: [
+                            { $lte: ["$closing_date", new Date()] },
+                            { $eq: [{ $size: "$participants" }, "$participants_max_count"] }
+                        ]
+                    }
+                ]
+            }
+        })
+            .populate("author")
+            .populate("creator")
+            .exec();
+    }
+    static getPendingUncompletedProstavasFromDB() {
+        return ProstavaCollection.find({
+            $expr: {
+                $and: [
+                    { $eq: ["$status", ProstavaStatus.Pending] },
+                    { $lt: [{ $size: "$participants" }, "$participants_max_count"] }
+                ]
+            }
+        })
+            .populate("author")
+            .populate("creator")
+            .exec();
     }
 }

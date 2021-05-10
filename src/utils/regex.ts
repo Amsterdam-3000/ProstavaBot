@@ -1,5 +1,4 @@
-import { CALENDAR, PROSTAVA } from "../constants";
-import { StringUtils } from "./string";
+import { ConverterUtils } from "./converter";
 
 export class RegexUtils {
     static matchDate() {
@@ -21,30 +20,22 @@ export class RegexUtils {
         return /^prostava-/;
     }
     static matchAction(action: string) {
-        return new RegExp(`${action}([^-]|$)`);
+        return new RegExp(`(^|[\|])${action}([\|]|$)`);
     }
     static matchSubAction(action: string) {
-        return new RegExp(`${StringUtils.getSubAction(action)}`);
+        return new RegExp(`(^|[\|])${ConverterUtils.getSubAction(action)}[\|]`);
     }
-    static matchCalendarActions() {
-        return new RegExp(
-            Object.values(CALENDAR.ACTION).reduce((regex, action) => (regex ? regex + "|" + action : action), "")
-        );
+    static matchCalendarAction(action: string) {
+        return new RegExp(`${action}[\\d-]+`);
     }
-    static matchCommand() {
-        return /^\/[^\s]+/;
+    static matchCommand(command?: string) {
+        return command ? new RegExp(`^/${command}(\\s|$)`) : /^\/[^\s]+/;
     }
-
-    static matchCommands() {
-        return new RegExp(
-            Object.values(PROSTAVA.COMMAND).reduce(
-                (regex, command) => (regex ? regex + "|" + "/" + command : "/" + command),
-                ""
-            )
-        );
+    static matchUser() {
+        return /@[^\s]+/;
     }
 
-    static matchEmojis() {
+    static matchOneEmoji() {
         //TODO Delete \\u{1F6CD} after emoji-regex update
         return new RegExp(`^(${require("emoji-regex/es2015")().source}|\\u{1F6CD})$`, "u");
     }

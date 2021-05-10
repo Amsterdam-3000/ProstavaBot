@@ -1,7 +1,7 @@
 import { I18nContext } from "@edjopato/telegraf-i18n/dist/source";
 import { Aztro, ProstavaStatus } from "../types";
 import { ConstantUtils } from "./constant";
-import { StringUtils } from "./string";
+import { ConverterUtils } from "./converter";
 
 export class LocaleUtils {
     static getErrorText(i18n: I18nContext, errorCode: string) {
@@ -9,6 +9,12 @@ export class LocaleUtils {
         const errorKey = `error.${error?.toLowerCase()}`;
         const variables = { code: errorCode };
         return i18n.t(errorKey, variables);
+    }
+    static getPollingText(i18n: I18nContext, pollingCode: string) {
+        const polling = ConstantUtils.getPollingByCode(pollingCode);
+        const pollingKey = `polling.${polling?.toLowerCase()}`;
+        const variables = { code: pollingCode };
+        return i18n.t(pollingKey, variables);
     }
 
     static getCommandText(i18n: I18nContext, command: string, value?: string) {
@@ -31,7 +37,7 @@ export class LocaleUtils {
         return this.getActionCommonText(i18n, "reply", action, value);
     }
     private static getActionCommonText(i18n: I18nContext, group: string, action: string, value?: string) {
-        const actionName = StringUtils.sliceProstavaAction(action);
+        const actionName = ConverterUtils.sliceProstavaAction(action);
         const actionKey = `${group}.${actionName.replace(/-/g, ".")}`;
         const actionCode = ConstantUtils.getActionCode(actionName.replace(/-/g, "_"));
         const variables = {

@@ -1,44 +1,81 @@
 import { CODE, PROSTAVA } from "../constants";
-import { ProstavaCollection } from "../models";
-import { Prostava, ProstavaDocument, ProstavaStatus, UpdateContext } from "../types";
-import { DateUtils, LocaleUtils, ObjectUtils, ProstavaUtils, StringUtils, TelegramUtils } from "../utils";
+import { UpdateContext } from "../types";
+import { LocaleUtils, ProstavaUtils, TelegramUtils, UserUtils } from "../utils";
 
 export class ProstavaMiddleware {
     static async addPendingProstavaToContext(ctx: UpdateContext, next: () => Promise<void>) {
-        if (!ProstavaUtils.getProstavaFromContext(ctx)) {
+        const user = TelegramUtils.getUserFromContext(ctx);
+        const isRequest = TelegramUtils.includesCommand(ctx, PROSTAVA.COMMAND.REQUEST);
+        ctx.prostava = ProstavaUtils.findUserPendingProstava(ctx.group.prostavas, user?.id, isRequest);
+        await next();
+    }
+    static async addNewProstavaToContext(ctx: UpdateContext, next: () => Promise<void>) {
+        if (TelegramUtils.getProstavaFromContext(ctx)) {
+            delete ctx.prostavas;
+        } else {
             const user = TelegramUtils.getUserFromContext(ctx);
-            ctx.prostava = ProstavaUtils.filterUserProstavas(ctx.group.prostavas, user?.id).find((prostava) =>
-                ProstavaUtils.isProstavaPending(prostava)
-            );
+            const isRequest = TelegramUtils.includesCommand(ctx, PROSTAVA.COMMAND.REQUEST);
+            ctx.prostavas = ProstavaUtils.filterUserNewProstavas(ctx.group.prostavas, user?.id, isRequest);
+        }
+        if (ctx.prostavas?.length === 1) {
+            ctx.prostava = ctx.prostavas[0];
+            delete ctx.prostavas;
+        } else if (ctx.prostavas?.length) {
+            const prostavaId = TelegramUtils.getSceneState(ctx).prostavaId;
+            ctx.prostava = ProstavaUtils.findProstavaById(ctx.prostavas, prostavaId);
+        } else if (!ctx.prostava && TelegramUtils.isMessageProstavaCommand(ctx)) {
+            const commandText = TelegramUtils.getMessageCommandText(ctx);
+            const isRequest = TelegramUtils.includesCommand(ctx, PROSTAVA.COMMAND.REQUEST);
+            ctx.prostava = ProstavaUtils.createProstavaFromText(ctx.group, ctx.user, commandText, isRequest);
+            ctx.group.prostavas.push(ctx.prostava);
         }
         await next();
     }
-    static async addProstavaFromActionToContext(ctx: UpdateContext, next: () => Promise<void>) {
-        const actionData = ObjectUtils.parseActionData(TelegramUtils.getCbQueryData(ctx));
-        ctx.prostava = (ctx.group.prostavas as [Prostava]).find(
-            (prostava) => (prostava as ProstavaDocument).id === actionData?.id
-        );
+    static async addProstavaFromRateActionToContext(ctx: UpdateContext, next: () => Promise<void>) {
+        const prostavaId = TelegramUtils.getActionDataFromCbQuery(ctx)?.id;
+        if (!prostavaId) {
+            await ctx.answerCbQuery();
+            return;
+        }
+        ctx.prostava = ProstavaUtils.findProstavaById(ctx.group.prostavas, prostavaId);
         await next();
     }
-    static async addNewProstavaToSession(ctx: UpdateContext, next: () => Promise<void>) {
-        if (!ProstavaUtils.getProstavaFromContext(ctx)) {
-            ctx.session.prostava = new ProstavaCollection(ProstavaUtils.fillProstavaFromText(ctx));
+    static async addProstavaFromSelectActionToContext(ctx: UpdateContext, next: () => Promise<void>) {
+        const prostavaId = TelegramUtils.getActionDataFromCbQuery(ctx)?.value;
+        if (!prostavaId || !ctx.prostavas?.length) {
+            await ctx.answerCbQuery();
+            return;
         }
+        ctx.prostava = ProstavaUtils.findProstavaById(ctx.prostavas, prostavaId);
+        TelegramUtils.setSceneState(ctx, { prostavaId: prostavaId });
         await next();
     }
-    static async deleteProstavaFromContext(ctx: UpdateContext, next: () => Promise<void>) {
-        delete ctx.prostava;
-        if (ctx.session?.prostava) {
-            delete ctx.session.prostava;
-        }
+    static async addQueryProstavasToContext(ctx: UpdateContext, next: () => Promise<void>) {
+        ctx.prostavas = ProstavaUtils.filterProstavasByQuery(ctx.group.prostavas, ctx.inlineQuery?.query);
         await next();
     }
 
+    static async changeProstavaAuthor(ctx: UpdateContext, next: () => Promise<void>) {
+        const prostava = TelegramUtils.getProstavaFromContext(ctx);
+        const actionData = TelegramUtils.getActionDataFromCbQuery(ctx);
+        const user = UserUtils.findUserByUserId(ctx.group.users, Number(actionData?.value));
+        if (prostava && user) {
+            prostava.author = user;
+        }
+        await next();
+    }
+    static async changeProstavaType(ctx: UpdateContext, next: () => Promise<void>) {
+        const prostava = TelegramUtils.getProstavaFromContext(ctx);
+        const actionData = TelegramUtils.getActionDataFromCbQuery(ctx);
+        if (prostava && actionData?.value) {
+            prostava.prostava_data.type = actionData?.value;
+        }
+        await next();
+    }
     static async changeProstavaOrVenueTitle(ctx: UpdateContext, next: () => Promise<void>) {
-        const sceneState = TelegramUtils.getSceneState(ctx);
-        const prostava = ProstavaUtils.getProstavaFromContext(ctx);
+        const prostava = TelegramUtils.getProstavaFromContext(ctx);
         if (prostava) {
-            switch (ObjectUtils.parseActionData(sceneState.actionData)?.action) {
+            switch (TelegramUtils.getActionDataFromSceneState(ctx)?.action) {
                 case PROSTAVA.ACTION.PROSTAVA_TITLE:
                     prostava.prostava_data.title = TelegramUtils.getTextMessage(ctx).text;
                     break;
@@ -50,30 +87,28 @@ export class ProstavaMiddleware {
         await next();
     }
     static async changeProstavaDate(ctx: UpdateContext, next: () => Promise<void>) {
-        const prostava = ProstavaUtils.getProstavaFromContext(ctx);
+        const prostava = TelegramUtils.getProstavaFromContext(ctx);
         if (prostava) {
-            prostava.prostava_data.date = new Date(
-                StringUtils.sliceCalendarActionDate(TelegramUtils.getCbQueryData(ctx))
-            );
+            prostava.prostava_data.date = TelegramUtils.getDateFromCalendarAction(ctx);
         }
         await next();
     }
     static async changeProstavaVenue(ctx: UpdateContext, next: () => Promise<void>) {
-        const prostava = ProstavaUtils.getProstavaFromContext(ctx);
+        const prostava = TelegramUtils.getProstavaFromContext(ctx);
         if (prostava) {
             prostava.prostava_data.venue = TelegramUtils.getVenueMessage(ctx).venue;
         }
         await next();
     }
     static async changeProstavaLocation(ctx: UpdateContext, next: () => Promise<void>) {
-        const prostava = ProstavaUtils.getProstavaFromContext(ctx);
+        const prostava = TelegramUtils.getProstavaFromContext(ctx);
         if (prostava) {
             prostava.prostava_data.venue.location = TelegramUtils.getLocationMessage(ctx).location;
         }
         await next();
     }
     static async changeProstavaCost(ctx: UpdateContext, next: () => Promise<void>) {
-        const prostava = ProstavaUtils.getProstavaFromContext(ctx);
+        const prostava = TelegramUtils.getProstavaFromContext(ctx);
         if (prostava) {
             prostava.prostava_data.cost = ProstavaUtils.fillProstavaCostFromText(
                 TelegramUtils.getTextMessage(ctx).text,
@@ -84,29 +119,15 @@ export class ProstavaMiddleware {
     }
 
     static async isProstavaDataFull(ctx: UpdateContext, next: () => Promise<void>) {
-        const prostava = ProstavaUtils.getProstavaFromContext(ctx);
-        if (!prostava || (prostava as ProstavaDocument).validateSync()) {
+        const prostava = TelegramUtils.getProstavaFromContext(ctx);
+        if (!ProstavaUtils.isProstavaDataFull(prostava)) {
             ctx.answerCbQuery(LocaleUtils.getErrorText(ctx.i18n, CODE.ERROR.NOT_CREATE));
             return;
         }
         await next();
     }
-    static async announceProstava(ctx: UpdateContext, next: () => Promise<void>) {
-        const prostava = ProstavaUtils.getProstavaFromContext(ctx);
-        if (prostava) {
-            prostava.participants_max_count = ctx.group.settings.chat_members_count - 1;
-            prostava.participants_min_count = Math.ceil(
-                (prostava.participants_max_count * ctx.group.settings.participants_min_percent) / 100
-            );
-            prostava.status = ProstavaStatus.Pending;
-            prostava.closing_date = DateUtils.getNowDatePlusHours(ctx.group.settings.pending_hours);
-            ctx.group.prostavas.push(prostava);
-        }
-        await next();
-    }
-
     static async isUserParticipantOfProstava(ctx: UpdateContext, next: () => Promise<void>) {
-        const prostava = ProstavaUtils.getProstavaFromContext(ctx);
+        const prostava = TelegramUtils.getProstavaFromContext(ctx);
         const user = TelegramUtils.getUserFromContext(ctx);
         if (!prostava) {
             ctx.answerCbQuery();
@@ -118,88 +139,80 @@ export class ProstavaMiddleware {
         }
         await next();
     }
-    static async changeProstavaParticipantRating(ctx: UpdateContext, next: () => Promise<void>) {
-        const prostava = ProstavaUtils.getProstavaFromContext(ctx);
-        if (!prostava) {
-            ctx.answerCbQuery();
-            return;
-        }
-        const rating = Number(ObjectUtils.parseActionData(TelegramUtils.getCbQueryData(ctx))?.value);
-        const user = TelegramUtils.getUserFromContext(ctx);
-        let participant = ProstavaUtils.findParticipantByUserId(prostava.participants, user?.id);
-        if (participant?.rating === rating) {
-            ctx.answerCbQuery();
-            return;
-        }
-        if (!participant) {
-            prostava.participants.push({ user: ctx.user, rating: 0 });
-            participant = ProstavaUtils.findParticipantByUserId(prostava.participants, user?.id);
-        }
-        if (participant) {
-            participant.rating = rating;
-            prostava.rating = ProstavaUtils.updateTotalRating(prostava.participants);
-        }
-        await next();
-    }
-
     static async isProstavaPendingCompleted(ctx: UpdateContext, next: () => Promise<void>) {
-        const prostava = ProstavaUtils.getProstavaFromContext(ctx);
-        if (!prostava || !ProstavaUtils.isProstavaPendingCompleted(prostava)) {
+        const prostava = TelegramUtils.getProstavaFromContext(ctx);
+        if (!prostava || !ProstavaUtils.canCompletePendingProstava(prostava)) {
             return;
         }
         await next();
     }
-    static async publishProstava(ctx: UpdateContext, next: () => Promise<void>) {
-        const prostava = ProstavaUtils.getProstavaFromContext(ctx);
-        if (!prostava) {
+    static async hasUserPendingProstava(ctx: UpdateContext, next: () => Promise<void>) {
+        const prostava = TelegramUtils.getProstavaFromContext(ctx);
+        if (!prostava || !ProstavaUtils.isProstavaPending(prostava)) {
             return;
         }
-        if (
-            prostava.participants_min_count &&
-            ProstavaUtils.filterParticipantsWere(prostava.participants)?.length < prostava.participants_min_count
-        ) {
-            prostava.status = ProstavaStatus.Rejected;
-        } else {
-            prostava.status = ProstavaStatus.Approved;
+        await next();
+    }
+    static async hasProstavaUsersPendingToRate(ctx: UpdateContext, next: () => Promise<void>) {
+        const prostava = TelegramUtils.getProstavaFromContext(ctx);
+        if (!prostava || !ProstavaUtils.filterUsersPendingToRateProstava(ctx.group.users, prostava)?.length) {
+            return;
         }
-        prostava.closing_date = new Date();
+        await next();
+    }
+    static async isUserCreatorOfProstava(ctx: UpdateContext, next: () => Promise<void>) {
+        const prostava = TelegramUtils.getProstavaFromContext(ctx);
+        if (!prostava || !ProstavaUtils.isUserCreatorOfPrastava(prostava, ctx.user.user_id)) {
+            ctx.answerCbQuery(LocaleUtils.getErrorText(ctx.i18n, CODE.ERROR.NOT_CHANGE));
+            return;
+        }
         await next();
     }
 
-    static async hasUserPendingProstava(ctx: UpdateContext, next: () => Promise<void>) {
-        const prostava = ProstavaUtils.getProstavaFromContext(ctx);
-        if (!ProstavaUtils.isProstavaPending(prostava)) {
-            return;
+    static async announceProstava(ctx: UpdateContext, next: () => Promise<void>) {
+        const prostava = TelegramUtils.getProstavaFromContext(ctx);
+        if (prostava) {
+            ProstavaUtils.announceProstava(prostava, ctx.group.settings);
         }
         await next();
     }
     static async withdrawProstava(ctx: UpdateContext, next: () => Promise<void>) {
-        const prostava = ProstavaUtils.getProstavaFromContext(ctx);
+        const prostava = TelegramUtils.getProstavaFromContext(ctx);
         if (prostava) {
-            try {
-                await (prostava as ProstavaDocument).delete();
-            } catch (err) {
-                console.log(err);
-                return;
-            }
-            ctx.group.prostavas = ProstavaUtils.deleteProstavaById(ctx.group.prostavas, prostava);
-            prostava.status = ProstavaStatus.New;
-            ctx.session.prostava = new ProstavaCollection(ProstavaUtils.fillProstavaFromDeleted(prostava));
-            delete ctx.prostava;
+            ProstavaUtils.withdrawProstava(prostava);
+        }
+        await next();
+    }
+    static async changeProstavaParticipantRating(ctx: UpdateContext, next: () => Promise<void>) {
+        const prostava = TelegramUtils.getProstavaFromContext(ctx);
+        if (!prostava) {
+            ctx.answerCbQuery();
+            return;
+        }
+        const rating = Number(TelegramUtils.getActionDataFromCbQuery(ctx)?.value);
+        const participant = ProstavaUtils.findParticipantByUserId(prostava.participants, ctx.user.user_id);
+        if (participant?.rating === rating) {
+            ctx.answerCbQuery();
+            return;
+        }
+        ProstavaUtils.updateParticipantRating(prostava, ctx.user, rating);
+        await next();
+    }
+    static async publishProstava(ctx: UpdateContext, next: () => Promise<void>) {
+        const prostava = TelegramUtils.getProstavaFromContext(ctx);
+        if (prostava) {
+            ProstavaUtils.publishProstava(prostava);
         }
         await next();
     }
 
     static async saveProstava(ctx: UpdateContext, next: () => Promise<void>) {
-        const prostava = ProstavaUtils.getProstavaFromContext(ctx);
-        if (prostava && (prostava as ProstavaDocument).isModified()) {
-            try {
-                await (prostava as ProstavaDocument).save();
-            } catch (err) {
-                console.log(err);
-                return;
-            }
-        }
+        let prostava = TelegramUtils.getProstavaFromContext(ctx);
         await next();
+        prostava = TelegramUtils.getProstavaFromContext(ctx) || prostava;
+        if (!prostava || !ProstavaUtils.isProstavaModified(prostava)) {
+            return;
+        }
+        await ProstavaUtils.saveProstava(prostava).catch((err) => console.log(err));
     }
 }

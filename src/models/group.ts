@@ -1,7 +1,7 @@
 import { model, Schema } from "mongoose";
 import { PROSTAVA, LOCALE, CODE } from "../constants";
 import { GroupModel, GroupDocument } from "../types";
-const mongooseAutoPopulate = require("mongoose-autopopulate");
+import { ProstavaTypeSchema } from "./prostava";
 
 const GroupSettinsSchema = new Schema(
     {
@@ -17,6 +17,12 @@ const GroupSettinsSchema = new Schema(
             minLength: 1,
             maxLength: 1
         },
+        prostava_types: [
+            {
+                type: ProstavaTypeSchema,
+                default: []
+            }
+        ],
         create_days_ago: {
             type: Number,
             default: 0
@@ -63,7 +69,9 @@ const GroupSchema = new Schema<GroupDocument, GroupModel>(
     },
     { _id: false }
 );
-
-GroupSchema.plugin(mongooseAutoPopulate);
+GroupSchema.plugin(require("mongoose-autopopulate"));
+GroupSchema.virtual("group_photo").get(function (this: GroupDocument) {
+    return "https://cdn.jsdelivr.net/joypixels/assets/6.5/png/unicode/128/1f465.png";
+});
 
 export const GroupCollection = model<GroupDocument, GroupModel>(PROSTAVA.COLLECTION.GROUP, GroupSchema);

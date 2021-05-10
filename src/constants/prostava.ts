@@ -1,8 +1,12 @@
 export const PROSTAVA = {
     ACTION: {
         BACK: "prostava-back",
+        EXIT: "prostava-exit",
         SETTINGS_LANGUAGE: "prostava-settings-language",
         SETTINGS_CURRENCY: "prostava-settings-currency",
+        SETTINGS_TYPE: "prostava-settings-type",
+        SETTINGS_TYPENEW: "prostava-settings-typenew",
+        SETTINGS_TYPEDIT: "prostava-settings-typedit",
         SETTINGS_DAYS: "prostava-settings-days",
         SETTINGS_COUNT: "prostava-settings-count",
         SETTINGS_PERCENTAGE: "prostava-settings-percentage",
@@ -10,6 +14,10 @@ export const PROSTAVA = {
         PROFILE_EMOJI: "prostava-profile-emoji",
         PROFILE_BIRTHDAY: "prostava-profile-birthday",
         PROFILE_USERNAME: "prostava-profile-username",
+        PROFILES_USER: "prostava-profiles-user",
+        PROSTAVA_PROSTAVA: "prostava-prostava-prostava",
+        PROSTAVA_AUTHOR: "prostava-prostava-author",
+        PROSTAVA_TYPE: "prostava-prostava-type",
         PROSTAVA_TITLE: "prostava-prostava-title",
         PROSTAVA_DATE: "prostava-prostava-date",
         PROSTAVA_VENUE: "prostava-prostava-venue",
@@ -25,11 +33,21 @@ export const PROSTAVA = {
         PROFILE: "profile",
         PROFILES: "profiles",
         PROFILES_ME: "profiles_me",
-        PROFILES_USER: "profiles_user",
         PROSTAVA: "prostava",
         PROSTAVA_UNDO: "prostava_undo",
         PROSTAVA_SAVE: "prostava_save",
+        PROSTAVA_RATE: "prostava_rate",
+        REQUEST: "request",
+        REQUEST_UNDO: "request_undo",
+        REQUEST_SAVE: "request_save",
+        REQUEST_RATE: "request_rate",
         SEARCH: "search"
+    },
+    SCENE: {
+        SETTINGS: "settings",
+        PROFILE: "profile",
+        PROFILES: "profiles",
+        PROSTAVA: "prostava"
     },
     COLLECTION: {
         GROUP: "Group",

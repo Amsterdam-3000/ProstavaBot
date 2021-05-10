@@ -50,5 +50,8 @@ UserSchema.virtual("user_photo").get(function (this: UserDocument) {
     }
     return "https://cdn.jsdelivr.net/joypixels/assets/6.5/png/unicode/128/1f921.png";
 });
+UserSchema.virtual("user_string").get(function (this: UserDocument) {
+    return this.personal_data.emoji + " " + this.personal_data.name;
+});
 
 export const UserCollection = model<UserDocument, UserModel>(PROSTAVA.COLLECTION.USER, UserSchema);

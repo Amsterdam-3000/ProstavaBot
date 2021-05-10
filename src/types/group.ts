@@ -1,10 +1,11 @@
 import { Document, Model } from "mongoose";
-import { Prostava } from "./prostava";
+import { Prostava, ProstavaType } from "./prostava";
 import { User } from "./user";
 
 export interface GroupSettings {
     language: string;
     currency: string;
+    prostava_types: ProstavaType[];
     create_days_ago: number;
     chat_members_count: number;
     participants_min_percent: number;
@@ -16,6 +17,7 @@ export interface Group {
     settings: GroupSettings;
     users: (User["_id"] | User)[];
     prostavas: (Prostava["_id"] | Prostava)[];
+    group_photo?: string;
 }
 
 interface GroupBaseDocument extends Group, Document {

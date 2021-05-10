@@ -1,46 +1,161 @@
 import { InlineQueryResultArticle } from "telegraf/typings/core/types/typegram";
 import { PROSTAVA } from "../constants";
-import { ProstavaDocument, UpdateContext } from "../types";
-import { LocaleUtils, ObjectUtils, ProstavaUtils, TelegramUtils } from "../utils";
-import { ProstavaView } from "../views";
+import { UpdateContext } from "../types";
+import { LocaleUtils, ProstavaUtils, TelegramUtils, UserUtils } from "../utils";
+import { ProfileView, ProstavaView } from "../views";
 
 export class ProstavaController {
-    static async showProstava(ctx: UpdateContext) {
-        const prostava = ProstavaUtils.getProstavaFromContext(ctx);
+    static async showSelectProstava(ctx: UpdateContext, next: () => Promise<void>) {
+        const prostava = TelegramUtils.getProstavaFromContext(ctx);
+        if (ctx.prostavas?.length && !prostava) {
+            const message = await ctx.reply(
+                LocaleUtils.getActionReplyText(ctx.i18n, PROSTAVA.ACTION.PROSTAVA_PROSTAVA),
+                ProstavaView.getProstavaKeyboard(ctx.i18n, ctx.prostavas)
+            );
+            TelegramUtils.setSceneState(ctx, { messageId: message.message_id });
+            return;
+        }
+        await next();
+    }
+    static async showCreateProstava(ctx: UpdateContext, next: () => Promise<void>) {
+        const prostava = TelegramUtils.getProstavaFromContext(ctx);
+        if (prostava && ProstavaUtils.isProstavaNew(prostava)) {
+            const command = ProstavaUtils.getProstavaCommand(prostava);
+            const message = await ctx.reply(
+                LocaleUtils.getCommandText(ctx.i18n, command, ctx.user?.personal_data?.name),
+                ProstavaView.getProstavaCreateKeyboard(
+                    ctx.i18n,
+                    prostava,
+                    ProstavaUtils.isProstavaDataFull(prostava),
+                    Number(ctx.prostavas?.length) > 1
+                )
+            );
+            TelegramUtils.setSceneState(ctx, { messageId: message.message_id });
+            return;
+        }
+        await next();
+    }
+    static async showRateProstava(ctx: UpdateContext, next: () => Promise<void>) {
+        const prostava = TelegramUtils.getProstavaFromContext(ctx);
+        if (prostava && ProstavaUtils.isProstavaPending(prostava)) {
+            const message = await ctx.reply(await ProstavaView.getProstavaHtml(ctx.i18n, prostava), {
+                parse_mode: "HTML",
+                reply_markup: ProstavaView.getProstavaRatingKeyboard(ctx.i18n, prostava).reply_markup
+            });
+            TelegramUtils.setSceneState(ctx, { messageId: message.message_id });
+            await ctx.pinChatMessage(message.message_id).catch((err) => console.log(err));
+            return;
+        }
+        await next();
+    }
+    static async backToSelectProstava(ctx: UpdateContext) {
+        if (!ctx.prostavas?.length) {
+            await ctx.answerCbQuery();
+            return;
+        }
+        await ctx
+            .editMessageText(
+                LocaleUtils.getActionReplyText(ctx.i18n, PROSTAVA.ACTION.PROSTAVA_PROSTAVA),
+                ProstavaView.getProstavaKeyboard(ctx.i18n, ctx.prostavas)
+            )
+            .catch((err) => console.log(err));
+        TelegramUtils.setSceneState(ctx, { prostavaId: "" });
+    }
+    static async backToCreateProstava(ctx: UpdateContext) {
+        const prostava = TelegramUtils.getProstavaFromContext(ctx);
+        if (!prostava) {
+            await ctx.answerCbQuery();
+            return;
+        }
+        const command = ProstavaUtils.getProstavaCommand(prostava);
+        await ctx
+            .editMessageText(
+                LocaleUtils.getCommandText(ctx.i18n, command, ctx.user?.personal_data?.name),
+                ProstavaView.getProstavaCreateKeyboard(
+                    ctx.i18n,
+                    prostava,
+                    ProstavaUtils.isProstavaDataFull(prostava),
+                    Number(ctx.prostavas?.length) > 1
+                )
+            )
+            .catch((err) => console.log(err));
+    }
+    static async refreshProstava(ctx: UpdateContext) {
+        const prostava = TelegramUtils.getProstavaFromContext(ctx);
+        if (!prostava) {
+            await ctx.answerCbQuery();
+            return;
+        }
+        await ctx
+            .editMessageText(await ProstavaView.getProstavaHtml(ctx.i18n, prostava), {
+                parse_mode: "HTML",
+                reply_markup: ProstavaView.getProstavaRatingKeyboard(ctx.i18n, prostava).reply_markup
+            })
+            .catch((err) => console.log(err));
+    }
+    static async showProstava(ctx: UpdateContext, next: () => Promise<void>) {
+        const prostava = TelegramUtils.getProstavaFromContext(ctx);
         if (!prostava) {
             return;
         }
-        if (ProstavaUtils.isProstavaNew(prostava)) {
-            const message = await ctx.reply(
-                LocaleUtils.getCommandText(ctx.i18n, PROSTAVA.COMMAND.PROSTAVA, ctx.user?.personal_data?.name),
-                ProstavaView.getProstavaCreateKeyboard(
-                    ctx.i18n,
-                    prostava.prostava_data,
-                    !(prostava as ProstavaDocument).validateSync()
-                )
-            );
-            TelegramUtils.setSceneStateToContext(ctx, ObjectUtils.initializeState(message));
-        } else if (ProstavaUtils.isProstavaPending(prostava)) {
-            const message = await ctx.reply(await ProstavaView.getProstavaHtml(ctx.i18n, prostava), {
-                parse_mode: "HTML",
-                reply_markup: ProstavaView.getProstavaRatingKeyboard(prostava).reply_markup
-            });
-            TelegramUtils.setSceneStateToContext(ctx, ObjectUtils.initializeState(message));
-            ctx.pinChatMessage(message.message_id).catch((err) => console.log(err));
-        } else {
-            await ctx.reply(await ProstavaView.getProstavaHtml(ctx.i18n, prostava), {
-                parse_mode: "HTML"
-            });
-        }
+        await ctx.reply(await ProstavaView.getProstavaHtml(ctx.i18n, prostava), {
+            parse_mode: "HTML"
+        });
+        await next();
     }
 
+    static async showProstavaAuthors(ctx: UpdateContext) {
+        await ctx
+            .editMessageText(
+                LocaleUtils.getActionReplyText(ctx.i18n, PROSTAVA.ACTION.PROSTAVA_AUTHOR),
+                ProfileView.getUsersKeyboard(
+                    ctx.i18n,
+                    UserUtils.filterUsersExceptUserId(ctx.group.users, ctx.user.user_id)
+                )
+            )
+            .catch((err) => console.log(err));
+    }
+    static async showProstavaTypes(ctx: UpdateContext) {
+        await ctx
+            .editMessageText(
+                LocaleUtils.getActionReplyText(ctx.i18n, PROSTAVA.ACTION.PROSTAVA_TYPE),
+                ProstavaView.getProstavaTypeKeyboard(ctx.i18n, ctx.group.settings.prostava_types)
+            )
+            .catch((err) => console.log(err));
+    }
+    static async showProstavaCalendar(ctx: UpdateContext) {
+        await ctx
+            .editMessageText(
+                LocaleUtils.getActionReplyText(ctx.i18n, PROSTAVA.ACTION.PROSTAVA_DATE),
+                ProstavaView.getProstavaCalendarKeyboard(ctx.i18n, ctx.group.settings)
+            )
+            .catch((err) => console.log(err));
+    }
+
+    static async showProstavaUsersPendingToRate(ctx: UpdateContext) {
+        const prostava = TelegramUtils.getProstavaFromContext(ctx);
+        if (!prostava) {
+            return;
+        }
+        const users = ProstavaUtils.filterUsersPendingToRateProstava(ctx.group.users, prostava);
+        if (!users?.length) {
+            return;
+        }
+        await ctx.reply(await ProstavaView.getPendingUsersHtml(ctx.i18n, users), {
+            parse_mode: "HTML",
+            reply_to_message_id: TelegramUtils.getSceneState(ctx).messageId
+        });
+    }
     static async showQueryProstavas(ctx: UpdateContext) {
+        if (!ctx.prostavas?.length) {
+            await ctx.answerInlineQuery([]);
+            return;
+        }
         const results: InlineQueryResultArticle[] = [];
-        const prostavas = ProstavaUtils.filterProstavasByQuery(ctx.group.prostavas, ctx.inlineQuery?.query);
-        for (const prostava of prostavas) {
+        for (const prostava of ctx.prostavas) {
             results.push({
                 type: "article",
-                id: (prostava as ProstavaDocument).id,
+                id: ProstavaUtils.getProstavaId(prostava),
                 thumb_url: prostava.prostava_data.venue?.thumb,
                 title: ProstavaView.getProstavaTitle(ctx.i18n, prostava),
                 description: ProstavaView.getProstavaDescription(ctx.i18n, prostava),
@@ -50,42 +165,6 @@ export class ProstavaController {
                 }
             });
         }
-        ctx.answerInlineQuery(results, {
-            cache_time: 1
-        });
-    }
-
-    static async showProstavaCalendar(ctx: UpdateContext) {
-        ctx.editMessageText(
-            LocaleUtils.getActionReplyText(ctx.i18n, PROSTAVA.ACTION.PROSTAVA_DATE),
-            ProstavaView.getProstavaCalendarKeyboard(ctx.i18n, ctx.group.settings)
-        ).catch((err) => console.log(err));
-    }
-
-    static async refreshProstava(ctx: UpdateContext) {
-        const prostava = ProstavaUtils.getProstavaFromContext(ctx);
-        if (!prostava) {
-            ctx.answerCbQuery();
-            return;
-        }
-        ctx.editMessageText(await ProstavaView.getProstavaHtml(ctx.i18n, prostava), {
-            parse_mode: "HTML",
-            reply_markup: ProstavaView.getProstavaRatingKeyboard(prostava).reply_markup
-        }).catch((err) => console.log(err));
-    }
-    static async backToCreateProstava(ctx: UpdateContext) {
-        const prostava = ProstavaUtils.getProstavaFromContext(ctx);
-        if (!prostava) {
-            ctx.answerCbQuery();
-            return;
-        }
-        ctx.editMessageText(
-            LocaleUtils.getCommandText(ctx.i18n, PROSTAVA.COMMAND.PROSTAVA, ctx.user?.personal_data?.name),
-            ProstavaView.getProstavaCreateKeyboard(
-                ctx.i18n,
-                prostava.prostava_data,
-                !(prostava as ProstavaDocument).validateSync()
-            )
-        ).catch((err) => console.log(err));
+        await ctx.answerInlineQuery(results);
     }
 }

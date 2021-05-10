@@ -1,7 +1,8 @@
 import { CallbackQuery, Chat, ChatMember, Message, Update, User } from "telegraf/typings/core/types/typegram";
 import { CONFIG } from "../commons/config";
-import { TELEGRAM } from "../constants";
+import { PROSTAVA, TELEGRAM } from "../constants";
 import { SceneState, UpdateContext } from "../types";
+import { ConverterUtils } from "./converter";
 import { RegexUtils } from "./regex";
 
 export class TelegramUtils {
@@ -32,14 +33,6 @@ export class TelegramUtils {
             }
         };
     }
-    //TODO Delete after fix typings bug
-    static fillFakeContext(chatId: number, userId: number) {
-        return {
-            chat: { id: chatId },
-            from: { id: userId },
-            session: { __scenes: { state: { message: { message_id: 0 } } } }
-        };
-    }
 
     static getChatFromContext(ctx: UpdateContext) {
         return ctx.chat || ctx.session?.chat;
@@ -47,12 +40,60 @@ export class TelegramUtils {
     static getUserFromContext(ctx: UpdateContext) {
         return ctx.callbackQuery?.from || ctx.from;
     }
-    static setSceneStateToContext(ctx: UpdateContext, sceneState: SceneState) {
-        ctx.scene.state = sceneState;
+    static getProstavaFromContext(ctx: UpdateContext) {
+        return ctx.prostava;
     }
 
-    static getCommandText(ctx: UpdateContext) {
-        return this.getTextMessage(ctx).text?.replace(RegexUtils.matchCommand(), "").trim();
+    static getActionDataFromCbQuery(ctx: UpdateContext) {
+        return ConverterUtils.parseActionData(this.getCbQueryData(ctx));
+    }
+    static getActionDataFromSceneState(ctx: UpdateContext) {
+        return ConverterUtils.parseActionData(this.getSceneState(ctx).actionData);
+    }
+    static getDateFromCalendarAction(ctx: UpdateContext) {
+        return new Date(ConverterUtils.sliceCalendarActionDate(TelegramUtils.getCbQueryData(ctx)));
+    }
+
+    static isMessageProstavaCommand(ctx: UpdateContext) {
+        return this.isProstavaCommand(this.getMessageCommand(ctx));
+    }
+    static includesCommand(ctx: UpdateContext, command: string) {
+        if (this.isMessageCommand(ctx)) {
+            return this.includesMessageCommand(ctx, command);
+        }
+        return this.includesSceneCommand(ctx, command);
+    }
+    static isMessageCommand(ctx: UpdateContext, command?: string) {
+        const messageCommand = this.getMessageCommand(ctx);
+        return command ? messageCommand === command : Boolean(messageCommand);
+    }
+    private static includesMessageCommand(ctx: UpdateContext, command: string) {
+        return this.getTextMessage(ctx)?.text.includes(command);
+    }
+    private static includesSceneCommand(ctx: UpdateContext, command: string) {
+        return this.getSceneState(ctx).command?.includes(command);
+    }
+    static isProstavaCommand(command: string | undefined) {
+        return command === PROSTAVA.COMMAND.PROSTAVA || command === PROSTAVA.COMMAND.REQUEST;
+    }
+
+    static getSceneCommand(ctx: UpdateContext) {
+        return this.getSceneState(ctx).command;
+    }
+    static setSceneState(ctx: UpdateContext, sceneState: SceneState) {
+        const sceneStateNew = { ...this.getSceneState(ctx), ...sceneState };
+        ctx.scene.state = sceneStateNew;
+    }
+    static getSceneState(ctx: UpdateContext) {
+        return ctx.scene.state as SceneState;
+    }
+
+    static getMessageCommand(ctx: UpdateContext) {
+        const command = this.getTextMessage(ctx)?.text?.match(RegexUtils.matchCommand());
+        return command ? command[0].slice(1).replace(RegexUtils.matchUser(), "") : undefined;
+    }
+    static getMessageCommandText(ctx: UpdateContext) {
+        return this.getTextMessage(ctx)?.text?.replace(RegexUtils.matchCommand(), "").trim();
     }
     static getCbQueryData(ctx: UpdateContext) {
         return (ctx.callbackQuery as CallbackQuery.DataCallbackQuery)?.data;
@@ -65,9 +106,6 @@ export class TelegramUtils {
     }
     static getLocationMessage(ctx: UpdateContext) {
         return ctx.message as Message.LocationMessage;
-    }
-    static getSceneState(ctx: UpdateContext) {
-        return ctx.scene.state as SceneState;
     }
 
     static getUserString(user: User | undefined) {

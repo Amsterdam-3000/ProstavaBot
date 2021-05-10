@@ -1,7 +1,8 @@
 import { model, Schema, Types } from "mongoose";
-import { PROSTAVA } from "../constants";
-import { ProstavaCost, ProstavaDocument, ProstavaModel, ProstavaStatus, ProstavaVenue } from "../types";
+import { CODE, PROSTAVA } from "../constants";
+import { ProstavaCost, ProstavaDocument, ProstavaModel, ProstavaStatus, ProstavaType, ProstavaVenue } from "../types";
 
+//Cost
 const CostSchema = new Schema(
     {
         amount: {
@@ -27,6 +28,7 @@ CostSchema.virtual("string").get(function (this: ProstavaCost) {
     return undefined;
 });
 
+//Venue
 const LocationSchema = new Schema(
     {
         longitude: {
@@ -75,8 +77,32 @@ VenueSchema.virtual("thumb").get(function (this: ProstavaVenue) {
     return undefined;
 });
 
+//Type
+export const ProstavaTypeSchema = new Schema(
+    {
+        text: String,
+        emoji: {
+            type: String,
+            minLength: 2,
+            maxLength: 8,
+            required: true
+        }
+    },
+    { _id: false }
+);
+ProstavaTypeSchema.virtual("string").get(function (this: ProstavaType) {
+    return this.text ? `${this.emoji} ${this.text}` : this.emoji;
+});
+
 const ProstavaDataSchema = new Schema(
     {
+        type: {
+            type: String,
+            minLength: 2,
+            maxLength: 8,
+            default: CODE.COMMAND.PROSTAVA,
+            required: true
+        },
         title: {
             type: String,
             required: true
@@ -134,6 +160,15 @@ const ProstavaSchema = new Schema<ProstavaDocument, ProstavaModel>({
         default: ProstavaStatus.New,
         enum: Object.values(ProstavaStatus)
     },
+    creator: {
+        type: Schema.Types.ObjectId,
+        ref: PROSTAVA.COLLECTION.USER,
+        required: true
+    },
+    is_request: {
+        type: Boolean,
+        default: false
+    },
     rating: {
         type: Number,
         default: 0,
@@ -151,6 +186,12 @@ const ProstavaSchema = new Schema<ProstavaDocument, ProstavaModel>({
     participants_min_count: Number,
     participants_max_count: Number,
     closing_date: Date
+});
+ProstavaSchema.set("validateBeforeSave", false);
+ProstavaSchema.virtual("title").get(function (this: ProstavaDocument) {
+    return this.prostava_data.title
+        ? `${this.prostava_data.type} ${this.prostava_data.title}`
+        : this.prostava_data.type;
 });
 ProstavaSchema.virtual("rating_string").get(function (this: ProstavaDocument) {
     return this.rating?.toFixed(1);

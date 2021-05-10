@@ -25,4 +25,7 @@ export class ConstantUtils {
     static getErrorByCode(errorCode: string) {
         return Object.keys(CODE.ERROR).find((key) => CODE.ERROR[key] === errorCode);
     }
+    static getPollingByCode(pollingCode: string) {
+        return Object.keys(CODE.POLLING).find((key) => CODE.POLLING[key] === pollingCode);
+    }
 }

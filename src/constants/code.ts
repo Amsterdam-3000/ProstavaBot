@@ -1,8 +1,12 @@
 export const CODE: { [index: string]: { [index: string]: string } } = {
     ACTION: {
         BACK: "🔙",
+        EXIT: "🔝",
         SETTINGS_LANGUAGE: "👅",
         SETTINGS_CURRENCY: "💲",
+        SETTINGS_TYPE: "®",
+        SETTINGS_TYPENEW: "➕",
+        SETTINGS_TYPEDIT: "〰️",
         SETTINGS_DAYS: "📆",
         SETTINGS_COUNT: "👥",
         SETTINGS_PERCENTAGE: "%",
@@ -10,6 +14,9 @@ export const CODE: { [index: string]: { [index: string]: string } } = {
         PROFILE_EMOJI: "🤡",
         PROFILE_BIRTHDAY: "🎂",
         PROFILE_USERNAME: "@",
+        PROSTAVA_PROSTAVA: "🍺",
+        PROSTAVA_AUTHOR: "👤",
+        PROSTAVA_TYPE: "®",
         PROSTAVA_TITLE: "💬",
         PROSTAVA_VENUE: "📍",
         PROSTAVA_LOCATION: "📌",
@@ -24,7 +31,8 @@ export const CODE: { [index: string]: { [index: string]: string } } = {
         APP_WRONG: "📵",
         ARE_GOING: "🚷",
         NOT_CREATE: "🚱",
-        NOT_RATE: "🚯"
+        NOT_RATE: "🚯",
+        NOT_CHANGE: "🚭"
     },
     LANGUAGE: {
         RU: "🇷🇺",
@@ -37,6 +45,10 @@ export const CODE: { [index: string]: { [index: string]: string } } = {
         "+3": "🍺",
         "+4": "🍺",
         "+5": "🍺"
+    },
+    POLLING: {
+        "0": "❌",
+        "1": "✅"
     },
     STATUS: {
         NEW: "🥚",
@@ -65,10 +77,17 @@ export const CODE: { [index: string]: { [index: string]: string } } = {
         PROFILE: "👤",
         PROFILES: "👥",
         PROFILES_ME: "👤",
-        PROFILES_USER: "👤",
         PROSTAVA: "🍺",
         PROSTAVA_UNDO: "🔚",
         PROSTAVA_SAVE: "💾",
+        PROSTAVA_RATE: "🚨",
+        REQUEST: "🥛",
+        REQUEST_UNDO: "🔚",
+        REQUEST_SAVE: "💾",
+        REQUEST_RATE: "🚨",
         SEARCH: "🔎"
+    },
+    TEXT_COMMAND: {
+        DELETE: "DELETE"
     }
 };

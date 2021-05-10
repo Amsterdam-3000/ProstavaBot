@@ -13,6 +13,7 @@ export interface User {
     personal_data: PersonalData;
     user_link?: string;
     user_photo?: string;
+    user_string?: string;
 }
 
 export interface UserDocument extends User, Document {

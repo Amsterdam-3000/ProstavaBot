@@ -1,40 +1,16 @@
-import { CODE } from "../constants";
-import { UpdateContext, UserDocument } from "../types";
-import { UserCollection } from "../models";
-import { LocaleUtils, ProstavaUtils, TelegramUtils } from "../utils";
+import { UpdateContext } from "../types";
+import { TelegramUtils, UserUtils } from "../utils";
 
 export class UserMiddleware {
     static async addUserToContext(ctx: UpdateContext, next: () => Promise<void>) {
         const user = TelegramUtils.getUserFromContext(ctx);
-        ctx.user = ProstavaUtils.findUserByUserId(ctx.group.users, user?.id)!;
+        if (!user || !ctx.group) {
+            return;
+        }
+        ctx.user = UserUtils.findUserByUserId(ctx.group.users, user.id)!;
         if (!ctx.user) {
-            ctx.user = new UserCollection(ProstavaUtils.fillNewUser(ctx));
+            ctx.user = UserUtils.createUserForGroup(ctx.group, user);
             ctx.group.users.push(ctx.user);
-        }
-        await next();
-    }
-
-    static async isUserAdmin(ctx: UpdateContext, next: () => Promise<void>) {
-        const user = TelegramUtils.getUserFromContext(ctx);
-        if (!user) {
-            return;
-        }
-        const chatMember = await ctx.getChatMember(user?.id);
-        if (!TelegramUtils.isMemberAdmin(chatMember)) {
-            ctx.answerCbQuery(LocaleUtils.getErrorText(ctx.i18n, CODE.ERROR.NOT_ADMIN));
-            return;
-        }
-        await next();
-    }
-
-    static async saveUser(ctx: UpdateContext, next: () => Promise<void>) {
-        if ((ctx.user as UserDocument).isModified()) {
-            try {
-                await (ctx.user as UserDocument).save();
-            } catch (err) {
-                console.log(err);
-                return;
-            }
         }
         await next();
     }
@@ -50,5 +26,13 @@ export class UserMiddleware {
     static async changeUserName(ctx: UpdateContext, next: () => Promise<void>) {
         ctx.user.personal_data.name = TelegramUtils.getTextMessage(ctx).text;
         await next();
+    }
+
+    static async saveUser(ctx: UpdateContext, next: () => Promise<void>) {
+        await next();
+        if (!ctx.user || !UserUtils.isUserModified(ctx.user)) {
+            return;
+        }
+        await UserUtils.saveUser(ctx.user).catch((err) => console.log(err));
     }
 }

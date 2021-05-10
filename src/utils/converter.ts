@@ -2,7 +2,8 @@ import { CALENDAR, CODE, PROSTAVA } from "../constants";
 import { ConstantUtils } from "./constant";
 import { RegexUtils } from "./regex";
 
-export class StringUtils {
+export class ConverterUtils {
+    //Value
     static displaySelectedValue(value: string, selected: boolean) {
         return `${value} ${ConstantUtils.getSelectedCode(selected)}`;
     }
@@ -13,6 +14,7 @@ export class StringUtils {
         return code;
     }
 
+    //Action
     static getSubAction(action: string) {
         return `${action}-`;
     }
@@ -22,7 +24,23 @@ export class StringUtils {
     static sliceCalendarActionDate(action: string) {
         return action.replace(CALENDAR.ACTION.CALENDAR_DATE, "");
     }
+    static stringifyActionData(action: string, value?: string, id?: string, isPublic = false): string {
+        return action + "|" + (value || 0) + "|" + (id || 0) + "|" + (isPublic ? 1 : 0);
+    }
+    static parseActionData(data: string | undefined) {
+        if (!data) {
+            return undefined;
+        }
+        const actionData = data.split("|");
+        return {
+            action: actionData[0],
+            value: actionData[1],
+            id: actionData[2],
+            isPublic: Boolean(Number(actionData[3]))
+        };
+    }
 
+    //Session
     static concatSessionKey(fromId?: number, chatId?: number) {
         //TODO Need local redis for dev
         let sessionKey = `${process.env.NODE_ENV}:${PROSTAVA.COLLECTION.SESSION}`;
