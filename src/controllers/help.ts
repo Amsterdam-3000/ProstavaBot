@@ -3,6 +3,6 @@ import { HelpView } from "../views";
 
 export class HelpController {
     static async showHelp(ctx: UpdateContext) {
-        ctx.replyWithHTML(await HelpView.getHelpHtml(ctx.i18n));
+        await ctx.replyWithHTML(await HelpView.getHelpHtml(ctx.i18n));
     }
 }

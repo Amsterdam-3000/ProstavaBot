@@ -16,7 +16,10 @@ prostavaScene.enter(
     ProstavaMiddleware.addNewProstavaToContext,
     ProstavaMiddleware.saveProstava,
     GroupMiddleware.saveGroup,
-    ProstavaController.showCreateOrRateProstava
+    ProstavaController.showRateProstava,
+    ProstavaController.showSelectProstava,
+    ProstavaController.showCreateProstava,
+    Scenes.Stage.leave<UpdateContext>()
 );
 prostavaScene.use(
     CommonMiddleware.isCbMessageOrigin,
@@ -25,12 +28,31 @@ prostavaScene.use(
     ProstavaMiddleware.saveProstava
 );
 
+//Prostava
+prostavaScene.action(
+    RegexUtils.matchAction(PROSTAVA.ACTION.PROSTAVA_PROSTAVA),
+    ProstavaMiddleware.addProstavaFromSelectActionToContext,
+    ProstavaController.backToCreateProstava
+);
+
+//Author
+prostavaScene.action(RegexUtils.matchAction(PROSTAVA.ACTION.PROSTAVA_AUTHOR), ProstavaController.showProstavaAuthors);
+prostavaScene.action(
+    RegexUtils.matchAction(PROSTAVA.ACTION.PROFILES_USER),
+    ProstavaMiddleware.changeProstavaAuthor,
+    ProstavaController.backToCreateProstava
+);
+
 //Type
-prostavaScene.action(RegexUtils.matchAction(PROSTAVA.ACTION.PROSTAVA_TYPE), ProstavaController.showProstavaTypes);
+prostavaScene.action(
+    RegexUtils.matchAction(PROSTAVA.ACTION.PROSTAVA_TYPE),
+    ProstavaMiddleware.isUserCreatorOfProstava,
+    ProstavaController.showProstavaTypes
+);
 prostavaScene.action(
     RegexUtils.matchSubAction(PROSTAVA.ACTION.PROSTAVA_TYPE),
     ProstavaMiddleware.changeProstavaType,
-    ProstavaController.showProstavaTypes
+    ProstavaController.backToCreateProstava
 );
 
 //Title Venue
@@ -40,19 +62,19 @@ prostavaScene.hears(
     RegexUtils.matchTitle(),
     CommonMiddleware.checkStateAction([PROSTAVA.ACTION.PROSTAVA_TITLE, PROSTAVA.ACTION.PROSTAVA_VENUE]),
     ProstavaMiddleware.changeProstavaOrVenueTitle,
-    CommonController.enterScene(PROSTAVA.COMMAND.PROSTAVA)
+    CommonController.enterScene(PROSTAVA.SCENE.PROSTAVA)
 );
 prostavaScene.on(
     "venue",
     CommonMiddleware.checkStateAction([PROSTAVA.ACTION.PROSTAVA_VENUE]),
     ProstavaMiddleware.changeProstavaVenue,
-    CommonController.enterScene(PROSTAVA.COMMAND.PROSTAVA)
+    CommonController.enterScene(PROSTAVA.SCENE.PROSTAVA)
 );
 prostavaScene.on(
     "location",
     CommonMiddleware.checkStateAction([PROSTAVA.ACTION.PROSTAVA_VENUE]),
     ProstavaMiddleware.changeProstavaLocation,
-    CommonController.enterScene(PROSTAVA.COMMAND.PROSTAVA)
+    CommonController.enterScene(PROSTAVA.SCENE.PROSTAVA)
 );
 
 //Date
@@ -69,7 +91,7 @@ prostavaScene.hears(
     RegexUtils.matchCost(),
     CommonMiddleware.checkStateAction([PROSTAVA.ACTION.PROSTAVA_COST]),
     ProstavaMiddleware.changeProstavaCost,
-    CommonController.enterScene(PROSTAVA.COMMAND.PROSTAVA)
+    CommonController.enterScene(PROSTAVA.SCENE.PROSTAVA)
 );
 
 //Create prostava
@@ -77,11 +99,11 @@ prostavaScene.action(
     RegexUtils.matchAction(PROSTAVA.ACTION.PROSTAVA_CREATE),
     ProstavaMiddleware.isProstavaDataFull,
     ProstavaMiddleware.announceProstava,
-    CommonController.enterScene(PROSTAVA.COMMAND.PROSTAVA)
+    CommonController.enterScene(PROSTAVA.SCENE.PROSTAVA)
 );
 
 //Back
-CommonScene.actionBack(prostavaScene, ProstavaController.backToCreateProstava);
+CommonScene.actionBack(prostavaScene, ProstavaController.backToSelectProstava);
 //Exit
 CommonScene.actionExit(prostavaScene);
 //Hide

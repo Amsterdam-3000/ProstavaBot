@@ -16,7 +16,10 @@ export class AztroModel {
         return aztro;
     }
 
-    public static getTodayHoroscope(birthday: Date) {
+    public static getTodayHoroscope(birthday: Date | undefined) {
+        if (!birthday) {
+            return undefined;
+        }
         return this.getHoroscope(birthday, "today");
     }
 }

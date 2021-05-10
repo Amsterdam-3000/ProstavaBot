@@ -70,5 +70,8 @@ const GroupSchema = new Schema<GroupDocument, GroupModel>(
     { _id: false }
 );
 GroupSchema.plugin(require("mongoose-autopopulate"));
+GroupSchema.virtual("group_photo").get(function (this: GroupDocument) {
+    return "https://cdn.jsdelivr.net/joypixels/assets/6.5/png/unicode/128/1f465.png";
+});
 
 export const GroupCollection = model<GroupDocument, GroupModel>(PROSTAVA.COLLECTION.GROUP, GroupSchema);

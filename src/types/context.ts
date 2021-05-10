@@ -5,7 +5,6 @@ import { Prostava } from "./prostava";
 import { Chat } from "telegraf/typings/core/types/typegram";
 
 interface ContextSession extends Scenes.SceneSession {
-    prostava?: Prostava;
     chat?: Chat;
 }
 
@@ -16,4 +15,5 @@ export interface UpdateContext extends Context {
     group: Group;
     user: User;
     prostava?: Prostava;
+    prostavas?: Prostava[];
 }

@@ -160,6 +160,15 @@ const ProstavaSchema = new Schema<ProstavaDocument, ProstavaModel>({
         default: ProstavaStatus.New,
         enum: Object.values(ProstavaStatus)
     },
+    creator: {
+        type: Schema.Types.ObjectId,
+        ref: PROSTAVA.COLLECTION.USER,
+        required: true
+    },
+    is_request: {
+        type: Boolean,
+        default: false
+    },
     rating: {
         type: Number,
         default: 0,
@@ -179,6 +188,11 @@ const ProstavaSchema = new Schema<ProstavaDocument, ProstavaModel>({
     closing_date: Date
 });
 ProstavaSchema.set("validateBeforeSave", false);
+ProstavaSchema.virtual("title").get(function (this: ProstavaDocument) {
+    return this.prostava_data.title
+        ? `${this.prostava_data.type} ${this.prostava_data.title}`
+        : this.prostava_data.type;
+});
 ProstavaSchema.virtual("rating_string").get(function (this: ProstavaDocument) {
     return this.rating?.toFixed(1);
 });

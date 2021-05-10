@@ -1,6 +1,6 @@
-<%= user.personal_data.emoji %> <a href="<%= user.user_link %>"><%= user.personal_data.name %></a> 
+<a href="<%= user.user_link %>"><%= user.user_string %></a> 
 <%= CODE.PROFILE_BIRTHDAY %> <%= DateUtils.getDateString(i18n.languageCode, user.personal_data.birthday) %>
-
+<% if (aztro) { %>
 <%= aztro?.symbol %> <%= aztro?.name %>
 <%= aztro?.description %> 
 <%= LocaleUtils.getAztroText(i18n, aztro, 'compatibility') %>
@@ -8,3 +8,4 @@
 <%= LocaleUtils.getAztroText(i18n, aztro, 'color') %>
 <%= LocaleUtils.getAztroText(i18n, aztro, 'lucky_number') %>
 <%= LocaleUtils.getAztroText(i18n, aztro, 'lucky_time') %>
+<% } %>

@@ -10,6 +10,12 @@ export class LocaleUtils {
         const variables = { code: errorCode };
         return i18n.t(errorKey, variables);
     }
+    static getPollingText(i18n: I18nContext, pollingCode: string) {
+        const polling = ConstantUtils.getPollingByCode(pollingCode);
+        const pollingKey = `polling.${polling?.toLowerCase()}`;
+        const variables = { code: pollingCode };
+        return i18n.t(pollingKey, variables);
+    }
 
     static getCommandText(i18n: I18nContext, command: string, value?: string) {
         const commandKey = `command.${command}`;

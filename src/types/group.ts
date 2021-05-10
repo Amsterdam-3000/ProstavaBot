@@ -17,6 +17,7 @@ export interface Group {
     settings: GroupSettings;
     users: (User["_id"] | User)[];
     prostavas: (Prostava["_id"] | Prostava)[];
+    group_photo?: string;
 }
 
 interface GroupBaseDocument extends Group, Document {

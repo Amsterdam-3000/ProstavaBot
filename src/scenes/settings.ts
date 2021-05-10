@@ -59,7 +59,7 @@ settingsScene.hears(
         PROSTAVA.ACTION.SETTINGS_HOURS
     ]),
     GroupMiddleware.changeSettings,
-    CommonController.enterScene(PROSTAVA.COMMAND.SETTINGS)
+    CommonController.enterScene(PROSTAVA.SCENE.SETTINGS)
 );
 
 //Back

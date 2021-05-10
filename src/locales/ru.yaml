@@ -14,7 +14,9 @@ reply:
         birthday: "${code} Отправь мне свою дату рождения (ГГГГ-ММ-ДД)"
         username: "${code} Отправь мне свое имя пользователя"
     prostava:
-        type: "${code} Поменять вариант проставы"
+        prostava: "${code} Выбери проставу"
+        author: "${code} Выбери автора проставы"
+        type: "${code} Выбери вариант проставы"
         title: "${code} Отправь мне название проставы"
         date: "${code} Выбери дату проставы"
         venue: "${code} Отправь мне навзвание места и координаты проставы"
@@ -37,6 +39,7 @@ action:
         birthday: "День рождения: ${value}"
         username: "Имя пользователя: ${value}"
     prostava:
+        author: "Автор: ${value}"
         type: "Вариант проставы: ${value}"
         title: "Название: ${value}"
         date: "${code} Дата: ${value}"
@@ -46,9 +49,13 @@ action:
         participants: "${code} Участники: ${value}"
         rating: "${code} Рейтинг: ${value}"
 status:
+    new: "${code}"
     pending: "${code} ${value}"
     rejected: "${code}"
     approved: "${code}"
+polling:
+    0: "${code} Нет"
+    1: "${code} Да"
 error:
     not_group: "${code} Работаю только в группах!"
     not_admin: "${code} Ты не админ в этой группе!"
@@ -56,6 +63,7 @@ error:
     are_going: "${code} Куда ты лезешь!?"
     not_create: "${code} Отправь мне все данные проставы!"
     not_rate: "${code} Ты не можешь оценивать сам себя!"
+    not_change: "${code} Ты не можешь изменить это"
 header:
     help: "Я помогаю контроллировать проставы. Вот мои команды:"
 command:
@@ -63,17 +71,21 @@ command:
     help: "${code} Показать команды Проставы"
     settings: "${code} Изменить настройки Проставы"
     profile: "${code} Заполнить свой профиль ${value}"
-    profiles: "${code} Показать всех пользователей"
+    profiles: "${code} Показать профиль пользователя"
     profiles_me: "${code} Показать свой профиль"
-    profiles_user: "${code} Показать профиль пользователя"
-    prostava: "${code} Объявить новую проставу ${value}"
+    prostava: "${code} Объявить проставу ${value}"
     prostava_undo: "${code} Вернуть на доработку проставу"
     prostava_save: "${code} Сохранить объявленную проставу"
+    prostava_rate: "${code} Напомнить участникам оценить проставу"
+    request: "${code} Запросить проставу для"
+    request_undo: "${code} Вернуть на доработку проставу"
+    request_save: "${code} Сохранить запрошенную проставу"
+    request_rate: "${code} Напомнить участникам проголосовать за проставу"
     search: "${code} Поиск простав"
 command_text:
-    prostava: "название|дата|место|стоимость"
-    search: "название|дата"
-    profiles: "эмодзи"
+    prostava: "вариант|название|дата|место|стоимость"
+    request: "автор|вариант|название"
+    search: "автор|вариант|название|дата"
 command_group:
     bot: "Бот"
     user: "Пользователь"

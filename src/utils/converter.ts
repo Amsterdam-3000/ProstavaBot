@@ -1,8 +1,6 @@
-import { Message } from "telegraf/typings/core/types/typegram";
 import { CALENDAR, CODE, PROSTAVA } from "../constants";
 import { ConstantUtils } from "./constant";
 import { RegexUtils } from "./regex";
-import { SceneState } from "../types";
 
 export class ConverterUtils {
     //Value
@@ -40,18 +38,6 @@ export class ConverterUtils {
             id: actionData[2],
             isPublic: Boolean(Number(actionData[3]))
         };
-    }
-
-    //Scene
-    static initializeState(message: Message): SceneState {
-        return {
-            message: message
-        };
-    }
-    static addActionToState(oldState: SceneState, actionData: string): SceneState {
-        const newState = { ...oldState };
-        newState.actionData = actionData;
-        return newState;
     }
 
     //Session

@@ -31,6 +31,9 @@ export class RegexUtils {
     static matchCommand(command?: string) {
         return command ? new RegExp(`^/${command}(\\s|$)`) : /^\/[^\s]+/;
     }
+    static matchUser() {
+        return /@[^\s]+/;
+    }
 
     static matchOneEmoji() {
         //TODO Delete \\u{1F6CD} after emoji-regex update

@@ -14,7 +14,9 @@ reply:
         birthday: "${code} Send me Your date of birth (YYYY-MM-DD)"
         username: "${code} Send me Your username"
     prostava:
-        type: "${code} Change prostava type"
+        prostava: "${code} Select prostava"
+        author: "${code} Select prostava author"
+        type: "${code} Select prostava type"
         title: "${code} Send me prostava title"
         date: "${code} Select prostava date"
         venue: "${code} Send me prostava location and title"
@@ -37,6 +39,7 @@ action:
         birthday: "Birthday: ${value}"
         username: "Username: ${value}"
     prostava:
+        author: "Author: ${value}"
         type: "Type: ${value}"
         title: "Title: ${value}"
         date: "${code} Date: ${value}"
@@ -46,9 +49,13 @@ action:
         participants: "${code} Participants: ${value}"
         rating: "${code} Rating: ${value}"
 status:
+    new: "${code}"
     pending: "${code} ${value}"
     rejected: "${code}"
     approved: "${code}"
+polling:
+    0: "${code} No"
+    1: "${code} Yes"
 error:
     not_group: "${code} I only work in groups!"
     not_admin: "${code} You are not admin in this group!"
@@ -56,6 +63,7 @@ error:
     are_going: "${code} Where are you going!?"
     not_create: "${code} Send me all prostava data!"
     not_rate: "${code} You can not rate for yourself!"
+    not_change: "${code} You can not change it"
 header:
     help: "I can help you control prostavas. Here are my commands:"
 command:
@@ -63,17 +71,21 @@ command:
     help: "${code} Show Prostava help"
     settings: "${code} Change Prostava settings"
     profile: "${code} Complete Your profile ${value}"
-    profiles: "${code} Show all users"
+    profiles: "${code} Show user profile"
     profiles_me: "${code} Show Your profile"
-    profiles_user: "${code} Show user profile"
-    prostava: "${code} Announce new prostava ${value}"
+    prostava: "${code} Announce prostava ${value}"
     prostava_undo: "${code} Withdraw announced prostava"
     prostava_save: "${code} Save announced prostava"
+    prostava_rate: "${code} Remind participants to rate prostava"
+    request: "${code} Request prostava for"
+    request_undo: "${code} Withdraw requested prostava"
+    request_save: "${code} Save requested prostava"
+    request_rate: "${code} Remind participants to vote for prostava"
     search: "${code} Search for prostavas"
 command_text:
-    prostava: "title|date|venue|cost"
-    search: "title|date"
-    profiles: "emoji"
+    prostava: "type|title|date|venue|cost"
+    request: "author|type|title"
+    search: "author|type|title|date"
 command_group:
     bot: "Bot"
     user: "User"

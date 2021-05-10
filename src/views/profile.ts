@@ -36,6 +36,23 @@ export class ProfileView {
         );
     }
 
+    static getUsersKeyboard(i18n: I18nContext, users: Group["users"]) {
+        return Markup.inlineKeyboard([...this.getUserButtons(users), CommonView.getExitButton(i18n)], {
+            columns: users.length > 10 ? 7 : 1
+        });
+    }
+    private static getUserButtons(users: Group["users"]) {
+        return (users as User[]).map((user) =>
+            Markup.button.callback(
+                user.user_string!,
+                ConverterUtils.stringifyActionData(PROSTAVA.ACTION.PROFILES_USER, user.user_id.toString())
+            )
+        );
+    }
+
+    static getUserKeyboard(i18n: I18nContext) {
+        return Markup.inlineKeyboard([CommonView.getBackButton(i18n), CommonView.getExitButton(i18n)], { columns: 1 });
+    }
     static getProfileHtml(i18n: I18nContext, user: User, aztro: Aztro | undefined) {
         return renderFile(resolve(__dirname, "profile.ejs"), {
             i18n: i18n,
@@ -44,15 +61,6 @@ export class ProfileView {
             CODE: CODE.ACTION,
             LocaleUtils: LocaleUtils,
             DateUtils: DateUtils
-        });
-    }
-
-    static getProfilesHtml(i18n: I18nContext, users: Group["users"]) {
-        return renderFile(resolve(__dirname, "profiles.ejs"), {
-            i18n: i18n,
-            users: users,
-            COMMAND: PROSTAVA.COMMAND,
-            LocaleUtils: LocaleUtils
         });
     }
 }

@@ -45,8 +45,11 @@ export interface Prostava {
     group_id: Group["_id"];
     author: User["_id"] | User;
     status: ProstavaStatus;
+    creator: User["_id"] | User;
+    is_request: boolean;
     rating: number;
     rating_string?: string;
+    title?: string;
     prostava_data: ProstavaData;
     participants: ProstavaParticipant[];
     participants_string?: string;
