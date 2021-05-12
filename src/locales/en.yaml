@@ -23,6 +23,7 @@ reply:
         cost: "${code} Send me prostava cost amount with currency"
         rating: "${code} Please, rate prostava: ${value}"
         polling: "${code} Please, vote for prostava: ${value}"
+        reminders: "${code} All prostavas completed"
 action:
     back: "${code} Back"
     exit: "${code} Exit"
@@ -62,7 +63,7 @@ error:
     not_admin: "${code} You are not admin in this group!"
     app_wrong: "${code} Something went wrong!"
     are_going: "${code} Where are you going!?"
-    not_create: "${code} Send me all prostava data!"
+    not_create: "${code} You can not create prostava yet!"
     not_rate: "${code} You can not rate for yourself!"
     not_change: "${code} You can not change it"
 header:
@@ -83,6 +84,8 @@ command:
     request_save: "${code} Save requested prostava"
     request_rate: "${code} Remind participants to vote for prostava"
     search: "${code} Search for prostavas"
+    reminders: "${code} Show scheduled prostavas"
+    calendar: "${code} Show calendar of prostavas"
 command_text:
     prostava: "type|title|date|venue|cost"
     request: "author|type|title"

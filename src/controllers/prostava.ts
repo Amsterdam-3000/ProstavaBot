@@ -26,7 +26,7 @@ export class ProstavaController {
                 ProstavaView.getProstavaCreateKeyboard(
                     ctx.i18n,
                     prostava,
-                    ProstavaUtils.isProstavaDataFull(prostava),
+                    ProstavaUtils.canAnnounceProstava(prostava),
                     Number(ctx.prostavas?.length) > 1
                 )
             );
@@ -74,7 +74,7 @@ export class ProstavaController {
                 ProstavaView.getProstavaCreateKeyboard(
                     ctx.i18n,
                     prostava,
-                    ProstavaUtils.isProstavaDataFull(prostava),
+                    ProstavaUtils.canAnnounceProstava(prostava),
                     Number(ctx.prostavas?.length) > 1
                 )
             )
@@ -146,6 +146,15 @@ export class ProstavaController {
             reply_to_message_id: TelegramUtils.getSceneState(ctx).messageId
         });
     }
+
+    //Reminders and Calendar
+    static async showRemindersOfProstavas(ctx: UpdateContext) {
+        const prostavas = ProstavaUtils.filterNewProstavas(ctx.group.prostavas);
+        await ctx.reply(await ProstavaView.getRemindersHtml(ctx.i18n, prostavas), {
+            parse_mode: "HTML"
+        });
+    }
+
     static async showQueryProstavas(ctx: UpdateContext) {
         if (!ctx.prostavas?.length) {
             await ctx.answerInlineQuery([]);

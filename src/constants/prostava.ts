@@ -42,7 +42,9 @@ export const PROSTAVA = {
         REQUEST_UNDO: "request_undo",
         REQUEST_SAVE: "request_save",
         REQUEST_RATE: "request_rate",
-        SEARCH: "search"
+        SEARCH: "search",
+        REMINDERS: "reminders",
+        CALENDAR: "calendar"
     },
     SCENE: {
         SETTINGS: "settings",

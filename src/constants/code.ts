@@ -86,7 +86,9 @@ export const CODE: { [index: string]: { [index: string]: string } } = {
         REQUEST_UNDO: "🔚",
         REQUEST_SAVE: "💾",
         REQUEST_RATE: "🚨",
-        SEARCH: "🔎"
+        SEARCH: "🔎",
+        REMINDERS: "⏰",
+        CALENDAR: "📅"
     },
     TEXT_COMMAND: {
         DELETE: "DELETE"
