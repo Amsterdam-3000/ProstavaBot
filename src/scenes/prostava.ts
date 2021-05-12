@@ -97,7 +97,7 @@ prostavaScene.hears(
 //Create prostava
 prostavaScene.action(
     RegexUtils.matchAction(PROSTAVA.ACTION.PROSTAVA_CREATE),
-    ProstavaMiddleware.isProstavaDataFull,
+    ProstavaMiddleware.canAnnounceProstava,
     ProstavaMiddleware.announceProstava,
     CommonController.enterScene(PROSTAVA.SCENE.PROSTAVA)
 );

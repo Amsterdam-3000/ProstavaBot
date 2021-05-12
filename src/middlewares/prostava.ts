@@ -118,9 +118,9 @@ export class ProstavaMiddleware {
         await next();
     }
 
-    static async isProstavaDataFull(ctx: UpdateContext, next: () => Promise<void>) {
+    static async canAnnounceProstava(ctx: UpdateContext, next: () => Promise<void>) {
         const prostava = TelegramUtils.getProstavaFromContext(ctx);
-        if (!ProstavaUtils.isProstavaDataFull(prostava)) {
+        if (!ProstavaUtils.canAnnounceProstava(prostava)) {
             ctx.answerCbQuery(LocaleUtils.getErrorText(ctx.i18n, CODE.ERROR.NOT_CREATE));
             return;
         }

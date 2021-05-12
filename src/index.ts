@@ -76,6 +76,9 @@ db.once("open", () => {
         ProstavaController.refreshProstava
     );
 
+    //Reminders and Calendar
+    bot.command(PROSTAVA.COMMAND.REMINDERS, ProstavaController.showRemindersOfProstavas);
+
     //Search prostavas
     bot.on("inline_query", ProstavaMiddleware.addQueryProstavasToContext, ProstavaController.showQueryProstavas);
 

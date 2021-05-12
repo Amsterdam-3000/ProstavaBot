@@ -15,6 +15,7 @@ export class ProstavaUtils {
             group_id: group._id,
             author: isRequest ? undefined : user,
             creator: user,
+            creation_date: new Date(),
             is_request: isRequest,
             prostava_data: {
                 title: RegexUtils.matchTitle().test(prostavaData[0]) ? prostavaData[0] : "",
@@ -67,8 +68,9 @@ export class ProstavaUtils {
     }
     static approveProstava(prostava: Prostava) {
         if (prostava.is_request) {
-            prostava.is_request = false;
             this.withdrawProstava(prostava);
+            prostava.is_request = false;
+            prostava.creation_date = new Date();
         } else {
             prostava.status = ProstavaStatus.Approved;
         }
@@ -128,10 +130,50 @@ export class ProstavaUtils {
             ProstavaUtils.isProstavaPending(prostava)
         );
     }
+
+    static filterUsersPendingToRateProstava(users: Group["users"], prostava: Prostava) {
+        return users.filter(
+            (user) =>
+                (user as User).user_id !== (prostava.author as User)?.user_id &&
+                !prostava.participants.find(
+                    (participant) => (user as User).user_id === (participant.user as User).user_id
+                )
+        );
+    }
+    static filterParticipantsWere(participants: Prostava["participants"]) {
+        return participants?.filter((participant) => participant.rating > 0);
+    }
+    static filterUserProstavas(prostavas: Group["prostavas"], userId: number | undefined, withinRequests = false) {
+        return this.filterProstavas(prostavas, withinRequests).filter((prostava) =>
+            withinRequests
+                ? this.isUserCreatorOfPrastava(prostava, userId)
+                : this.isUserAuthorOfPrastava(prostava, userId)
+        );
+    }
+    static filterProstavasByQuery(prostavas: Group["prostavas"], query: string | undefined) {
+        return this.filterApprovedProstavas(prostavas).filter((prostava) => this.matchProstavaByQuery(prostava, query));
+    }
+    static filterApprovedProstavas(prostavas: Group["prostavas"]) {
+        return this.filterProstavas(prostavas).filter((prostava) => this.isProstavaApproved(prostava));
+    }
+    static filterNewProstavas(prostavas: Group["prostavas"]) {
+        return this.filterProstavas(prostavas).filter((prostava) => this.isProstavaNew(prostava));
+    }
     static filterUserNewProstavas(prostavas: Group["prostavas"], userId: number | undefined, withinRequests = false) {
         return ProstavaUtils.filterUserProstavas(prostavas, userId, withinRequests).filter((prostava) =>
             ProstavaUtils.isProstavaNew(prostava)
         );
+    }
+    static filterProstavas(prostavas: Group["prostavas"], withinRequests = false) {
+        return (prostavas as Prostava[]).filter((prostava) =>
+            withinRequests ? this.isRequest(prostava) : !this.isRequest(prostava)
+        );
+    }
+    static matchProstavaByQuery(prostava: Prostava, query: string | undefined) {
+        if (!query || prostava.prostava_data.title?.match(query)) {
+            return true;
+        }
+        return false;
     }
 
     static getProstavaRatingString(rating: Prostava["rating"], ratingString: Prostava["rating_string"]) {
@@ -190,43 +232,6 @@ export class ProstavaUtils {
         return prostava.is_request ? PROSTAVA.COMMAND.REQUEST : PROSTAVA.COMMAND.PROSTAVA;
     }
 
-    static filterUsersPendingToRateProstava(users: Group["users"], prostava: Prostava) {
-        return users.filter(
-            (user) =>
-                (user as User).user_id !== (prostava.author as User)?.user_id &&
-                !prostava.participants.find(
-                    (participant) => (user as User).user_id === (participant.user as User).user_id
-                )
-        );
-    }
-    static filterParticipantsWere(participants: Prostava["participants"]) {
-        return participants?.filter((participant) => participant.rating > 0);
-    }
-    static filterUserProstavas(prostavas: Group["prostavas"], userId: number | undefined, withinRequests = false) {
-        return this.filterProstavas(prostavas, withinRequests).filter((prostava) =>
-            withinRequests
-                ? this.isUserCreatorOfPrastava(prostava, userId)
-                : this.isUserAuthorOfPrastava(prostava, userId)
-        );
-    }
-    static filterProstavasByQuery(prostavas: Group["prostavas"], query: string | undefined) {
-        return this.filterApprovedProstavas(prostavas).filter((prostava) => this.matchProstavaByQuery(prostava, query));
-    }
-    static filterApprovedProstavas(prostavas: Group["prostavas"]) {
-        return this.filterProstavas(prostavas).filter((prostava) => this.isProstavaApproved(prostava));
-    }
-    static filterProstavas(prostavas: Group["prostavas"], withinRequests = false) {
-        return (prostavas as Prostava[]).filter((prostava) =>
-            withinRequests ? this.isRequest(prostava) : !this.isRequest(prostava)
-        );
-    }
-    static matchProstavaByQuery(prostava: Prostava, query: string | undefined) {
-        if (!query || prostava.prostava_data.title?.match(query)) {
-            return true;
-        }
-        return false;
-    }
-
     static isUserAuthorOfPrastava(prostava: Prostava, userId: number | undefined) {
         return (prostava.author as User)?.user_id === userId;
     }
@@ -253,13 +258,13 @@ export class ProstavaUtils {
         return false;
     }
 
-    static isProstavaDataFull(prostava: Prostava | undefined) {
+    static canAnnounceProstava(prostava: Prostava | undefined) {
         if (!prostava) {
             return false;
         }
         const error = (prostava as ProstavaDocument).validateSync() as Error.ValidationError;
         if (!error) {
-            return true;
+            return prostava.prostava_data.date.getTime() <= new Date().getTime();
         }
         if (prostava.is_request) {
             return !error.errors["author"] && !error.errors["type"] && !error.errors["prostava_data.title"]

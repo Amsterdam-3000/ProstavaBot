@@ -1,0 +1,8 @@
+<% if (!prostavas?.length) { %>
+<%= i18n.t('reply.prostava.reminders', { code: CODE.STATUS.APPROVED }) %>
+<% } else { %>
+<% prostavas.forEach(function(prostava){ %>
+<b><%= prostava.title %></b>
+<%= prostava.author.user_string %><% if (prostava.prostava_data.date.getTime() > new Date().getTime()) { %> • <%= DateUtils.getDateString(i18n.languageCode, prostava.prostava_data.date) %><% } %>
+<% }); %>
+<% } %>

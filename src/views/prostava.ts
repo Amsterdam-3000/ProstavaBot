@@ -137,7 +137,7 @@ export class ProstavaView {
     static getProstavaCalendarKeyboard(i18n: I18nContext, settings: GroupSettings) {
         return prostavaCalendar
             .setMinDate(DateUtils.getDateDaysAgo(settings.create_days_ago))
-            .setMaxDate(new Date())
+            .setMaxDate(DateUtils.getDateDaysAfter(settings.create_days_ago))
             .setWeekDayNames(DateUtils.getWeekDayNames(i18n.languageCode))
             .setMonthNames(DateUtils.getMonthNames(i18n.languageCode))
             .getCalendar(new Date());
@@ -163,6 +163,16 @@ export class ProstavaView {
             users: users,
             ACTION: PROSTAVA.ACTION,
             LocaleUtils: LocaleUtils
+        });
+    }
+
+    //Reminder and Calendar
+    static getRemindersHtml(i18n: I18nContext, prostavas: Prostava[]) {
+        return renderFile(resolve(__dirname, "reminders.ejs"), {
+            i18n: i18n,
+            prostavas: prostavas,
+            DateUtils: DateUtils,
+            CODE: CODE
         });
     }
 

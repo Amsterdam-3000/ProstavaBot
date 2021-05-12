@@ -56,6 +56,7 @@ export interface Prostava {
     participants_min_count?: number;
     participants_max_count?: number;
     closing_date?: Date;
+    creation_date?: Date;
 }
 
 export interface ProstavaDocument extends Prostava, Document {

@@ -4,6 +4,9 @@
 # Dependency directory
 node_modules
 
+# Playground
+playground
+
 # Editors
 .vscode
 .idea

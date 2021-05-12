@@ -42,6 +42,14 @@ export class DateUtils {
         date.setDate(date.getDate() - days);
         return date;
     }
+    static getDateDaysAfter(days: number) {
+        if (!days) {
+            return null;
+        }
+        const date = new Date();
+        date.setDate(date.getDate() + days);
+        return date;
+    }    
     static getHoursFromDateToNow(date: Date) {
         return (new Date().getTime() - date.getTime()) / 36e5;
     }

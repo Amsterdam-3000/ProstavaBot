@@ -185,7 +185,8 @@ const ProstavaSchema = new Schema<ProstavaDocument, ProstavaModel>({
     },
     participants_min_count: Number,
     participants_max_count: Number,
-    closing_date: Date
+    closing_date: Date,
+    creation_date: Date
 });
 ProstavaSchema.set("validateBeforeSave", false);
 ProstavaSchema.virtual("title").get(function (this: ProstavaDocument) {
