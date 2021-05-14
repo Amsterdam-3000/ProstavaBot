@@ -23,7 +23,7 @@ reply:
         cost: "${code} Send me prostava cost amount with currency"
         rating: "${code} Please, rate prostava: ${value}"
         polling: "${code} Please, vote for prostava: ${value}"
-        reminders: "${code} All prostavas completed"
+        no_prostavas: "${code} No prostavas"
 action:
     back: "${code} Back"
     exit: "${code} Exit"

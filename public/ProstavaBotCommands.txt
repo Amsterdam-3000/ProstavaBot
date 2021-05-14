@@ -6,3 +6,5 @@ profiles - 👥 Show user profile
 profiles_me - 👤 Show Your profile
 prostava - 🍺 Announce prostava
 request - 🥛 Request prostava for
+reminders - ⏰ Show scheduled prostavas
+calendar - 📅 Show calendar of prostavas

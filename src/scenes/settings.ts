@@ -6,7 +6,7 @@ import { UpdateContext } from "../types";
 import { RegexUtils } from "../utils";
 import { CommonScene } from "./common";
 
-export const settingsScene = new Scenes.BaseScene<UpdateContext>(PROSTAVA.COMMAND.SETTINGS);
+export const settingsScene = new Scenes.BaseScene<UpdateContext>(PROSTAVA.SCENE.SETTINGS);
 
 settingsScene.enter(SettingsController.showSettings);
 settingsScene.use(CommonMiddleware.isCbMessageOrigin, GroupMiddleware.saveGroup);

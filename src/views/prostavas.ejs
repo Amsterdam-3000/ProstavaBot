@@ -1,0 +1,8 @@
+<% if (date) { %><b><%= DateUtils.getDateString(i18n.languageCode, date) %></b><% } %>
+<% if (!prostavas?.length) { %>
+<%= i18n.t('reply.prostava.no_prostavas', { code: CODE.COMMAND.REQUEST }) %>
+<% } else { %><% prostavas.forEach(function(prostava){ %>
+<%= prostava.title %><% if (prostava.status) { %> • <%= LocaleUtils.getStatusText(i18n, prostava.status) %><% } %>
+<%= prostava.author.user_string %><% if (!date && prostava.prostava_data.date.getTime() > new Date().getTime()) { %> • <%= DateUtils.getDateString(i18n.languageCode, prostava.prostava_data.date) %><% } %>
+<% }); %>
+<% } %>

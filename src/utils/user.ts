@@ -29,8 +29,30 @@ export class UserUtils {
     static findUserByUserId(users: Group["users"], userId: number | undefined) {
         return (users as User[]).find((user) => user.user_id === userId);
     }
-
+    static filterUsersByBirthday(users: Group["users"], date: Date) {
+        return (users as User[]).filter(
+            (user) =>
+                user.personal_data.birthday &&
+                user.personal_data.birthday.getMonth() === date.getMonth() &&
+                user.personal_data.birthday.getDate() === date.getDate()
+        );
+    }
     static filterUsersExceptUserId(users: Group["users"], userId: number | undefined) {
         return (users as User[]).filter((user) => user.user_id !== userId);
+    }
+
+    static getUserAgeByDate(user: User, date: Date = new Date()) {
+        if (!user.personal_data.birthday) {
+            return 0;
+        }
+        let age = date.getFullYear() - user.personal_data.birthday.getFullYear();
+        if (
+            date.getMonth() < user.personal_data.birthday.getMonth() ||
+            (date.getMonth() === user.personal_data.birthday.getMonth() &&
+                date.getDate() < user.personal_data.birthday.getDate())
+        ) {
+            age = age - 1;
+        }
+        return age;
     }
 }
