@@ -23,7 +23,7 @@ reply:
         cost: "${code} Отправь мне стоимость с валютой проставы"
         rating: "${code} Пожалуйста, оцените проставу: ${value}"
         polling: "${code} Пожалуйста, проголосуйте за проставу: ${value}"
-        reminders: "${code} Все проставы выполнены"
+        no_prostavas: "${code} Нет простав"
 action:
     back: "${code} Назад"
     exit: "${code} Выход"

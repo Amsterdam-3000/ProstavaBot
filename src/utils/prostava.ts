@@ -46,6 +46,9 @@ export class ProstavaUtils {
         }
         return dateIn;
     }
+    static fillFakeProstavaFromUser(user: User) {
+        return new ProstavaCollection({ status: "", author: user, prostava_data: {} });
+    }
     static getProstavaId(prostava: Prostava) {
         return (prostava as ProstavaDocument).id;
     }
@@ -153,8 +156,18 @@ export class ProstavaUtils {
     static filterProstavasByQuery(prostavas: Group["prostavas"], query: string | undefined) {
         return this.filterApprovedProstavas(prostavas).filter((prostava) => this.matchProstavaByQuery(prostava, query));
     }
+    static filterProstavasByDate(prostavas: Group["prostavas"], date: Date) {
+        return (prostavas as Prostava[]).filter(
+            (prostava) => prostava.prostava_data.date.toDateString() === date.toDateString()
+        );
+    }
     static filterApprovedProstavas(prostavas: Group["prostavas"]) {
         return this.filterProstavas(prostavas).filter((prostava) => this.isProstavaApproved(prostava));
+    }
+    static filterScheduledNewProstavas(prostavas: Group["prostavas"]) {
+        return this.filterNewProstavas(prostavas).filter(
+            (prostava) => prostava.prostava_data.date && prostava.prostava_data.date.getTime() > new Date().getTime()
+        );
     }
     static filterNewProstavas(prostavas: Group["prostavas"]) {
         return this.filterProstavas(prostavas).filter((prostava) => this.isProstavaNew(prostava));
@@ -230,6 +243,58 @@ export class ProstavaUtils {
     }
     static getProstavaCommand(prostava: Prostava) {
         return prostava.is_request ? PROSTAVA.COMMAND.REQUEST : PROSTAVA.COMMAND.PROSTAVA;
+    }
+    static getMinDateOfProstavas(prostavas: Prostava[] | undefined) {
+        if (!prostavas?.length) {
+            return new Date();
+        }
+        return prostavas.reduce(
+            (min, prostava) =>
+                min.getTime() > prostava.prostava_data.date.getTime() ? prostava.prostava_data.date : min,
+            new Date()
+        );
+    }
+    static getMaxDateOfProstavas(prostavas: Prostava[] | undefined) {
+        if (!prostavas?.length) {
+            return new Date();
+        }
+        return prostavas.reduce(
+            (max, prostava) =>
+                max.getTime() < prostava.prostava_data.date.getTime() ? prostava.prostava_data.date : max,
+            new Date()
+        );
+    }
+    static getProstavasDateTexts(prostavas: Prostava[] | undefined, users: Group["users"]) {
+        if (!prostavas?.length) {
+            return undefined;
+        }
+        const dateTexts = new Map();
+        prostavas.forEach((prostava) => {
+            const day = DateUtils.toYyyymmdd(prostava.prostava_data.date);
+            if (dateTexts.has(day)) {
+                dateTexts.set(day, CODE.ACTION.PROSTAVA_RATING);
+            } else {
+                dateTexts.set(day, prostava.prostava_data.type);
+            }
+        });
+        for (const user of users as User[]) {
+            if (!user.personal_data.birthday) {
+                continue;
+            }
+            const dates = DateUtils.repeatDateYearlyFromTo(
+                user.personal_data.birthday,
+                DateUtils.getFirstDayOfYear(this.getMinDateOfProstavas(prostavas)),
+                DateUtils.getLastDayOfYear(this.getMaxDateOfProstavas(prostavas))
+            );
+            for (const date of dates) {
+                const day = DateUtils.toYyyymmdd(date);
+                if (dateTexts.has(day)) {
+                    continue;
+                }
+                dateTexts.set(day, CODE.ACTION.PROFILE_BIRTHDAY);
+            }
+        }
+        return dateTexts;
     }
 
     static isUserAuthorOfPrastava(prostava: Prostava, userId: number | undefined) {

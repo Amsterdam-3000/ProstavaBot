@@ -148,9 +148,36 @@ export class ProstavaController {
     }
 
     //Reminders and Calendar
-    static async showRemindersOfProstavas(ctx: UpdateContext) {
-        const prostavas = ProstavaUtils.filterNewProstavas(ctx.group.prostavas);
-        await ctx.reply(await ProstavaView.getRemindersHtml(ctx.i18n, prostavas), {
+    static async showProstavas(ctx: UpdateContext) {
+        await ctx.reply(await ProstavaView.getProstavasHtml(ctx.i18n, ctx.prostavas), {
+            parse_mode: "HTML"
+        });
+    }
+    static async showCalendarOfProstavas(ctx: UpdateContext) {
+        const prostavas = [
+            ...ProstavaUtils.filterScheduledNewProstavas(ctx.group.prostavas),
+            ...ProstavaUtils.filterApprovedProstavas(ctx.group.prostavas)
+        ];
+        const message = await ctx.reply(await ProstavaView.getProstavasHtml(ctx.i18n, ctx.prostavas, new Date()), {
+            reply_markup: ProstavaView.getCalendarOfProstavasKeyboard(ctx.i18n, prostavas, ctx.group.users)
+                .reply_markup,
+            parse_mode: "HTML"
+        });
+        TelegramUtils.setSceneState(ctx, { messageId: message.message_id });
+    }
+    static async refreshCalendarOfProstavas(ctx: UpdateContext, date: string) {
+        const selectedDate = new Date(date);
+        const prostavas = [
+            ...ProstavaUtils.filterScheduledNewProstavas(ctx.group.prostavas),
+            ...ProstavaUtils.filterApprovedProstavas(ctx.group.prostavas)
+        ];
+        await ctx.editMessageText(await ProstavaView.getProstavasHtml(ctx.i18n, ctx.prostavas, selectedDate), {
+            reply_markup: ProstavaView.getCalendarOfProstavasKeyboard(
+                ctx.i18n,
+                prostavas,
+                ctx.group.users,
+                selectedDate
+            ).reply_markup,
             parse_mode: "HTML"
         });
     }

@@ -5,7 +5,7 @@ import { resolve } from "path";
 import { ConstantUtils, DateUtils, LocaleUtils, ConverterUtils, ProstavaUtils, TelegramUtils } from "../utils";
 import { CODE, PROSTAVA } from "../constants";
 import { Group, GroupSettings, Prostava, ProstavaType, User } from "../types";
-import { prostavaCalendar } from "../scenes";
+import { prostavaCalendar } from "../commons/calendar";
 import { CommonView } from "./common";
 
 export class ProstavaView {
@@ -140,6 +140,7 @@ export class ProstavaView {
             .setMaxDate(DateUtils.getDateDaysAfter(settings.create_days_ago))
             .setWeekDayNames(DateUtils.getWeekDayNames(i18n.languageCode))
             .setMonthNames(DateUtils.getMonthNames(i18n.languageCode))
+            .setExitName(LocaleUtils.getActionText(i18n, PROSTAVA.ACTION.EXIT))
             .getCalendar(new Date());
     }
 
@@ -166,14 +167,31 @@ export class ProstavaView {
         });
     }
 
-    //Reminder and Calendar
-    static getRemindersHtml(i18n: I18nContext, prostavas: Prostava[]) {
-        return renderFile(resolve(__dirname, "reminders.ejs"), {
+    //Reminders and Calendar
+    static getProstavasHtml(i18n: I18nContext, prostavas: Prostava[] | undefined, date?: Date) {
+        return renderFile(resolve(__dirname, "prostavas.ejs"), {
             i18n: i18n,
             prostavas: prostavas,
+            date: date,
             DateUtils: DateUtils,
+            LocaleUtils: LocaleUtils,
             CODE: CODE
         });
+    }
+    static getCalendarOfProstavasKeyboard(
+        i18n: I18nContext,
+        prostavas: Prostava[] | undefined,
+        users: Group["users"],
+        date: Date = new Date()
+    ) {
+        return prostavaCalendar
+            .setMinDate(DateUtils.getFirstDayOfYear(ProstavaUtils.getMinDateOfProstavas(prostavas)))
+            .setMaxDate(DateUtils.getLastDayOfYear(ProstavaUtils.getMaxDateOfProstavas(prostavas)))
+            .setWeekDayNames(DateUtils.getWeekDayNames(i18n.languageCode))
+            .setMonthNames(DateUtils.getMonthNames(i18n.languageCode))
+            .setDateTexts(ProstavaUtils.getProstavasDateTexts(prostavas, users))
+            .setExitName(LocaleUtils.getActionText(i18n, PROSTAVA.ACTION.EXIT))
+            .getCalendar(date);
     }
 
     //Inline Query

@@ -5,11 +5,9 @@ import { RegexUtils } from "../utils";
 import { Scenes } from "telegraf";
 import { UpdateContext } from "../types";
 import { CommonScene } from "./common";
+import { prostavaCalendar } from "../commons/calendar";
 
-const Calendar = require("telegraf-calendar-telegram");
-
-export const prostavaScene = new Scenes.BaseScene<UpdateContext>(PROSTAVA.COMMAND.PROSTAVA);
-export const prostavaCalendar = new Calendar(prostavaScene, { startWeekDay: 1 });
+export const prostavaScene = new Scenes.BaseScene<UpdateContext>(PROSTAVA.SCENE.PROSTAVA);
 
 prostavaScene.enter(
     ProstavaMiddleware.addPendingProstavaToContext,
@@ -83,6 +81,7 @@ prostavaScene.action(
     RegexUtils.matchCalendarAction(CALENDAR.ACTION.CALENDAR_DATE),
     ProstavaMiddleware.changeProstavaDate
 );
+prostavaCalendar.setBot(prostavaScene);
 prostavaCalendar.setDateListener(ProstavaController.backToCreateProstava);
 
 //Cost

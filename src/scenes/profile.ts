@@ -6,7 +6,7 @@ import { UpdateContext } from "../types";
 import { RegexUtils } from "../utils";
 import { CommonScene } from "./common";
 
-export const profileScene = new Scenes.BaseScene<UpdateContext>(PROSTAVA.COMMAND.PROFILE);
+export const profileScene = new Scenes.BaseScene<UpdateContext>(PROSTAVA.SCENE.PROFILE);
 
 profileScene.enter(ProfileController.completeProfile);
 profileScene.use(CommonMiddleware.isCbMessageOrigin, UserMiddleware.saveUser);

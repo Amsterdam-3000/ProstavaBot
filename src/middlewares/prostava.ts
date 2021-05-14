@@ -50,6 +50,40 @@ export class ProstavaMiddleware {
         TelegramUtils.setSceneState(ctx, { prostavaId: prostavaId });
         await next();
     }
+
+    static async addAllNewProstavasToContext(ctx: UpdateContext, next: () => Promise<void>) {
+        ctx.prostavas = ProstavaUtils.filterNewProstavas(ctx.group.prostavas);
+        await next();
+    }
+    static async addDateProstavasToContext(ctx: UpdateContext, next: () => Promise<void>) {
+        let date = new Date();
+        if (TelegramUtils.getCbQueryData(ctx)) {
+            date = TelegramUtils.getDateFromCalendarAction(ctx);
+        }
+        const birthdayUsers = UserUtils.filterUsersByBirthday(ctx.group.users, date);
+        ctx.prostavas = [];
+        for (const user of birthdayUsers) {
+            const prostava = ProstavaUtils.fillFakeProstavaFromUser(user);
+            prostava.prostava_data.type = CODE.ACTION.PROFILE_BIRTHDAY;
+            prostava.prostava_data.title = LocaleUtils.getActionText(
+                ctx.i18n,
+                PROSTAVA.ACTION.PROFILE_BIRTHDAY,
+                UserUtils.getUserAgeByDate(user, date).toString()
+            );
+            ctx.prostavas.push(prostava);
+        }
+        ctx.prostavas = [
+            ...ctx.prostavas,
+            ...ProstavaUtils.filterProstavasByDate(
+                [
+                    ...ProstavaUtils.filterScheduledNewProstavas(ctx.group.prostavas),
+                    ...ProstavaUtils.filterApprovedProstavas(ctx.group.prostavas)
+                ],
+                date
+            )
+        ];
+        await next();
+    }
     static async addQueryProstavasToContext(ctx: UpdateContext, next: () => Promise<void>) {
         ctx.prostavas = ProstavaUtils.filterProstavasByQuery(ctx.group.prostavas, ctx.inlineQuery?.query);
         await next();

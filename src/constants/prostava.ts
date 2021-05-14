@@ -50,7 +50,8 @@ export const PROSTAVA = {
         SETTINGS: "settings",
         PROFILE: "profile",
         PROFILES: "profiles",
-        PROSTAVA: "prostava"
+        PROSTAVA: "prostava",
+        CALENDAR: "calendar"
     },
     COLLECTION: {
         GROUP: "Group",
