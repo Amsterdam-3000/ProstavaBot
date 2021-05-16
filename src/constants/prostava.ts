@@ -65,6 +65,7 @@ export const PROSTAVA = {
     },
     JOB: {
         PROSTAVA_AUTO_PUBLISH: "prostavaAutoPublishJob",
-        PROSTAVA_RATE_REMINDER: "prostavaRateReminderJob"
+        PROSTAVA_RATE_REMINDER: "prostavaRateReminderJob",
+        USER_BIRTHDAY_REMINDER: "userBirthdayReminderJob"
     }
 };

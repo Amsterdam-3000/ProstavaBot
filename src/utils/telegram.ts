@@ -6,7 +6,12 @@ import { ConverterUtils } from "./converter";
 import { RegexUtils } from "./regex";
 
 export class TelegramUtils {
-    static fillCommandFakeUpdate(command: string, chatId: number, userId: number): Update.MessageUpdate {
+    static fillCommandFakeUpdate(
+        chatId: number,
+        userId: number | undefined,
+        command: string,
+        commandText?: string
+    ): Update.MessageUpdate {
         return {
             update_id: 0,
             message: {
@@ -17,11 +22,11 @@ export class TelegramUtils {
                     title: ""
                 },
                 from: {
-                    id: userId,
+                    id: userId || 0,
                     is_bot: false,
                     first_name: ""
                 },
-                text: `/${command}`,
+                text: commandText ? `/${command} ${commandText}` : `/${command}`,
                 date: Date.now(),
                 entities: [
                     {

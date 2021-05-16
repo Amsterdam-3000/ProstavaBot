@@ -84,6 +84,11 @@ export class DateUtils {
         date.setTime(date.getTime() + hours * 36e5);
         return date;
     }
+    static getNowDateNextWeek() {
+        const date = new Date();
+        date.setDate(date.getDate() + 7);
+        return date;
+    }
 
     static toYyyymmdd(date: Date) {
         const mm = date.getMonth() + 1;
