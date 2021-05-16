@@ -29,3 +29,12 @@ prostavaQueue.add(
         }
     }
 );
+prostavaQueue.add(
+    PROSTAVA.JOB.USER_BIRTHDAY_REMINDER,
+    {},
+    {
+        repeat: {
+            cron: "22 11 * * *"
+        }
+    }
+);

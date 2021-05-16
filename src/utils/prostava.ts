@@ -6,26 +6,46 @@ import { DateUtils } from "./date";
 import { RegexUtils } from "./regex";
 import { ConverterUtils } from "./converter";
 import { ProstavaCollection } from "../models";
+import { UserUtils } from "./user";
+import { GroupUtils } from "./group";
 
 export class ProstavaUtils {
     static createProstavaFromText(group: Group, user: User, text: string, isRequest = false) {
+        let author = isRequest ? undefined : user;
+        let prostavaType = CODE.COMMAND.PROSTAVA;
+        let prostavaTitle: string | undefined;
         const prostavaData = text?.split("|") || [];
-        return new ProstavaCollection({
+        if (isRequest && RegexUtils.matchNumber().test(prostavaData[0])) {
+            author = UserUtils.findUserByUserId(group.users, Number(prostavaData[0]));
+            prostavaData.shift();
+        }
+        if (RegexUtils.matchOneEmoji().test(prostavaData[0])) {
+            prostavaType = prostavaData[0];
+            prostavaTitle = GroupUtils.findProstavaTypeByEmoji(group, prostavaType)?.text;
+            prostavaData.shift();
+        }
+        const prostava = new ProstavaCollection({
             _id: Types.ObjectId(),
             group_id: group._id,
-            author: isRequest ? undefined : user,
+            author: author,
             creator: user,
             creation_date: new Date(),
             is_request: isRequest,
             prostava_data: {
-                title: RegexUtils.matchTitle().test(prostavaData[0]) ? prostavaData[0] : "",
+                type: prostavaType,
+                title:
+                    prostavaData[0] && RegexUtils.matchTitle().test(prostavaData[0]) ? prostavaData[0] : prostavaTitle,
                 date: this.fillProstavaDateFromText(prostavaData[1], group.settings),
                 venue: {
-                    title: RegexUtils.matchTitle().test(prostavaData[2]) ? prostavaData[2] : ""
+                    title: prostavaData[2] && RegexUtils.matchTitle().test(prostavaData[2]) ? prostavaData[2] : ""
                 },
                 cost: this.fillProstavaCostFromText(prostavaData[3], group.settings.currency)
             }
         });
+        if (this.canAnnounceProstava(prostava)) {
+            this.announceProstava(prostava, group.settings);
+        }
+        return prostava;
     }
     static fillProstavaCostFromText(costText: string, currency?: string) {
         const cost = costText?.split(/(?=\p{Sc})/u) || [];

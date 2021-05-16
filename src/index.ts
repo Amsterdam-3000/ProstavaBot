@@ -95,6 +95,7 @@ db.once("open", () => {
     //Background jobs
     prostavaQueue.process(PROSTAVA.JOB.PROSTAVA_AUTO_PUBLISH, ProstavaProcess.publishCompletedProstavas);
     prostavaQueue.process(PROSTAVA.JOB.PROSTAVA_RATE_REMINDER, ProstavaProcess.remindUsersRateProstavas);
+    prostavaQueue.process(PROSTAVA.JOB.USER_BIRTHDAY_REMINDER, ProstavaProcess.announceReuestsForBithdayUsers);
 
     //Enable graceful stop
     process.once("SIGINT", () => bot.stop("SIGINT"));

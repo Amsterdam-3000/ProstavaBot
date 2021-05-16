@@ -55,4 +55,15 @@ export class UserUtils {
         }
         return age;
     }
+
+    static getBirthdayUsersOnDateFromDB(date: Date) {
+        return UserCollection.find({
+            $expr: {
+                $and: [
+                    { $eq: [{ $month: "$personal_data.birthday" }, date.getMonth() + 1] },
+                    { $eq: [{ $dayOfMonth: "$personal_data.birthday" }, date.getDate()] }
+                ]
+            }
+        }).exec();
+    }
 }
