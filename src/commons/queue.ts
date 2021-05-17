@@ -34,7 +34,8 @@ prostavaQueue.add(
     {},
     {
         repeat: {
-            cron: "22 11 * * *"
+            cron: "22 11 * * *",
+            tz: "Europe/Moscow"
         }
     }
 );
