@@ -11,6 +11,7 @@ export const CODE: { [index: string]: { [index: string]: string } } = {
         SETTINGS_COUNT: "👥",
         SETTINGS_PERCENTAGE: "%",
         SETTINGS_HOURS: "⏱",
+        PROFILE_BOT: "🤖",
         PROFILE_EMOJI: "🤡",
         PROFILE_BIRTHDAY: "🎂",
         PROFILE_USERNAME: "@",

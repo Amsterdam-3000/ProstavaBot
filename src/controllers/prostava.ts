@@ -110,7 +110,7 @@ export class ProstavaController {
                 LocaleUtils.getActionReplyText(ctx.i18n, PROSTAVA.ACTION.PROSTAVA_AUTHOR),
                 ProfileView.getUsersKeyboard(
                     ctx.i18n,
-                    UserUtils.filterUsersExceptUserId(ctx.group.users, ctx.user.user_id)
+                    UserUtils.filterRealUsersExceptUserId(ctx.group.users, ctx.user.user_id)
                 )
             )
             .catch((err) => console.log(err));

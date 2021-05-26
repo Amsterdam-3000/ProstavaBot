@@ -60,7 +60,7 @@ export class ProstavaMiddleware {
         if (TelegramUtils.getCbQueryData(ctx)) {
             date = TelegramUtils.getDateFromCalendarAction(ctx);
         }
-        const birthdayUsers = UserUtils.filterUsersByBirthday(ctx.group.users, date);
+        const birthdayUsers = UserUtils.filterRealUsersByBirthday(ctx.group.users, date);
         ctx.prostavas = [];
         for (const user of birthdayUsers) {
             const prostava = ProstavaUtils.fillFakeProstavaFromUser(user);

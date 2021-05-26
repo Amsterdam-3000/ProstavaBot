@@ -10,6 +10,7 @@ export interface User {
     _id: Types.ObjectId;
     user_id: number;
     group_id: number;
+    is_bot: boolean;
     personal_data: PersonalData;
     user_link?: string;
     user_photo?: string;

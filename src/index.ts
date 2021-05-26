@@ -18,7 +18,7 @@ db.once("open", () => {
     //Global middlewares
     bot.use(GlobalMiddleware.addSessionToContext);
     bot.use(GlobalMiddleware.isGroupChat);
-    bot.use(GlobalMiddleware.isUserReal);
+    bot.use(GlobalMiddleware.isUserRealOrProstavaBot);
     bot.use(GlobalMiddleware.addI18nToContext);
     bot.use(GroupMiddleware.addGroupToContext, GroupMiddleware.applyGroupSettings, UserMiddleware.addUserToContext);
     bot.use(UserMiddleware.saveUser, GroupMiddleware.saveGroup);

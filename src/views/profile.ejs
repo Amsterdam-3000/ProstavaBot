@@ -1,5 +1,5 @@
 <a href="<%= user.user_link %>"><%= user.user_string %></a> 
-<%= CODE.PROFILE_BIRTHDAY %> <%= DateUtils.getDateString(i18n.languageCode, user.personal_data.birthday) %>
+<% if (user.personal_data.birthday) { %><%= CODE.PROFILE_BIRTHDAY %> <%= DateUtils.getDateString(i18n.languageCode, user.personal_data.birthday) %><% } %>
 <% if (aztro) { %>
 <%= aztro?.symbol %> <%= aztro?.name %>
 <%= aztro?.description %> 

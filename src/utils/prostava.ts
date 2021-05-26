@@ -155,9 +155,8 @@ export class ProstavaUtils {
     }
 
     static filterUsersPendingToRateProstava(users: Group["users"], prostava: Prostava) {
-        return users.filter(
+        return UserUtils.filterRealUsersExceptUserId(users, (prostava.author as User)?.user_id).filter(
             (user) =>
-                (user as User).user_id !== (prostava.author as User)?.user_id &&
                 !prostava.participants.find(
                     (participant) => (user as User).user_id === (participant.user as User).user_id
                 )

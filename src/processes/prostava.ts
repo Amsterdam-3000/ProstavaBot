@@ -29,7 +29,15 @@ export class ProstavaProcess {
         for (const user of birthdayUsers) {
             const command = PROSTAVA.COMMAND.REQUEST;
             const commandText = `${user.user_id}|${CODE.ACTION.PROFILE_BIRTHDAY}`;
-            bot.handleUpdate(TelegramUtils.fillCommandFakeUpdate(user.group_id, bot.botInfo?.id, command, commandText));
+            bot.handleUpdate(
+                TelegramUtils.fillCommandFakeUpdate(
+                    user.group_id,
+                    bot.botInfo?.id,
+                    command,
+                    bot.botInfo?.is_bot,
+                    commandText
+                )
+            );
         }
     }
 }

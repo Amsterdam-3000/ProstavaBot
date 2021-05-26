@@ -31,6 +31,10 @@ const UserSchema = new Schema<UserDocument, UserModel>({
         type: Number,
         required: true
     },
+    is_bot: {
+        type: Boolean,
+        default: false
+    },
     personal_data: {
         type: PersonalDataSchema,
         default: {}

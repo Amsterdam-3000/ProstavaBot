@@ -24,9 +24,9 @@ export class GlobalMiddleware {
         await next();
     }
 
-    static async isUserReal(ctx: UpdateContext, next: () => Promise<void>) {
+    static async isUserRealOrProstavaBot(ctx: UpdateContext, next: () => Promise<void>) {
         const user = TelegramUtils.getUserFromContext(ctx);
-        if (!TelegramUtils.isUserReal(user)) {
+        if (!TelegramUtils.isUserReal(user) && !TelegramUtils.isUserProstavaBot(ctx.botInfo, user)) {
             return;
         }
         await next();

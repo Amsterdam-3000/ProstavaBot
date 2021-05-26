@@ -10,6 +10,7 @@ export class TelegramUtils {
         chatId: number,
         userId: number | undefined,
         command: string,
+        is_bot = false,
         commandText?: string
     ): Update.MessageUpdate {
         return {
@@ -23,7 +24,7 @@ export class TelegramUtils {
                 },
                 from: {
                     id: userId || 0,
-                    is_bot: false,
+                    is_bot: is_bot,
                     first_name: ""
                 },
                 text: commandText ? `/${command} ${commandText}` : `/${command}`,
@@ -135,5 +136,8 @@ export class TelegramUtils {
     }
     static isUserReal(user: User | undefined) {
         return !user?.is_bot;
+    }
+    static isUserProstavaBot(bot: User, user: User | undefined) {
+        return user?.is_bot && user?.id === bot.id;
     }
 }
