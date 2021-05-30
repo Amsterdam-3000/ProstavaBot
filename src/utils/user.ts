@@ -3,6 +3,7 @@ import { Types } from "mongoose";
 import { TelegramUtils } from "./telegram";
 import { User as TelegramUser } from "typegram";
 import { UserCollection } from "../models";
+import { CODE } from "../constants";
 
 export class UserUtils {
     static createUserForGroup(group: Group, user: TelegramUser) {
@@ -10,8 +11,10 @@ export class UserUtils {
             _id: Types.ObjectId(),
             user_id: user.id,
             group_id: group._id,
+            is_bot: user.is_bot,
             personal_data: {
-                name: TelegramUtils.getUserString(user)
+                name: TelegramUtils.getUserString(user),
+                emoji: user.is_bot ? CODE.ACTION.PROFILE_BOT : CODE.ACTION.PROFILE_EMOJI
             }
         });
     }
@@ -29,16 +32,23 @@ export class UserUtils {
     static findUserByUserId(users: Group["users"], userId: number | undefined) {
         return (users as User[]).find((user) => user.user_id === userId);
     }
-    static filterUsersByBirthday(users: Group["users"], date: Date) {
-        return (users as User[]).filter(
+    static filterRealUsersByBirthday(users: Group["users"], date: Date) {
+        return this.filterRealUsers(users).filter(
             (user) =>
                 user.personal_data.birthday &&
                 user.personal_data.birthday.getMonth() === date.getMonth() &&
                 user.personal_data.birthday.getDate() === date.getDate()
         );
     }
-    static filterUsersExceptUserId(users: Group["users"], userId: number | undefined) {
-        return (users as User[]).filter((user) => user.user_id !== userId);
+    static filterRealUsersExceptUserId(users: Group["users"], userId: number | undefined) {
+        return this.filterRealUsers(users).filter((user) => user.user_id !== userId);
+    }
+    static filterRealUsers(users: Group["users"]) {
+        return (users as User[]).filter((user) => this.isUserReal(user));
+    }
+
+    static isUserReal(user: User) {
+        return !user.is_bot;
     }
 
     static getUserAgeByDate(user: User, date: Date = new Date()) {

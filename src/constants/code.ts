@@ -11,6 +11,7 @@ export const CODE: { [index: string]: { [index: string]: string } } = {
         SETTINGS_COUNT: "👥",
         SETTINGS_PERCENTAGE: "%",
         SETTINGS_HOURS: "⏱",
+        PROFILE_BOT: "🤖",
         PROFILE_EMOJI: "🤡",
         PROFILE_BIRTHDAY: "🎂",
         PROFILE_USERNAME: "@",
@@ -22,9 +23,11 @@ export const CODE: { [index: string]: { [index: string]: string } } = {
         PROSTAVA_LOCATION: "📌",
         PROSTAVA_COST: "💰",
         PROSTAVA_DATE: "📅",
+        PROSTAVA_TIME: "⌚️",
         PROSTAVA_PARTICIPANTS: "👥",
         PROSTAVA_RATING: "🍻",
-        PROSTAVA_POLLING: "🗳"
+        PROSTAVA_POLLING: "🗳",
+        PROSTAVA_COMING: "🏃🏼"
     },
     ERROR: {
         NOT_GROUP: "🚫",
@@ -52,7 +55,7 @@ export const CODE: { [index: string]: { [index: string]: string } } = {
         "1": "✅"
     },
     STATUS: {
-        NEW: "🥚",
+        NEW: "🆕",
         PENDING: "⏳",
         APPROVED: "✅",
         REJECTED: "❌"

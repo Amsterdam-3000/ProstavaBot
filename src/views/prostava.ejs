@@ -1,8 +1,7 @@
 <b><%= prostava.title %></b> • <%= LocaleUtils.getStatusText(i18n, prostava.status, ProstavaUtils.getParticipantsVotesString(prostava.participants_string, prostava.participants_max_count)) %>
-<a href="<%= prostava.author.user_link %>"><%= prostava.author.user_string %></a><% if (!prostava.is_request && prostava.status !== "new") { %> • <%= DateUtils.getDateString(i18n.languageCode, prostava.prostava_data.date) %><% } %>
+<a href="<%= prostava.author.user_link %>"><%= prostava.author.user_string %></a><% if (!prostava.is_request && prostava.status !== "new") { %> • <%= DateUtils.getDateTimeString(i18n.languageCode, prostava.prostava_data.date) %><% } %>
 <% if (prostava.status !== "new") { %><%= ProstavaUtils.getParticipantsString(prostava.participants, prostava.participants_min_count, !prostava.is_request) %><% } %>
-<% if (!prostava.is_request && prostava.status !== "new") { %>
+<% if (!prostava.is_request && prostava.status !== "new" && !prostava.is_preview) { %>
 <%= LocaleUtils.getActionText(i18n, ACTION.PROSTAVA_COST, prostava.prostava_data.cost.string) %>
-<%= LocaleUtils.getActionText(i18n, ACTION.PROSTAVA_RATING, ProstavaUtils.getProstavaRatingString(prostava.rating, prostava.rating_string)) %>
-<a href="<%= prostava.prostava_data.venue.thumb %>"><%= CODE.PROSTAVA_LOCATION %></a><a href="<%= prostava.prostava_data.venue.url %>"><%= prostava.prostava_data.venue.title %></a>
-<% } %>
+<%= LocaleUtils.getActionText(i18n, ACTION.PROSTAVA_RATING, ProstavaUtils.getProstavaRatingString(prostava.rating, prostava.rating_string)) %><% } %>
+<% if (!prostava.is_request && prostava.status !== "new") { %><a href="<%= prostava.prostava_data.venue.thumb %>"><%= CODE.PROSTAVA_LOCATION %></a><a href="<%= prostava.prostava_data.venue.url %>"><%= prostava.prostava_data.venue.title %></a><% } %>

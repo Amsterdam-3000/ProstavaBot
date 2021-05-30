@@ -18,7 +18,7 @@ db.once("open", () => {
     //Global middlewares
     bot.use(GlobalMiddleware.addSessionToContext);
     bot.use(GlobalMiddleware.isGroupChat);
-    bot.use(GlobalMiddleware.isUserReal);
+    bot.use(GlobalMiddleware.isUserRealOrProstavaBot);
     bot.use(GlobalMiddleware.addI18nToContext);
     bot.use(GroupMiddleware.addGroupToContext, GroupMiddleware.applyGroupSettings, UserMiddleware.addUserToContext);
     bot.use(UserMiddleware.saveUser, GroupMiddleware.saveGroup);
@@ -93,7 +93,7 @@ db.once("open", () => {
     console.log("Prostava is polling");
 
     //Background jobs
-    prostavaQueue.process(PROSTAVA.JOB.PROSTAVA_AUTO_PUBLISH, ProstavaProcess.publishCompletedProstavas);
+    prostavaQueue.process(PROSTAVA.JOB.PROSTAVA_AUTO_PUBLISH, ProstavaProcess.publishOrWithdrawCompletedProstavas);
     prostavaQueue.process(PROSTAVA.JOB.PROSTAVA_RATE_REMINDER, ProstavaProcess.remindUsersRateProstavas);
     prostavaQueue.process(PROSTAVA.JOB.USER_BIRTHDAY_REMINDER, ProstavaProcess.announceReuestsForBithdayUsers);
 

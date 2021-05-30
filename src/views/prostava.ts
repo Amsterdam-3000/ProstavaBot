@@ -51,6 +51,17 @@ export class ProstavaView {
                 Markup.button.callback(
                     LocaleUtils.getActionText(
                         i18n,
+                        PROSTAVA.ACTION.PROSTAVA_TIME,
+                        ConverterUtils.displayValue(
+                            DateUtils.getTimeString(i18n.languageCode, prostava.prostava_data.date)
+                        )
+                    ),
+                    ConverterUtils.stringifyActionData(PROSTAVA.ACTION.PROSTAVA_TIME),
+                    prostava.is_request || prostava.prostava_data.date.getTime() <= Date.now()
+                ),
+                Markup.button.callback(
+                    LocaleUtils.getActionText(
+                        i18n,
                         PROSTAVA.ACTION.PROSTAVA_VENUE,
                         ProstavaUtils.getVenueDisplayString(prostava.prostava_data.venue)
                     ),
@@ -64,7 +75,7 @@ export class ProstavaView {
                         ConverterUtils.displayValue(prostava.prostava_data.cost?.string)
                     ),
                     ConverterUtils.stringifyActionData(PROSTAVA.ACTION.PROSTAVA_COST),
-                    prostava.is_request
+                    prostava.is_request || prostava.prostava_data.date.getTime() > Date.now()
                 ),
                 Markup.button.callback(
                     LocaleUtils.getActionText(
@@ -102,10 +113,13 @@ export class ProstavaView {
         return Markup.inlineKeyboard(this.getProstavaRatingButtons(i18n, prostava));
     }
     private static getProstavaRatingButtons(i18n: I18nContext, prostava: Prostava) {
-        const ratingCodes = prostava.is_request ? Object.entries(CODE.POLLING) : Object.entries(CODE.RATING);
+        const ratingCodes =
+            prostava.is_request || prostava.is_preview ? Object.entries(CODE.POLLING) : Object.entries(CODE.RATING);
         return ratingCodes.map((ratingCode) =>
             Markup.button.callback(
-                prostava.is_request ? LocaleUtils.getPollingText(i18n, ratingCode[1]) : ratingCode[1] + ratingCode[0],
+                prostava.is_request || prostava.is_preview
+                    ? LocaleUtils.getPollingText(i18n, ratingCode[1])
+                    : ratingCode[1] + ratingCode[0],
                 ConverterUtils.stringifyActionData(
                     ConverterUtils.getSubAction(PROSTAVA.ACTION.PROSTAVA_RATING),
                     ratingCode[0],

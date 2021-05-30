@@ -169,6 +169,10 @@ const ProstavaSchema = new Schema<ProstavaDocument, ProstavaModel>({
         type: Boolean,
         default: false
     },
+    is_preview: {
+        type: Boolean,
+        default: false
+    },
     rating: {
         type: Number,
         default: 0,
