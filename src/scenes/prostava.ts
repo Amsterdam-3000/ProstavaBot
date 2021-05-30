@@ -75,7 +75,7 @@ prostavaScene.on(
     CommonController.enterScene(PROSTAVA.SCENE.PROSTAVA)
 );
 
-//Date
+//Date and Time
 prostavaScene.action(RegexUtils.matchAction(PROSTAVA.ACTION.PROSTAVA_DATE), ProstavaController.showProstavaCalendar);
 prostavaScene.action(
     RegexUtils.matchCalendarAction(CALENDAR.ACTION.CALENDAR_DATE),
@@ -83,6 +83,13 @@ prostavaScene.action(
 );
 prostavaCalendar.setBot(prostavaScene);
 prostavaCalendar.setDateListener(ProstavaController.backToCreateProstava);
+CommonScene.actionInputRequest(prostavaScene, PROSTAVA.ACTION.PROSTAVA_TIME);
+prostavaScene.hears(
+    RegexUtils.matchTime(),
+    CommonMiddleware.checkStateAction([PROSTAVA.ACTION.PROSTAVA_TIME]),
+    ProstavaMiddleware.changeProstavaTime,
+    CommonController.enterScene(PROSTAVA.SCENE.PROSTAVA)
+);
 
 //Cost
 CommonScene.actionInputRequest(prostavaScene, PROSTAVA.ACTION.PROSTAVA_COST);

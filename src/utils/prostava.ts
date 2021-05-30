@@ -56,10 +56,14 @@ export class ProstavaUtils {
     }
     static fillProstavaDateFromText(dateText: string, settings: Group["settings"]) {
         const dateNow = new Date(Date.now());
+        //TODO Default hours
+        dateNow.setHours(20);
         if (!dateText || !RegexUtils.matchDate().test(dateText)) {
             return dateNow;
         }
         const dateIn = new Date(dateText);
+        //TODO Default hours
+        dateIn.setHours(20);
         const dateAgo = DateUtils.getDateDaysAgo(settings.create_days_ago);
         if ((dateAgo && dateIn.getTime() < dateAgo.getTime()) || dateIn.getTime() > dateNow.getTime()) {
             return dateNow;
@@ -73,13 +77,32 @@ export class ProstavaUtils {
         return (prostava as ProstavaDocument).id;
     }
 
+    static changeProstavaDate(prostava: Prostava, dateText: string) {
+        const date = new Date(dateText);
+        date.setHours(prostava.prostava_data.date.getHours());
+        date.setMinutes(prostava.prostava_data.date.getMinutes());
+        prostava.prostava_data.date = date;
+    }
+    static changeProstavaTime(prostava: Prostava, timeText: string) {
+        const time = timeText.split(":");
+        const date = new Date(prostava.prostava_data.date.getTime());
+        date.setHours(Number(time[0]));
+        date.setMinutes(Number(time[1]));
+        prostava.prostava_data.date = date;
+    }
     static announceProstava(prostava: Prostava, settings: Group["settings"]) {
         prostava.status = ProstavaStatus.Pending;
         prostava.participants_max_count = settings.chat_members_count - 1;
         prostava.participants_min_count = Math.ceil(
             (prostava.participants_max_count * settings.participants_min_percent) / 100
         );
-        prostava.closing_date = DateUtils.getNowDatePlusHours(settings.pending_hours);
+        if (prostava.prostava_data.date.getTime() > Date.now()) {
+            prostava.is_preview = true;
+            prostava.closing_date = DateUtils.getDateDaysAfter(1, prostava.prostava_data.date);
+        } else {
+            prostava.is_preview = false;
+            prostava.closing_date = DateUtils.getNowDatePlusHours(settings.pending_hours);
+        }
     }
     static publishProstava(prostava: Prostava) {
         if (ProstavaUtils.canApprovePendingProstava(prostava)) {
@@ -105,6 +128,7 @@ export class ProstavaUtils {
         prostava.status = ProstavaStatus.New;
         prostava.participants = [];
         prostava.rating = 0;
+        prostava.is_preview = false;
         prostava.closing_date = new Date();
         prostava.participants_max_count = 0;
         prostava.participants_min_count = 0;
@@ -348,7 +372,15 @@ export class ProstavaUtils {
         }
         const error = (prostava as ProstavaDocument).validateSync() as Error.ValidationError;
         if (!error) {
-            return prostava.prostava_data.date.getTime() <= new Date().getTime();
+            return true;
+        }
+        if (prostava.prostava_data.date.getTime() > Date.now()) {
+            return !error.errors["prostava_data.title"] &&
+                !error.errors["prostava_data.date"] &&
+                !error.errors["prostava_data.venue.title"] &&
+                !error.errors["prostava_data.venue.location"]
+                ? true
+                : false;
         }
         if (prostava.is_request) {
             return !error.errors["author"] && !error.errors["type"] && !error.errors["prostava_data.title"]
@@ -378,7 +410,12 @@ export class ProstavaUtils {
                     {
                         $or: [
                             { $lte: ["$closing_date", new Date()] },
-                            { $eq: [{ $size: "$participants" }, "$participants_max_count"] }
+                            {
+                                $and: [
+                                    { $eq: [{ $size: "$participants" }, "$participants_max_count"] },
+                                    { $ne: ["$is_preview", true] }
+                                ]
+                            }
                         ]
                     }
                 ]

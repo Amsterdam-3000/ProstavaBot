@@ -23,9 +23,11 @@ export const CODE: { [index: string]: { [index: string]: string } } = {
         PROSTAVA_LOCATION: "📌",
         PROSTAVA_COST: "💰",
         PROSTAVA_DATE: "📅",
+        PROSTAVA_TIME: "⌚️",
         PROSTAVA_PARTICIPANTS: "👥",
         PROSTAVA_RATING: "🍻",
-        PROSTAVA_POLLING: "🗳"
+        PROSTAVA_POLLING: "🗳",
+        PROSTAVA_COMING: "🏃🏼"
     },
     ERROR: {
         NOT_GROUP: "🚫",
@@ -53,7 +55,7 @@ export const CODE: { [index: string]: { [index: string]: string } } = {
         "1": "✅"
     },
     STATUS: {
-        NEW: "🥚",
+        NEW: "🆕",
         PENDING: "⏳",
         APPROVED: "✅",
         REJECTED: "❌"

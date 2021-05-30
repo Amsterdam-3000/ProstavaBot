@@ -58,7 +58,7 @@ export class ProstavaMiddleware {
     static async addDateProstavasToContext(ctx: UpdateContext, next: () => Promise<void>) {
         let date = new Date();
         if (TelegramUtils.getCbQueryData(ctx)) {
-            date = TelegramUtils.getDateFromCalendarAction(ctx);
+            date = new Date(TelegramUtils.getDateTextFromCalendarAction(ctx));
         }
         const birthdayUsers = UserUtils.filterRealUsersByBirthday(ctx.group.users, date);
         ctx.prostavas = [];
@@ -123,7 +123,14 @@ export class ProstavaMiddleware {
     static async changeProstavaDate(ctx: UpdateContext, next: () => Promise<void>) {
         const prostava = TelegramUtils.getProstavaFromContext(ctx);
         if (prostava) {
-            prostava.prostava_data.date = TelegramUtils.getDateFromCalendarAction(ctx);
+            ProstavaUtils.changeProstavaDate(prostava, TelegramUtils.getDateTextFromCalendarAction(ctx));
+        }
+        await next();
+    }
+    static async changeProstavaTime(ctx: UpdateContext, next: () => Promise<void>) {
+        const prostava = TelegramUtils.getProstavaFromContext(ctx);
+        if (prostava) {
+            ProstavaUtils.changeProstavaTime(prostava, TelegramUtils.getTextMessage(ctx).text);
         }
         await next();
     }

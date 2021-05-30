@@ -20,11 +20,13 @@ export const PROSTAVA = {
         PROSTAVA_TYPE: "prostava-prostava-type",
         PROSTAVA_TITLE: "prostava-prostava-title",
         PROSTAVA_DATE: "prostava-prostava-date",
+        PROSTAVA_TIME: "prostava-prostava-time",
         PROSTAVA_VENUE: "prostava-prostava-venue",
         PROSTAVA_COST: "prostava-prostava-cost",
         PROSTAVA_CREATE: "prostava-prostava-create",
         PROSTAVA_RATING: "prostava-prostava-rating",
         PROSTAVA_POLLING: "prostava-prostava-polling",
+        PROSTAVA_COMING: "prostava-prostava-coming",
         PROSTAVA_PARTICIPANTS: "prostava-prostava-participants"
     },
     COMMAND: {

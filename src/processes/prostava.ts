@@ -5,10 +5,14 @@ import { bot } from "../commons/bot";
 import { User } from "../types";
 
 export class ProstavaProcess {
-    static async publishCompletedProstavas(job: Queue.Job) {
+    static async publishOrWithdrawCompletedProstavas(job: Queue.Job) {
         const completedProstavas = await ProstavaUtils.getPendingCompletedProstavasFromDB();
         for (const prostava of completedProstavas) {
-            const command = prostava.is_request ? PROSTAVA.COMMAND.REQUEST_SAVE : PROSTAVA.COMMAND.PROSTAVA_SAVE;
+            const command = prostava.is_request
+                ? PROSTAVA.COMMAND.REQUEST_SAVE
+                : prostava.is_preview
+                ? PROSTAVA.COMMAND.PROSTAVA_UNDO
+                : PROSTAVA.COMMAND.PROSTAVA_SAVE;
             const user = (prostava.is_request ? prostava.creator : prostava.author) as User;
             bot.handleUpdate(TelegramUtils.fillCommandFakeUpdate(prostava.group_id, user.user_id, command));
         }

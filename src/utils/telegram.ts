@@ -56,8 +56,8 @@ export class TelegramUtils {
     static getActionDataFromSceneState(ctx: UpdateContext) {
         return ConverterUtils.parseActionData(this.getSceneState(ctx).actionData);
     }
-    static getDateFromCalendarAction(ctx: UpdateContext) {
-        return new Date(ConverterUtils.sliceCalendarActionDate(TelegramUtils.getCbQueryData(ctx)));
+    static getDateTextFromCalendarAction(ctx: UpdateContext) {
+        return ConverterUtils.sliceCalendarActionDate(TelegramUtils.getCbQueryData(ctx));
     }
 
     static isMessageProstavaCommand(ctx: UpdateContext) {

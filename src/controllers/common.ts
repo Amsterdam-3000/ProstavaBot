@@ -5,6 +5,7 @@ export class CommonController {
     static enterScene(scene: string) {
         return async (ctx: UpdateContext) => {
             const command = TelegramUtils.getMessageCommand(ctx) || TelegramUtils.getSceneCommand(ctx);
+            //TODO ID for ALL inside one command
             const prostavaId = TelegramUtils.isProstavaCommand(command) && TelegramUtils.getSceneState(ctx).prostavaId;
             await ctx.scene.enter(scene, { command: command, prostavaId: prostavaId });
         };

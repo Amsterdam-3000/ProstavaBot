@@ -47,6 +47,7 @@ export interface Prostava {
     status: ProstavaStatus;
     creator: User["_id"] | User;
     is_request: boolean;
+    is_preview: boolean;
     rating: number;
     rating_string?: string;
     title?: string;

@@ -29,6 +29,24 @@ export class DateUtils {
             day: "numeric"
         });
     }
+    static getTimeString(language: string, date: Date | undefined) {
+        return date?.toLocaleString(language, {
+            hour12: false,
+            hour: "2-digit",
+            minute: "2-digit"
+        });
+    }
+    static getDateTimeString(language: string, date: Date | undefined) {
+        return date?.toLocaleString(language, {
+            year: "numeric",
+            month: "short",
+            weekday: "short",
+            day: "numeric",
+            hour12: false,
+            hour: "2-digit",
+            minute: "2-digit"
+        });
+    }
     static getWeekDayName(language: string, date: Date) {
         return date.toLocaleString(language, { weekday: "short" })[0];
     }
@@ -61,20 +79,14 @@ export class DateUtils {
         return lastDay;
     }
     static getDateDaysAgo(days: number) {
-        if (!days) {
-            return null;
-        }
         const date = new Date();
         date.setDate(date.getDate() - days);
         return date;
     }
-    static getDateDaysAfter(days: number) {
-        if (!days) {
-            return null;
-        }
-        const date = new Date();
-        date.setDate(date.getDate() + days);
-        return date;
+    static getDateDaysAfter(days: number, date = new Date()) {
+        const newDate = new Date(date.getTime());
+        newDate.setDate(newDate.getDate() + days);
+        return newDate;
     }
     static getHoursFromDateToNow(date: Date) {
         return (new Date().getTime() - date.getTime()) / 36e5;
