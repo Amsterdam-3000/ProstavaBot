@@ -1,9 +1,12 @@
-import { Group, GroupDocument, Prostava, ProstavaType } from "../types";
-import { UserUtils } from "./user";
-import { Types } from "mongoose";
-import { GroupCollection } from "../models";
 import { CODE } from "../constants";
+import { Group, GroupDocument, Prostava, ProstavaType, User } from "../types";
+import { GroupCollection } from "../models";
+import { UserUtils } from "./user";
+import { ConverterUtils } from "./converter";
+import { ProstavaUtils } from "./prostava";
+import { Types } from "mongoose";
 import { Chat } from "telegraf/typings/core/types/typegram";
+import ical from "ical-generator";
 
 export class GroupUtils {
     static findGroupByChatIdFromDB(chatId: number) {
@@ -20,6 +23,7 @@ export class GroupUtils {
         return new GroupCollection({
             _id: chat.id,
             settings: {
+                name: (chat as Chat.GroupChat).title,
                 chat_members_count: chatMembersCount - 1,
                 prostava_types: this.getRequiredProstavaTypes()
             }
@@ -59,5 +63,23 @@ export class GroupUtils {
                     UserUtils.findUserById(group.users, participant.user as Types.ObjectId) || participant.user;
             });
         });
+    }
+
+    static saveGroupCalendarOfProstavasToPublic(group: Group) {
+        const calendar = ical(ConverterUtils.convertGroupToCalendar(group));
+        (ProstavaUtils.filterScheduledProstavas(group.prostavas) as Prostava[]).forEach((prostava) => {
+            const event = calendar.createEvent(ConverterUtils.convertProstavaToEvent(prostava));
+            prostava.participants.forEach((participant) => {
+                event.createAttendee(ConverterUtils.convertParticipantToAttendee(participant));
+            });
+            (ProstavaUtils.filterUsersPendingToRateProstava(group.users, prostava) as User[]).forEach((user) => {
+                event.createAttendee(ConverterUtils.convertUserToAttendee(user));
+            });
+        });
+        calendar.save(`./public/calendar/${group._id}.ics`);
+    }
+    static getAllGroupsFromDB() {
+        //TODO Disable autopopulate?
+        return GroupCollection.find().exec();
     }
 }

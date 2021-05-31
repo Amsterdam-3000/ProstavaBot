@@ -154,10 +154,7 @@ export class ProstavaController {
         });
     }
     static async showCalendarOfProstavas(ctx: UpdateContext) {
-        const prostavas = [
-            ...ProstavaUtils.filterScheduledNewProstavas(ctx.group.prostavas),
-            ...ProstavaUtils.filterApprovedProstavas(ctx.group.prostavas)
-        ];
+        const prostavas = ProstavaUtils.filterScheduledProstavas(ctx.group.prostavas);
         const message = await ctx.reply(await ProstavaView.getProstavasHtml(ctx.i18n, ctx.prostavas, new Date()), {
             reply_markup: ProstavaView.getCalendarOfProstavasKeyboard(ctx.i18n, prostavas, ctx.group.users)
                 .reply_markup,
@@ -167,10 +164,7 @@ export class ProstavaController {
     }
     static async refreshCalendarOfProstavas(ctx: UpdateContext, date: string) {
         const selectedDate = new Date(date);
-        const prostavas = [
-            ...ProstavaUtils.filterScheduledNewProstavas(ctx.group.prostavas),
-            ...ProstavaUtils.filterApprovedProstavas(ctx.group.prostavas)
-        ];
+        const prostavas = ProstavaUtils.filterScheduledProstavas(ctx.group.prostavas);
         await ctx.editMessageText(await ProstavaView.getProstavasHtml(ctx.i18n, ctx.prostavas, selectedDate), {
             reply_markup: ProstavaView.getCalendarOfProstavasKeyboard(
                 ctx.i18n,

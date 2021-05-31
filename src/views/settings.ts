@@ -2,11 +2,11 @@ import { I18nContext } from "@edjopato/telegraf-i18n/dist/source";
 import { Markup } from "telegraf";
 import { PROSTAVA, LOCALE, CODE } from "../constants";
 import { ConstantUtils, LocaleUtils, ConverterUtils, ProstavaUtils } from "../utils";
-import { GroupSettings, ProstavaType } from "../types";
+import { Group, ProstavaType } from "../types";
 import { CommonView } from "./common";
 
 export class SettingsView {
-    static getSettingsKeyboard(i18n: I18nContext, settings: GroupSettings) {
+    static getSettingsKeyboard(i18n: I18nContext, group: Group) {
         return Markup.inlineKeyboard(
             [
                 Markup.button.callback(
@@ -18,26 +18,30 @@ export class SettingsView {
                     PROSTAVA.ACTION.SETTINGS_LANGUAGE
                 ),
                 Markup.button.callback(
-                    LocaleUtils.getActionText(i18n, PROSTAVA.ACTION.SETTINGS_CURRENCY, settings.currency),
+                    LocaleUtils.getActionText(i18n, PROSTAVA.ACTION.SETTINGS_CURRENCY, group.settings.currency),
                     PROSTAVA.ACTION.SETTINGS_CURRENCY
                 ),
                 Markup.button.callback(
                     LocaleUtils.getActionText(
                         i18n,
                         PROSTAVA.ACTION.SETTINGS_TYPE,
-                        ConverterUtils.displayValue(ProstavaUtils.getProstavaTypesString(settings.prostava_types))
+                        ConverterUtils.displayValue(ProstavaUtils.getProstavaTypesString(group.settings.prostava_types))
                     ),
                     PROSTAVA.ACTION.SETTINGS_TYPE
                 ),
                 Markup.button.callback(
-                    LocaleUtils.getActionText(i18n, PROSTAVA.ACTION.SETTINGS_DAYS, settings.create_days_ago.toString()),
+                    LocaleUtils.getActionText(
+                        i18n,
+                        PROSTAVA.ACTION.SETTINGS_DAYS,
+                        group.settings.create_days_ago.toString()
+                    ),
                     PROSTAVA.ACTION.SETTINGS_DAYS
                 ),
                 Markup.button.callback(
                     LocaleUtils.getActionText(
                         i18n,
                         PROSTAVA.ACTION.SETTINGS_COUNT,
-                        settings.chat_members_count.toString()
+                        group.settings.chat_members_count.toString()
                     ),
                     PROSTAVA.ACTION.SETTINGS_COUNT
                 ),
@@ -45,13 +49,25 @@ export class SettingsView {
                     LocaleUtils.getActionText(
                         i18n,
                         PROSTAVA.ACTION.SETTINGS_PERCENTAGE,
-                        settings.participants_min_percent.toString()
+                        group.settings.participants_min_percent.toString()
                     ),
                     PROSTAVA.ACTION.SETTINGS_PERCENTAGE
                 ),
                 Markup.button.callback(
-                    LocaleUtils.getActionText(i18n, PROSTAVA.ACTION.SETTINGS_HOURS, settings.pending_hours.toString()),
+                    LocaleUtils.getActionText(
+                        i18n,
+                        PROSTAVA.ACTION.SETTINGS_HOURS,
+                        group.settings.pending_hours.toString()
+                    ),
                     PROSTAVA.ACTION.SETTINGS_HOURS
+                ),
+                Markup.button.url(
+                    LocaleUtils.getActionText(i18n, PROSTAVA.ACTION.SETTINGS_APPLE),
+                    group.calendar_apple!
+                ),
+                Markup.button.url(
+                    LocaleUtils.getActionText(i18n, PROSTAVA.ACTION.SETTINGS_GOOGLE),
+                    group.calendar_google!
                 ),
                 CommonView.getExitButton(i18n)
             ],

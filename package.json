@@ -3,14 +3,14 @@
   "version": "0.2.0",
   "description": "Я контролирую проставы твоих друзей",
   "scripts": {
-    "start-dev": "nodemon src/index.ts",
+    "start-dev": "nodemon src/bot.ts",
     "serve-dev": "nodemon src/server.ts",
     "copy-static-assets": "ts-node copyStaticAssets.ts",
     "lint": "eslint '*/**/*.ts' --quiet --fix",
     "build-ts": "tsc",
     "build": "npm run lint && npm run build-ts && npm run copy-static-assets",
-    "start": "node dist",
-    "test": "ts-node playground/2.ts"
+    "start": "node dist/bot.js",
+    "serve": "node dist/server.js"
   },
   "nodemonConfig": {
     "verbose": true,

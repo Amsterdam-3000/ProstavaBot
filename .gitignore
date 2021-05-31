@@ -7,6 +7,9 @@ node_modules
 # Playground
 playground
 
+# Calendar
+public/calendar/*.ics
+
 # Editors
 .vscode
 .idea

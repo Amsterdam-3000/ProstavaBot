@@ -30,6 +30,15 @@ prostavaQueue.add(
     }
 );
 prostavaQueue.add(
+    PROSTAVA.JOB.GROUP_SYNC_CALENDAR,
+    {},
+    {
+        repeat: {
+            cron: "*/5 * * * *"
+        }
+    }
+);
+prostavaQueue.add(
     PROSTAVA.JOB.USER_BIRTHDAY_REMINDER,
     {},
     {
