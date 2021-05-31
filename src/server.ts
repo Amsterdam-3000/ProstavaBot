@@ -4,7 +4,7 @@ import { join } from "path";
 
 const app = express();
 
-app.use("/calendar", express.static(join(CONFIG.HOME, "/public/calendar")));
+app.use(express.static("public"));
 
 app.get("/api/calendar/apple/:calendarId", (req, res) => {
     res.redirect(`webcal://${req.headers.host}/calendar/${req.params.calendarId}.ics`);
