@@ -1,10 +1,15 @@
 import { model, Schema } from "mongoose";
+import { CONFIG } from "../commons/config";
 import { PROSTAVA, LOCALE, CODE } from "../constants";
 import { GroupModel, GroupDocument } from "../types";
 import { ProstavaTypeSchema } from "./prostava";
 
 const GroupSettinsSchema = new Schema(
     {
+        name: {
+            type: String,
+            required: true
+        },
         language: {
             type: String,
             default: LOCALE.LANGUAGE.EN,
@@ -72,6 +77,12 @@ const GroupSchema = new Schema<GroupDocument, GroupModel>(
 GroupSchema.plugin(require("mongoose-autopopulate"));
 GroupSchema.virtual("group_photo").get(function (this: GroupDocument) {
     return "https://cdn.jsdelivr.net/joypixels/assets/6.5/png/unicode/128/1f465.png";
+});
+GroupSchema.virtual("calendar_google").get(function (this: GroupDocument) {
+    return `https://${CONFIG.PROSTAVA_HOST}:${CONFIG.PROSTAVA_PORT}/api/calendar/google/${this._id}`;
+});
+GroupSchema.virtual("calendar_apple").get(function (this: GroupDocument) {
+    return `https://${CONFIG.PROSTAVA_HOST}:${CONFIG.PROSTAVA_PORT}/api/calendar/apple/${this._id}`;
 });
 
 export const GroupCollection = model<GroupDocument, GroupModel>(PROSTAVA.COLLECTION.GROUP, GroupSchema);

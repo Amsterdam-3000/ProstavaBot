@@ -204,16 +204,24 @@ export class ProstavaUtils {
             (prostava) => prostava.prostava_data.date.toDateString() === date.toDateString()
         );
     }
+    static filterScheduledProstavas(prostavas: Group["prostavas"]) {
+        return [
+            ...this.filterApprovedProstavas(prostavas),
+            ...this.filterRejectedProstavas(prostavas),
+            ...this.filterPendingProstavas(prostavas)
+        ];
+    }
     static filterApprovedProstavas(prostavas: Group["prostavas"]) {
         return this.filterProstavas(prostavas).filter((prostava) => this.isProstavaApproved(prostava));
     }
-    static filterScheduledNewProstavas(prostavas: Group["prostavas"]) {
-        return this.filterNewProstavas(prostavas).filter(
-            (prostava) => prostava.prostava_data.date && prostava.prostava_data.date.getTime() > new Date().getTime()
-        );
+    static filterRejectedProstavas(prostavas: Group["prostavas"]) {
+        return this.filterProstavas(prostavas).filter((prostava) => this.isProstavaRejected(prostava));
     }
     static filterNewProstavas(prostavas: Group["prostavas"]) {
         return this.filterProstavas(prostavas).filter((prostava) => this.isProstavaNew(prostava));
+    }
+    static filterPendingProstavas(prostavas: Group["prostavas"]) {
+        return this.filterProstavas(prostavas).filter((prostava) => this.isProstavaPending(prostava));
     }
     static filterUserNewProstavas(prostavas: Group["prostavas"], userId: number | undefined, withinRequests = false) {
         return ProstavaUtils.filterUserProstavas(prostavas, userId, withinRequests).filter((prostava) =>
@@ -392,8 +400,14 @@ export class ProstavaUtils {
     static isRequest(prostava: Prostava | undefined) {
         return prostava?.is_request;
     }
+    static isPreview(prostava: Prostava | undefined) {
+        return prostava?.is_preview;
+    }
     static isProstavaApproved(prostava: Prostava | undefined) {
         return prostava?.status === ProstavaStatus.Approved;
+    }
+    static isProstavaRejected(prostava: Prostava | undefined) {
+        return prostava?.status === ProstavaStatus.Rejected;
     }
     static isProstavaPending(prostava: Prostava | undefined) {
         return prostava?.status === ProstavaStatus.Pending;

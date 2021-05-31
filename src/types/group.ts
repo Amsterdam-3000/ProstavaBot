@@ -3,6 +3,7 @@ import { Prostava, ProstavaType } from "./prostava";
 import { User } from "./user";
 
 export interface GroupSettings {
+    name: string;
     language: string;
     currency: string;
     prostava_types: ProstavaType[];
@@ -18,6 +19,8 @@ export interface Group {
     users: (User["_id"] | User)[];
     prostavas: (Prostava["_id"] | Prostava)[];
     group_photo?: string;
+    calendar_google?: string;
+    calendar_apple?: string;
 }
 
 interface GroupBaseDocument extends Group, Document {

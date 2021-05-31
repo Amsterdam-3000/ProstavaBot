@@ -11,6 +11,8 @@ export const PROSTAVA = {
         SETTINGS_COUNT: "prostava-settings-count",
         SETTINGS_PERCENTAGE: "prostava-settings-percentage",
         SETTINGS_HOURS: "prostava-settings-hours",
+        SETTINGS_GOOGLE: "prostava-settings-google",
+        SETTINGS_APPLE: "prostava-settings-apple",
         PROFILE_EMOJI: "prostava-profile-emoji",
         PROFILE_BIRTHDAY: "prostava-profile-birthday",
         PROFILE_USERNAME: "prostava-profile-username",
@@ -66,8 +68,9 @@ export const PROSTAVA = {
         PROSTAVA: "prostavaQueue"
     },
     JOB: {
+        GROUP_SYNC_CALENDAR: "groupSyncCalendarJob",
+        USER_BIRTHDAY_REMINDER: "userBirthdayReminderJob",
         PROSTAVA_AUTO_PUBLISH: "prostavaAutoPublishJob",
-        PROSTAVA_RATE_REMINDER: "prostavaRateReminderJob",
-        USER_BIRTHDAY_REMINDER: "userBirthdayReminderJob"
+        PROSTAVA_RATE_REMINDER: "prostavaRateReminderJob"
     }
 };

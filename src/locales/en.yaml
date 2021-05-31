@@ -38,6 +38,8 @@ action:
         count: "${code} Chat members count: ${value}"
         percentage: "Minimum of participants: ${value}${code}"
         hours: "${code} Prostava pending hours: ${value}"
+        google: "${code} Google Calendar"
+        apple: "${code} Apple Calendar"
     profile:
         emoji: "Emoji: ${value}"
         birthday: "Birthday: ${value}"

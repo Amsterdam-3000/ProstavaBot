@@ -74,13 +74,7 @@ export class ProstavaMiddleware {
         }
         ctx.prostavas = [
             ...ctx.prostavas,
-            ...ProstavaUtils.filterProstavasByDate(
-                [
-                    ...ProstavaUtils.filterScheduledNewProstavas(ctx.group.prostavas),
-                    ...ProstavaUtils.filterApprovedProstavas(ctx.group.prostavas)
-                ],
-                date
-            )
+            ...ProstavaUtils.filterProstavasByDate(ProstavaUtils.filterScheduledProstavas(ctx.group.prostavas), date)
         ];
         await next();
     }

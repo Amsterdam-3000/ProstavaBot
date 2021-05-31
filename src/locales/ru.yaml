@@ -38,6 +38,8 @@ action:
         count: "${code} Количество участников: ${value}"
         percentage: "Минимальный процент: ${value}${code}"
         hours: "${code} Количество часов: ${value}"
+        google: "${code} Google Календарь"
+        apple: "${code} Apple Календарь"
     profile:
         emoji: "Эмодзи: ${value}"
         birthday: "День рождения: ${value}"

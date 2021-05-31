@@ -7,7 +7,7 @@ export class SettingsController {
     static async showSettings(ctx: UpdateContext) {
         const message = await ctx.reply(
             LocaleUtils.getCommandText(ctx.i18n, PROSTAVA.COMMAND.SETTINGS),
-            SettingsView.getSettingsKeyboard(ctx.i18n, ctx.group?.settings)
+            SettingsView.getSettingsKeyboard(ctx.i18n, ctx.group)
         );
         TelegramUtils.setSceneState(ctx, { messageId: message.message_id });
     }
@@ -45,7 +45,7 @@ export class SettingsController {
         await ctx
             .editMessageText(
                 LocaleUtils.getCommandText(ctx.i18n, PROSTAVA.COMMAND.SETTINGS),
-                SettingsView.getSettingsKeyboard(ctx.i18n, ctx.group?.settings)
+                SettingsView.getSettingsKeyboard(ctx.i18n, ctx.group)
             )
             .catch((err) => console.log(err));
     }
