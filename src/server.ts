@@ -1,9 +1,10 @@
 import express from "express";
 import { CONFIG } from "./commons/config";
+import { join } from "path";
 
 const app = express();
 
-app.use(express.static("public"));
+app.use(express.static(join(__dirname, "public")));
 
 app.get("/api/calendar/apple/:calendarId", (req, res) => {
     res.redirect(`webcal://${req.headers.host}/calendar/${req.params.calendarId}.ics`);
