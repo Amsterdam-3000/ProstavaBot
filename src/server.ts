@@ -15,6 +15,6 @@ app.get("/api/calendar/google/:calendarId", (req, res) => {
     );
 });
 
-app.listen(CONFIG.PROSTAVA_PORT, () => {
+app.listen(process.env.PORT || CONFIG.PROSTAVA_PORT, () => {
     console.log(`Prostava is listening on port ${CONFIG.PROSTAVA_PORT}`);
 });
