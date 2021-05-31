@@ -6,6 +6,7 @@ import { ConverterUtils } from "./converter";
 import { ProstavaUtils } from "./prostava";
 import { Types } from "mongoose";
 import { Chat } from "telegraf/typings/core/types/typegram";
+import { join } from "path";
 import ical from "ical-generator";
 
 export class GroupUtils {
@@ -76,7 +77,7 @@ export class GroupUtils {
                 event.createAttendee(ConverterUtils.convertUserToAttendee(user));
             });
         });
-        calendar.save(`./public/calendar/${group._id}.ics`);
+        calendar.save(join("public/calendar", `${group._id}.ics`));
     }
     static getAllGroupsFromDB() {
         //TODO Disable autopopulate?
