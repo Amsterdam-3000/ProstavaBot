@@ -8,7 +8,7 @@ export const CONFIG = {
     TELEGRAM_TOKEN: process.env.TELEGRAM_TOKEN,
     MONGODB_URI: process.env.MONGODB_URI,
     REDIS_URI: process.env.REDIS_URI,
-    PROSTAVA_HOST: process.env.PROSTAVA_HOST,
-    PROSTAVA_PORT: process.env.PROSTAVA_PORT,
+    PROSTAVA_HOST: process.env.HOST,
+    PROSTAVA_PORT: process.env.PORT,
     SUPER_ADMIN_ID: Number(process.env.SUPER_ADMIN_ID)
 };
