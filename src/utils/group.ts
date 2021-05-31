@@ -77,7 +77,7 @@ export class GroupUtils {
                 event.createAttendee(ConverterUtils.convertUserToAttendee(user));
             });
         });
-        calendar.save(join("public/calendar", `${group._id}.ics`));
+        calendar.save(join(__dirname, "public/calendar", `${group._id}.ics`));
     }
     static getAllGroupsFromDB() {
         //TODO Disable autopopulate?
