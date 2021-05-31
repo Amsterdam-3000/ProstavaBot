@@ -78,7 +78,9 @@ export class GroupUtils {
                 event.createAttendee(ConverterUtils.convertUserToAttendee(user));
             });
         });
-        calendar.save(join(CONFIG.HOME, "/public/calendar", `${group._id}.ics`)).catch((err) => console.log(err));
+        calendar.save(join(CONFIG.HOME, "/public/calendar", `${group._id}.ics`), (err) => {
+            console.log(err);
+        });
     }
     static getAllGroupsFromDB() {
         //TODO Disable autopopulate?
