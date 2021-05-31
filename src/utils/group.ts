@@ -8,6 +8,7 @@ import { Types } from "mongoose";
 import { Chat } from "telegraf/typings/core/types/typegram";
 import { join } from "path";
 import ical from "ical-generator";
+import { CONFIG } from "../commons/config";
 
 export class GroupUtils {
     static findGroupByChatIdFromDB(chatId: number) {
@@ -77,7 +78,7 @@ export class GroupUtils {
                 event.createAttendee(ConverterUtils.convertUserToAttendee(user));
             });
         });
-        calendar.save(join(__dirname, "public/calendar", `${group._id}.ics`));
+        calendar.save(join(CONFIG.HOME, "/public/calendar", `${group._id}.ics`));
     }
     static getAllGroupsFromDB() {
         //TODO Disable autopopulate?
