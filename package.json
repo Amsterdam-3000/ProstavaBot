@@ -32,6 +32,7 @@
   "homepage": "https://github.com/usebooz/ProstavaBot#readme",
   "dependencies": {
     "@edjopato/telegraf-i18n": "^0.2.2",
+    "@touch4it/ical-timezones": "^1.7.0",
     "bull": "^3.22.3",
     "dotenv": "^8.2.0",
     "ejs": "^3.1.6",

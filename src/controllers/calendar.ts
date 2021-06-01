@@ -34,7 +34,7 @@ export class CalendarController {
 
     static async redirectToGoogleCalendar(req: Request, res: Response) {
         res.redirect(
-            `https://calendar.google.com/calendar/u/0/r/month?cid=https://${req.headers.host}/api/calendar/${req.params.groupId}.ics`
+            `https://calendar.google.com/calendar/u/0/r/month?cid=http://${req.headers.host}/api/calendar/${req.params.groupId}.ics`
         );
     }
 }

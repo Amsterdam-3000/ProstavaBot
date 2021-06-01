@@ -1,4 +1,5 @@
 import { ICalAttendeeData, ICalAttendeeStatus, ICalCalendarData, ICalEventData, ICalEventStatus } from "ical-generator";
+import { getVtimezoneComponent } from "@touch4it/ical-timezones";
 import { Group, Prostava, ProstavaParticipant, ProstavaStatus, User } from "../types";
 import { CALENDAR, CODE, PROSTAVA } from "../constants";
 import { CONFIG } from "../commons/config";
@@ -48,7 +49,11 @@ export class ConverterUtils {
     static convertGroupToCalendar(group: Group): ICalCalendarData {
         return {
             prodId: `//${CONFIG.PROSTAVA_HOST}//${group._id}//EN`,
-            name: group.settings.name
+            name: group.settings.name,
+            timezone: {
+                name: "Europe/Moscow",
+                generator: getVtimezoneComponent
+            }
         };
     }
     static convertProstavaToEvent(prostava: Prostava): ICalEventData {
@@ -56,6 +61,8 @@ export class ConverterUtils {
             start: moment(prostava.prostava_data.date),
             //TODO Default duration
             end: moment(prostava.prostava_data.date).add(4, "hours"),
+            //TODO Group of prostava timezone
+            timezone: "Europe/Moscow",
             summary: prostava.title,
             status: this.convertProstavaStatusToEvent(prostava.status),
             location: prostava.prostava_data.venue.title

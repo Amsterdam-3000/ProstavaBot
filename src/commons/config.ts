@@ -10,5 +10,6 @@ export const CONFIG = {
     REDIS_URI: process.env.REDIS_URI,
     PROSTAVA_HOST: process.env.HOST,
     PROSTAVA_PORT: process.env.PORT,
+    PROSTAVA_SCHEME: process.env.SCHEME || "https",
     SUPER_ADMIN_ID: Number(process.env.SUPER_ADMIN_ID)
 };
