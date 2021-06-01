@@ -6,7 +6,7 @@ import { ConverterUtils } from "./converter";
 import { ProstavaUtils } from "./prostava";
 import { Types } from "mongoose";
 import { Chat } from "telegraf/typings/core/types/typegram";
-import { join } from "path";
+import { join, resolve } from "path";
 import ical from "ical-generator";
 import { CONFIG } from "../commons/config";
 
@@ -78,6 +78,8 @@ export class GroupUtils {
                 event.createAttendee(ConverterUtils.convertUserToAttendee(user));
             });
         });
+        console.log("save:\n", __dirname, "\n", process.env.PWD, "\n", process.cwd());
+        console.log(join(CONFIG.HOME, "/public/calendar", `${group._id}.ics`));
         calendar.save(join(CONFIG.HOME, "/public/calendar", `${group._id}.ics`), (err) => {
             console.log(err);
         });
