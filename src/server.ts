@@ -1,10 +1,10 @@
 import express from "express";
 import { CONFIG } from "./commons/config";
-import { join } from "path";
+import { resolve } from "path";
 
 const app = express();
 
-app.use(express.static("public"));
+app.use(express.static(resolve(__dirname, "../", "public")));
 
 app.get("/api/calendar/apple/:calendarId", (req, res) => {
     res.redirect(`webcal://${req.headers.host}/calendar/${req.params.calendarId}.ics`);
@@ -12,7 +12,7 @@ app.get("/api/calendar/apple/:calendarId", (req, res) => {
 
 app.get("/api/calendar/google/:calendarId", (req, res) => {
     res.redirect(
-        `https://calendar.google.com/calendar/u/0/r/month?cid=http://${req.headers.host}/calendar/${req.params.calendarId}.ics`
+        `https://calendar.google.com/calendar/u/0/r/month?cid=https://${req.headers.host}/calendar/${req.params.calendarId}.ics`
     );
 });
 
