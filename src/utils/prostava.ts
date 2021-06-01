@@ -382,16 +382,16 @@ export class ProstavaUtils {
         if (!error) {
             return true;
         }
+        if (prostava.is_request) {
+            return !error.errors["author"] && !error.errors["type"] && !error.errors["prostava_data.title"]
+                ? true
+                : false;
+        }
         if (prostava.prostava_data.date.getTime() > Date.now()) {
             return !error.errors["prostava_data.title"] &&
                 !error.errors["prostava_data.date"] &&
                 !error.errors["prostava_data.venue.title"] &&
                 !error.errors["prostava_data.venue.location"]
-                ? true
-                : false;
-        }
-        if (prostava.is_request) {
-            return !error.errors["author"] && !error.errors["type"] && !error.errors["prostava_data.title"]
                 ? true
                 : false;
         }

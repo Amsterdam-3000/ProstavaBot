@@ -1,14 +1,9 @@
 import { CODE } from "../constants";
-import { Group, GroupDocument, Prostava, ProstavaType, User } from "../types";
+import { Group, GroupDocument, Prostava, ProstavaType } from "../types";
 import { GroupCollection } from "../models";
 import { UserUtils } from "./user";
-import { ConverterUtils } from "./converter";
-import { ProstavaUtils } from "./prostava";
 import { Types } from "mongoose";
 import { Chat } from "telegraf/typings/core/types/typegram";
-import { join, resolve } from "path";
-import ical from "ical-generator";
-import { CONFIG } from "../commons/config";
 
 export class GroupUtils {
     static findGroupByChatIdFromDB(chatId: number) {
@@ -65,27 +60,5 @@ export class GroupUtils {
                     UserUtils.findUserById(group.users, participant.user as Types.ObjectId) || participant.user;
             });
         });
-    }
-
-    static saveGroupCalendarOfProstavasToPublic(group: Group) {
-        const calendar = ical(ConverterUtils.convertGroupToCalendar(group));
-        (ProstavaUtils.filterScheduledProstavas(group.prostavas) as Prostava[]).forEach((prostava) => {
-            const event = calendar.createEvent(ConverterUtils.convertProstavaToEvent(prostava));
-            prostava.participants.forEach((participant) => {
-                event.createAttendee(ConverterUtils.convertParticipantToAttendee(participant));
-            });
-            (ProstavaUtils.filterUsersPendingToRateProstava(group.users, prostava) as User[]).forEach((user) => {
-                event.createAttendee(ConverterUtils.convertUserToAttendee(user));
-            });
-        });
-        console.log("save:\n", __dirname, "\n", process.env.PWD, "\n", process.cwd());
-        console.log(join(CONFIG.HOME, "/public/calendar", `${group._id}.ics`));
-        calendar.save(join(CONFIG.HOME, "/public/calendar", `${group._id}.ics`), (err) => {
-            console.log(err);
-        });
-    }
-    static getAllGroupsFromDB() {
-        //TODO Disable autopopulate?
-        return GroupCollection.find().exec();
     }
 }

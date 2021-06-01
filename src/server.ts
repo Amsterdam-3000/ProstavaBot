@@ -1,23 +1,19 @@
-import express from "express";
 import { CONFIG } from "./commons/config";
-import { resolve } from "path";
+import { db } from "./commons/db";
+import { server } from "./commons/server";
+import { CalendarController } from "./controllers";
 
-const app = express();
-
-console.log("save:\n", __dirname, "\n", process.env.PWD, "\n", process.cwd());
-console.log(resolve(__dirname, "../", "public/calendar"));
-app.use("/calendar", express.static(resolve(__dirname, "../", "public/calendar")));
-
-app.get("/api/calendar/apple/:calendarId", (req, res) => {
-    res.redirect(`webcal://${req.headers.host}/calendar/${req.params.calendarId}.ics`);
+db.on("error", (err) => {
+    console.log(err);
+    process.exit(1);
 });
 
-app.get("/api/calendar/google/:calendarId", (req, res) => {
-    res.redirect(
-        `https://calendar.google.com/calendar/u/0/r/month?cid=https://${req.headers.host}/calendar/${req.params.calendarId}.ics`
-    );
-});
+db.once("open", () => {
+    server.get("/api/calendar/:groupId.ics", CalendarController.sendGroupCalendarOfProstavas);
+    server.get("/api/calendar/apple/:groupId", CalendarController.redirectToAppleCalendar);
+    server.get("/api/calendar/google/:groupId", CalendarController.redirectToGoogleCalendar);
 
-app.listen(CONFIG.PROSTAVA_PORT, () => {
-    console.log(`Prostava is listening on port ${CONFIG.PROSTAVA_PORT}`);
+    server.listen(CONFIG.PROSTAVA_PORT, () => {
+        console.log(`Prostava is listening on port ${CONFIG.PROSTAVA_PORT}`);
+    });
 });

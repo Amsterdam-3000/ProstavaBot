@@ -68,7 +68,6 @@ export const PROSTAVA = {
         PROSTAVA: "prostavaQueue"
     },
     JOB: {
-        GROUP_SYNC_CALENDAR: "groupSyncCalendarJob",
         USER_BIRTHDAY_REMINDER: "userBirthdayReminderJob",
         PROSTAVA_AUTO_PUBLISH: "prostavaAutoPublishJob",
         PROSTAVA_RATE_REMINDER: "prostavaRateReminderJob"

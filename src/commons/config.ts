@@ -10,6 +10,5 @@ export const CONFIG = {
     REDIS_URI: process.env.REDIS_URI,
     PROSTAVA_HOST: process.env.HOST,
     PROSTAVA_PORT: process.env.PORT,
-    SUPER_ADMIN_ID: Number(process.env.SUPER_ADMIN_ID),
-    HOME: process.env.HOME || process.cwd(),
+    SUPER_ADMIN_ID: Number(process.env.SUPER_ADMIN_ID)
 };
