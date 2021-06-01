@@ -5,7 +5,7 @@ import { UserMiddleware, GroupMiddleware, GlobalMiddleware, CommonMiddleware, Pr
 import { CommonController, HelpController, ProstavaController } from "./controllers";
 import { RegexUtils } from "./utils";
 import { prostavaQueue } from "./commons/queue";
-import { GroupProcess, ProstavaProcess, UserProcess } from "./processes";
+import { ProstavaProcess, UserProcess } from "./processes";
 import { Scenes } from "telegraf";
 import { UpdateContext } from "./types";
 
@@ -96,7 +96,6 @@ db.once("open", () => {
     prostavaQueue.process(PROSTAVA.JOB.PROSTAVA_AUTO_PUBLISH, ProstavaProcess.publishOrWithdrawCompletedProstavas);
     prostavaQueue.process(PROSTAVA.JOB.PROSTAVA_RATE_REMINDER, ProstavaProcess.remindUsersRateProstavas);
     prostavaQueue.process(PROSTAVA.JOB.USER_BIRTHDAY_REMINDER, UserProcess.announceReuestsForBithdayUsers);
-    prostavaQueue.process(PROSTAVA.JOB.GROUP_SYNC_CALENDAR, GroupProcess.updateGroupCalendarsOfProstavas);
 
     //Enable graceful stop
     process.once("SIGINT", () => bot.stop("SIGINT"));
