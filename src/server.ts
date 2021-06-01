@@ -4,6 +4,8 @@ import { resolve } from "path";
 
 const app = express();
 
+console.log("save:\n", __dirname, "\n", process.env.PWD, "\n", process.cwd());
+console.log(resolve(__dirname, "../", "public/calendar"));
 app.use("/calendar", express.static(resolve(__dirname, "../", "public/calendar")));
 
 app.get("/api/calendar/apple/:calendarId", (req, res) => {
