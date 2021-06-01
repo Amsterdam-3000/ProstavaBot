@@ -79,10 +79,10 @@ GroupSchema.virtual("group_photo").get(function (this: GroupDocument) {
     return "https://cdn.jsdelivr.net/joypixels/assets/6.5/png/unicode/128/1f465.png";
 });
 GroupSchema.virtual("calendar_google").get(function (this: GroupDocument) {
-    return `https://${CONFIG.PROSTAVA_HOST}/api/calendar/google/${this._id}`;
+    return `${CONFIG.PROSTAVA_SCHEME}://${CONFIG.PROSTAVA_HOST}/api/calendar/google/${this._id}`;
 });
 GroupSchema.virtual("calendar_apple").get(function (this: GroupDocument) {
-    return `https://${CONFIG.PROSTAVA_HOST}/api/calendar/apple/${this._id}`;
+    return `${CONFIG.PROSTAVA_SCHEME}://${CONFIG.PROSTAVA_HOST}/api/calendar/apple/${this._id}`;
 });
 
 export const GroupCollection = model<GroupDocument, GroupModel>(PROSTAVA.COLLECTION.GROUP, GroupSchema);
