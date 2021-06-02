@@ -1,7 +1,10 @@
-import ical from "ical-generator";
+import ical, { ICalAlarmType } from "ical-generator";
 import { Request, Response } from "express";
 import { Prostava, User } from "../types";
-import { ConverterUtils, GroupUtils, ProstavaUtils } from "../utils";
+import { GroupUtils, ProstavaUtils } from "../utils";
+import { i18n } from "../commons/locale";
+import { CalendarView } from "../views";
+import { DateTime } from "luxon";
 
 export class CalendarController {
     static async sendGroupCalendarOfProstavas(req: Request, res: Response) {
@@ -11,14 +14,20 @@ export class CalendarController {
                 throw new Error(`Not found groupId ${req.params.groupId}`);
             }
             GroupUtils.populateGroupProstavas(group);
-            const calendar = ical(ConverterUtils.convertGroupToCalendar(group));
+            const i18nContext = i18n.createContext(group.settings.language, {});
+            const calendar = ical(CalendarView.getGroupCalendar(group));
             (ProstavaUtils.filterScheduledProstavas(group.prostavas) as Prostava[]).forEach((prostava) => {
-                const event = calendar.createEvent(ConverterUtils.convertProstavaToEvent(prostava));
+                const event = calendar.createEvent(CalendarView.getProstavaEvent(prostava, i18nContext));
                 prostava.participants.forEach((participant) => {
-                    event.createAttendee(ConverterUtils.convertParticipantToAttendee(participant));
+                    event.createAttendee(CalendarView.getParticipantAttendee(participant));
                 });
                 (ProstavaUtils.filterUsersPendingToRateProstava(group.users, prostava) as User[]).forEach((user) => {
-                    event.createAttendee(ConverterUtils.convertUserToAttendee(user));
+                    event.createAttendee(CalendarView.getUserAttendee(user));
+                });
+                //TODO Default alarm
+                event.createAlarm({
+                    type: ICalAlarmType.display,
+                    trigger: DateTime.fromJSDate(prostava.prostava_data.date).minus({ day: 1 })
                 });
             });
             calendar.serve(res, `${req.params.groupId}.ics`);

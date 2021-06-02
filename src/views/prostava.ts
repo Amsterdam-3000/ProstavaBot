@@ -53,7 +53,11 @@ export class ProstavaView {
                         i18n,
                         PROSTAVA.ACTION.PROSTAVA_TIME,
                         ConverterUtils.displayValue(
-                            DateUtils.getTimeString(i18n.languageCode, prostava.prostava_data.date)
+                            DateUtils.getTimeString(
+                                i18n.languageCode,
+                                prostava.prostava_data.timezone,
+                                prostava.prostava_data.date
+                            )
                         )
                     ),
                     ConverterUtils.stringifyActionData(PROSTAVA.ACTION.PROSTAVA_TIME),

@@ -111,6 +111,10 @@ const ProstavaDataSchema = new Schema(
             type: Date,
             required: true
         },
+        timezone: {
+            type: String,
+            required: true
+        },
         venue: {
             type: VenueSchema,
             required: true
