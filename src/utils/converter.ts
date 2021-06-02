@@ -1,11 +1,8 @@
-import { ICalAttendeeData, ICalAttendeeStatus, ICalCalendarData, ICalEventData, ICalEventStatus } from "ical-generator";
-import { getVtimezoneComponent } from "@touch4it/ical-timezones";
-import { Group, Prostava, ProstavaParticipant, ProstavaStatus, User } from "../types";
+import { ICalAttendeeStatus, ICalEventStatus } from "ical-generator";
+import { ProstavaStatus } from "../types";
 import { CALENDAR, CODE, PROSTAVA } from "../constants";
-import { CONFIG } from "../commons/config";
 import { ConstantUtils } from "./constant";
 import { RegexUtils } from "./regex";
-import moment from "moment";
 
 export class ConverterUtils {
     //Value
@@ -46,60 +43,6 @@ export class ConverterUtils {
     }
 
     //Calendar
-    static convertGroupToCalendar(group: Group): ICalCalendarData {
-        return {
-            prodId: `//${CONFIG.PROSTAVA_HOST}//${group._id}//EN`,
-            name: group.settings.name,
-            timezone: {
-                name: "Europe/Moscow",
-                generator: getVtimezoneComponent
-            }
-        };
-    }
-    static convertProstavaToEvent(prostava: Prostava): ICalEventData {
-        return {
-            start: moment(prostava.prostava_data.date),
-            //TODO Default duration
-            end: moment(prostava.prostava_data.date).add(4, "hours"),
-            //TODO Group of prostava timezone
-            timezone: "Europe/Moscow",
-            summary: prostava.title,
-            status: this.convertProstavaStatusToEvent(prostava.status),
-            location: prostava.prostava_data.venue.title
-                ? {
-                      title: prostava.prostava_data.venue.title,
-                      address: prostava.prostava_data.venue.address,
-                      geo: prostava.prostava_data.venue.location
-                          ? {
-                                lat: prostava.prostava_data.venue.location.latitude,
-                                lon: prostava.prostava_data.venue.location.longitude
-                            }
-                          : undefined,
-                      radius: 1
-                  }
-                : null,
-            //TODO Rating and Cost
-            //description: "",
-            organizer: {
-                name: (prostava.author as User).user_string || (prostava.author as User).personal_data.name,
-                email: (prostava.author as User).user_id.toString()
-            }
-        };
-    }
-    static convertParticipantToAttendee(participant: ProstavaParticipant): ICalAttendeeData {
-        return {
-            name: (participant.user as User).user_string || (participant.user as User).personal_data.name,
-            email: (participant.user as User).user_id.toString(),
-            status: ConverterUtils.convertParticipantRatingToAttendee(participant.rating)
-        };
-    }
-    static convertUserToAttendee(user: User): ICalAttendeeData {
-        return {
-            name: user.user_string || user.personal_data.name,
-            email: user.user_id.toString(),
-            status: ICalAttendeeStatus.TENTATIVE
-        };
-    }
     static convertProstavaStatusToEvent(prostavaStatus: ProstavaStatus) {
         let eventStatus: ICalEventStatus;
         switch (prostavaStatus) {

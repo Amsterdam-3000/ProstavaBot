@@ -29,19 +29,21 @@ export class DateUtils {
             day: "numeric"
         });
     }
-    static getTimeString(language: string, date: Date | undefined) {
-        return date?.toLocaleString(language, {
+    static getTimeString(language: string, timezone: string, date: Date | undefined) {
+        return date?.toLocaleTimeString(language, {
+            timeZone: timezone,
             hour12: false,
             hour: "2-digit",
             minute: "2-digit"
         });
     }
-    static getDateTimeString(language: string, date: Date | undefined) {
+    static getDateTimeString(language: string, timezone: string, date: Date | undefined) {
         return date?.toLocaleString(language, {
             year: "numeric",
             month: "short",
             weekday: "short",
             day: "numeric",
+            timeZone: timezone,
             hour12: false,
             hour: "2-digit",
             minute: "2-digit"

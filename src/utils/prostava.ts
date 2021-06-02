@@ -8,6 +8,7 @@ import { ConverterUtils } from "./converter";
 import { ProstavaCollection } from "../models";
 import { UserUtils } from "./user";
 import { GroupUtils } from "./group";
+import { DateTime } from "luxon";
 
 export class ProstavaUtils {
     static createProstavaFromText(group: Group, user: User, text: string, isRequest = false) {
@@ -36,6 +37,7 @@ export class ProstavaUtils {
                 title:
                     prostavaData[0] && RegexUtils.matchTitle().test(prostavaData[0]) ? prostavaData[0] : prostavaTitle,
                 date: this.fillProstavaDateFromText(prostavaData[1], group.settings),
+                timezone: group.settings.timezone,
                 venue: {
                     title: prostavaData[2] && RegexUtils.matchTitle().test(prostavaData[2]) ? prostavaData[2] : ""
                 },
@@ -85,10 +87,10 @@ export class ProstavaUtils {
     }
     static changeProstavaTime(prostava: Prostava, timeText: string) {
         const time = timeText.split(":");
-        const date = new Date(prostava.prostava_data.date.getTime());
-        date.setHours(Number(time[0]));
-        date.setMinutes(Number(time[1]));
-        prostava.prostava_data.date = date;
+        const dateTime = DateTime.fromJSDate(prostava.prostava_data.date)
+            .setZone(prostava.prostava_data.timezone)
+            .set({ hour: Number(time[0]), minute: Number(time[1]) });
+        prostava.prostava_data.date = dateTime.toJSDate();
     }
     static announceProstava(prostava: Prostava, settings: Group["settings"]) {
         prostava.status = ProstavaStatus.Pending;

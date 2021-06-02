@@ -6,6 +6,7 @@ export interface GroupSettings {
     name: string;
     language: string;
     currency: string;
+    timezone: string;
     prostava_types: ProstavaType[];
     create_days_ago: number;
     chat_members_count: number;

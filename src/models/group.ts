@@ -22,6 +22,10 @@ const GroupSettinsSchema = new Schema(
             minLength: 1,
             maxLength: 1
         },
+        timezone: {
+            type: String,
+            default: "Europe/Moscow"
+        },
         prostava_types: [
             {
                 type: ProstavaTypeSchema,

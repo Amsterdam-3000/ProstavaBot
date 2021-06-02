@@ -31,6 +31,7 @@ export interface ProstavaData {
     type: string;
     title?: string;
     date: Date;
+    timezone: string;
     venue: ProstavaVenue;
     cost?: ProstavaCost;
 }
