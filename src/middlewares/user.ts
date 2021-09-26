@@ -2,7 +2,7 @@ import { UpdateContext } from "../types";
 import { TelegramUtils, UserUtils } from "../utils";
 
 export class UserMiddleware {
-    static async addUserToContext(ctx: UpdateContext, next: () => Promise<void>) {
+    static async addUserToContext(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         const user = TelegramUtils.getUserFromContext(ctx);
         if (!user || !ctx.group) {
             return;
@@ -15,20 +15,20 @@ export class UserMiddleware {
         await next();
     }
 
-    static async changeUserEmoji(ctx: UpdateContext, next: () => Promise<void>) {
+    static async changeUserEmoji(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         ctx.user.personal_data.emoji = TelegramUtils.getTextMessage(ctx).text;
         await next();
     }
-    static async changeUserBirthday(ctx: UpdateContext, next: () => Promise<void>) {
+    static async changeUserBirthday(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         ctx.user.personal_data.birthday = new Date(TelegramUtils.getTextMessage(ctx).text);
         await next();
     }
-    static async changeUserName(ctx: UpdateContext, next: () => Promise<void>) {
+    static async changeUserName(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         ctx.user.personal_data.name = TelegramUtils.getTextMessage(ctx).text;
         await next();
     }
 
-    static async saveUser(ctx: UpdateContext, next: () => Promise<void>) {
+    static async saveUser(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         await next();
         if (!ctx.user || !UserUtils.isUserModified(ctx.user)) {
             return;

@@ -7,7 +7,7 @@ import { CalendarView } from "../views";
 import { DateTime } from "luxon";
 
 export class CalendarController {
-    static async sendGroupCalendarOfProstavas(req: Request, res: Response) {
+    static async sendGroupCalendarOfProstavas(req: Request, res: Response): Promise<void> {
         try {
             const group = await GroupUtils.findGroupByChatIdFromDB(Number(req.params.groupId));
             if (!group) {
@@ -37,11 +37,11 @@ export class CalendarController {
         }
     }
 
-    static async redirectToAppleCalendar(req: Request, res: Response) {
+    static async redirectToAppleCalendar(req: Request, res: Response): Promise<void> {
         res.redirect(`webcal://${req.headers.host}/api/calendar/${req.params.groupId}.ics`);
     }
 
-    static async redirectToGoogleCalendar(req: Request, res: Response) {
+    static async redirectToGoogleCalendar(req: Request, res: Response): Promise<void> {
         res.redirect(
             `https://calendar.google.com/calendar/u/0/r/month?cid=http://${req.headers.host}/api/calendar/${req.params.groupId}.ics`
         );

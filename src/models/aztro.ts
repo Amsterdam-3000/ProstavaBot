@@ -16,7 +16,7 @@ export class AztroModel {
         return aztro;
     }
 
-    public static getTodayHoroscope(birthday: Date | undefined) {
+    public static getTodayHoroscope(birthday: Date | undefined): Promise<Aztro> | undefined {
         if (!birthday) {
             return undefined;
         }
