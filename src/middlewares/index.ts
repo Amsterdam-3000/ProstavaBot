@@ -3,4 +3,6 @@ export * from "./prostava";
 export * from "./user";
 export * from "./group";
 export * from "./global";
-export * from "./auth";
+export * from "./apiAuth";
+export * from "./apiGroup";
+export * from "./apiUser";

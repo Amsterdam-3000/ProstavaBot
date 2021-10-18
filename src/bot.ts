@@ -1,5 +1,4 @@
 import { bot } from "./commons/bot";
-import { db } from "./commons/db";
 import { PROSTAVA } from "./constants";
 import { UserMiddleware, GroupMiddleware, GlobalMiddleware, CommonMiddleware, ProstavaMiddleware } from "./middlewares";
 import { CommonController, HelpController, ProstavaController } from "./controllers";
@@ -9,12 +8,7 @@ import { ProstavaProcess, UserProcess } from "./processes";
 import { Scenes } from "telegraf";
 import { UpdateContext } from "./types";
 
-db.on("error", (err) => {
-    console.log(err);
-    process.exit(1);
-});
-
-db.once("open", () => {
+export function launchBot(): void {
     //Global middlewares
     bot.use(GlobalMiddleware.addSessionToContext);
     bot.use(GlobalMiddleware.isGroupChat);
@@ -87,10 +81,13 @@ db.once("open", () => {
     //Search prostavas
     bot.on("inline_query", ProstavaMiddleware.addQueryProstavasToContext, ProstavaController.showQueryProstavas);
 
+    //TODO Sync DB (Left members, new chat photo and etc.)
+    // bot.on("");
+
     //Launch
     bot.launch();
     bot.catch((err) => console.log(err));
-    console.log("Prostava is polling");
+    console.log("Prostava Bot is polling");
 
     //Background jobs
     prostavaQueue.process(PROSTAVA.JOB.PROSTAVA_AUTO_PUBLISH, ProstavaProcess.publishOrWithdrawCompletedProstavas);
@@ -100,4 +97,4 @@ db.once("open", () => {
     //Enable graceful stop
     process.once("SIGINT", () => bot.stop("SIGINT"));
     process.once("SIGTERM", () => bot.stop("SIGTERM"));
-});
+}

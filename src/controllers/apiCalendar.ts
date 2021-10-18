@@ -6,10 +6,10 @@ import { i18n } from "../commons/locale";
 import { CalendarView } from "../views";
 import { DateTime } from "luxon";
 
-export class CalendarController {
+export class ApiCalendarController {
     static async sendGroupCalendarOfProstavas(req: Request, res: Response): Promise<void> {
         try {
-            const group = await GroupUtils.findGroupByChatIdFromDB(Number(req.params.groupId));
+            const group = await GroupUtils.getGroupByChatIdFromDB(Number(req.params.groupId));
             if (!group) {
                 throw new Error(`Not found groupId ${req.params.groupId}`);
             }
@@ -27,13 +27,13 @@ export class CalendarController {
                 //TODO Default alarm
                 event.createAlarm({
                     type: ICalAlarmType.display,
-                    trigger: DateTime.fromJSDate(prostava.prostava_data.date).minus({ day: 1 })
+                    trigger: DateTime.fromJSDate(prostava.prostava_data.date).minus({ days: 1 })
                 });
             });
             calendar.serve(res, `${req.params.groupId}.ics`);
-        } catch (err) {
-            console.log(err);
-            res.sendStatus(404);
+        } catch (error) {
+            console.log(error);
+            res.status(500).json(error);
         }
     }
 

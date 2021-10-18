@@ -3,6 +3,8 @@ import { ProstavaStatus } from "../types";
 import { CALENDAR, CODE, PROSTAVA } from "../constants";
 import { ConstantUtils } from "./constant";
 import { RegexUtils } from "./regex";
+import emojiToolkit from "emoji-toolkit";
+import emojiUnicode from "emoji-unicode";
 
 export class ConverterUtils {
     //Value
@@ -73,5 +75,18 @@ export class ConverterUtils {
             sessionKey = `${sessionKey}:${chatId}`;
         }
         return sessionKey;
+    }
+
+    //Emoji Url
+    static getEmojiImageUrl(emoji: string | undefined): string | undefined {
+        const emojiImageUrl = emojiToolkit.toImage(emoji)?.match(/(?<=src=")[^"]+/);
+        if (emojiImageUrl?.length) {
+            return emojiImageUrl[0]?.replace("/32/", "/128/");
+        }
+        const emojiCode = emojiUnicode(emoji);
+        if (emojiCode && !emojiCode.includes(" ")) {
+            return `https://cdn.jsdelivr.net/joypixels/assets/6.5/png/unicode/128/${emojiCode}.png`;
+        }
+        return;
     }
 }

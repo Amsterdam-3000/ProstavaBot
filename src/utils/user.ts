@@ -8,7 +8,7 @@ import { CODE } from "../constants";
 export class UserUtils {
     static createUserForGroup(group: Group, user: TelegramUser) {
         return new UserCollection({
-            _id: Types.ObjectId(),
+            _id: new Types.ObjectId(),
             user_id: user.id,
             group_id: group._id,
             is_bot: user.is_bot,
@@ -66,7 +66,10 @@ export class UserUtils {
         return age;
     }
 
-    static getBirthdayUsersOnDateFromDB(date: Date) {
+    static getUsersByUserIdFromDB(userId: User["user_id"]): Promise<UserDocument[]> {
+        return UserCollection.find({ user_id: userId }).exec();
+    }
+    static getBirthdayUsersOnDateFromDB(date: Date): Promise<UserDocument[]> {
         return UserCollection.find({
             $expr: {
                 $and: [

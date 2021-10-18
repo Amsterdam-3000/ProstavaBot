@@ -3,14 +3,15 @@ import { PROSTAVA } from "../constants";
 import { CONFIG } from "./config";
 
 export const prostavaQueue = new Queue(PROSTAVA.QUEUE.PROSTAVA, {
-    redis: CONFIG.REDIS_URI,
     //TODO Need local redis for dev
+    redis: CONFIG.REDIS_URI,
     prefix: `${process.env.NODE_ENV}:${PROSTAVA.COLLECTION.QUEUE}`,
     defaultJobOptions: {
         removeOnComplete: true,
         removeOnFail: false
     }
 });
+
 prostavaQueue.add(
     PROSTAVA.JOB.PROSTAVA_AUTO_PUBLISH,
     {},

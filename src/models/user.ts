@@ -1,8 +1,7 @@
 import { model, Schema, Types } from "mongoose";
+import { ConverterUtils } from "../utils";
 import { PROSTAVA, CODE } from "../constants";
-import { UserDocument, UserModel } from "../types";
-import emojiToolkit from "emoji-toolkit";
-import emojiUnicode from "emoji-unicode";
+import { UserDocument, UserModel, PersonalData } from "../types";
 
 const PersonalDataSchema = new Schema(
     {
@@ -10,7 +9,7 @@ const PersonalDataSchema = new Schema(
         emoji: {
             type: String,
             default: CODE.ACTION.PROFILE_EMOJI,
-            minLength: 2,
+            minLength: 1,
             maxLength: 8
         },
         birthday: Date
@@ -37,22 +36,15 @@ const UserSchema = new Schema<UserDocument, UserModel>({
     },
     personal_data: {
         type: PersonalDataSchema,
-        default: {}
+        default: {} as PersonalData
     }
 });
 UserSchema.virtual("user_link").get(function (this: UserDocument) {
     return `tg://user?id=${this.user_id}`;
 });
 UserSchema.virtual("user_photo").get(function (this: UserDocument) {
-    const emojiImageUrl = emojiToolkit.toImage(this.personal_data?.emoji)?.match(/(?<=src=")[^"]+/);
-    if (emojiImageUrl?.length) {
-        return emojiImageUrl[0]?.replace("/32/", "/128/");
-    }
-    const emojiCode = emojiUnicode(this.personal_data?.emoji);
-    if (emojiCode && !emojiCode.includes(" ")) {
-        return `https://cdn.jsdelivr.net/joypixels/assets/6.5/png/unicode/128/${emojiCode}.png`;
-    }
-    return "https://cdn.jsdelivr.net/joypixels/assets/6.5/png/unicode/128/1f921.png";
+    const emojiImageUrl = ConverterUtils.getEmojiImageUrl(this.personal_data?.emoji);
+    return emojiImageUrl ? emojiImageUrl : "https://cdn.jsdelivr.net/joypixels/assets/6.5/png/unicode/128/1f921.png";
 });
 UserSchema.virtual("user_string").get(function (this: UserDocument) {
     return this.personal_data.emoji + " " + this.personal_data.name;

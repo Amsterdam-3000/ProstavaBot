@@ -127,11 +127,11 @@ export class TelegramUtils {
         const hash = HmacSHA256(data_check_string, secret_key);
         return authUser["hash"] === hash.toString(enc.Hex);
     }
-    static signTelegramUser(authUser: Record<string, unknown>): { user: Record<string, unknown>; token: string } {
+    static signTelegramUser(authUser: Record<string, unknown>): string {
         const user = { ...authUser };
         delete user["hash"];
         delete user["auth_date"];
-        return { user: user, token: sign(user, CONFIG.TELEGRAM_TOKEN!) };
+        return sign(user, CONFIG.TELEGRAM_TOKEN!, { expiresIn: "3 days" });
     }
 
     static getUserString(user: User | undefined): string {

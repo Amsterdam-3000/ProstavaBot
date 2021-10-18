@@ -83,7 +83,7 @@ export const ProstavaTypeSchema = new Schema(
         text: String,
         emoji: {
             type: String,
-            minLength: 2,
+            minLength: 1,
             maxLength: 8,
             required: true
         }

@@ -26,7 +26,7 @@ export class ProstavaUtils {
             prostavaData.shift();
         }
         const prostava = new ProstavaCollection({
-            _id: Types.ObjectId(),
+            _id: new Types.ObjectId(),
             group_id: group._id,
             author: author,
             creator: user,

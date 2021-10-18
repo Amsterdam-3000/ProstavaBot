@@ -1,6 +1,6 @@
 import { CODE, PROSTAVA } from "../constants";
 import { UpdateContext } from "../types";
-import { GroupUtils, TelegramUtils } from "../utils";
+import { GroupUtils, TelegramUtils, RegexUtils } from "../utils";
 
 export class GroupMiddleware {
     static async addGroupToContext(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
@@ -8,7 +8,7 @@ export class GroupMiddleware {
         if (!chat) {
             return;
         }
-        const group = await GroupUtils.findGroupByChatIdFromDB(chat.id);
+        const group = await GroupUtils.getGroupByChatIdFromDB(chat.id);
         if (group) {
             GroupUtils.populateGroupProstavas(group);
             ctx.group = group;
@@ -16,6 +16,12 @@ export class GroupMiddleware {
             const chatMembersCount = await ctx.getChatMembersCount();
             ctx.group = GroupUtils.createGroupForChat(chat, chatMembersCount);
         }
+        await next();
+    }
+
+    //Emoji
+    static async changeGroupEmoji(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
+        ctx.group.settings.emoji = TelegramUtils.getTextMessage(ctx).text;
         await next();
     }
 
@@ -42,7 +48,8 @@ export class GroupMiddleware {
     //Prostava type
     static async addNewProstavaType(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         const inputText = TelegramUtils.getTextMessage(ctx).text;
-        if (ctx.group.settings.prostava_types.find((type) => type.emoji === inputText)) {
+        const emoji = inputText.match(RegexUtils.matchEmoji());
+        if (!emoji || ctx.group.settings.prostava_types.find((type) => type.emoji === emoji[0])) {
             ctx.answerCbQuery();
             return;
         }
