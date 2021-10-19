@@ -144,7 +144,7 @@ const ProstavaParticipantSchema = new Schema(
     { _id: false }
 );
 
-const ProstavaSchema = new Schema<ProstavaDocument, ProstavaModel>({
+const ProstavaSchema = new Schema<ProstavaDocument>({
     _id: {
         type: Schema.Types.ObjectId,
         default: new Types.ObjectId()

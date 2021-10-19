@@ -61,7 +61,7 @@ const GroupSettinsSchema = new Schema(
     { _id: false }
 );
 
-const GroupSchema = new Schema<GroupDocument, GroupModel>(
+const GroupSchema = new Schema<GroupDocument>(
     {
         _id: Number,
         settings: {

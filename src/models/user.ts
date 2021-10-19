@@ -17,7 +17,7 @@ const PersonalDataSchema = new Schema(
     { _id: false }
 );
 
-const UserSchema = new Schema<UserDocument, UserModel>({
+const UserSchema = new Schema<UserDocument>({
     _id: {
         type: Schema.Types.ObjectId,
         default: new Types.ObjectId()

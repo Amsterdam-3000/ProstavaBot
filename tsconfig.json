@@ -2,6 +2,7 @@
     "extends": "@tsconfig/node14/tsconfig.json",
     "compilerOptions": {
         "noImplicitAny": false,
+        "esModuleInterop": true,
         "moduleResolution": "node",
         "outDir": "dist",
         "baseUrl": ".",

@@ -11,6 +11,7 @@ export class AztroModel {
             })
         };
         const url = `https://aztro.sameerkumar.website/?sign=${aztro.name.toLowerCase()}&day=${day}`;
+        //TODO fix this
         // const response = await fetch(url, { method: "POST" });
         // aztro = { ...aztro, ...(await (response.json() as Promise<Record<string, unknown>>)) };
         return aztro;

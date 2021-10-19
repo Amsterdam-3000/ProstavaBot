@@ -7,15 +7,16 @@ export class CommonMiddleware {
         TelegramUtils.setSceneState(ctx, { actionData: TelegramUtils.getCbQueryData(ctx) });
         await next();
     }
-    static checkStateAction =
-        (actions: Array<string>) =>
-        async (ctx: UpdateContext, next: () => Promise<void>): Promise<void> => {
-            const action = TelegramUtils.getActionDataFromSceneState(ctx)?.action;
-            if (!action || !RegexUtils.matchAction(action).test(actions.join("|"))) {
-                return;
-            }
-            await next();
-        };
+    static checkStateAction = (actions: Array<string>) => async (
+        ctx: UpdateContext,
+        next: () => Promise<void>
+    ): Promise<void> => {
+        const action = TelegramUtils.getActionDataFromSceneState(ctx)?.action;
+        if (!action || !RegexUtils.matchAction(action).test(actions.join("|"))) {
+            return;
+        }
+        await next();
+    };
 
     static async isCbMessageOrigin(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         const actionData = TelegramUtils.getActionDataFromCbQuery(ctx);
