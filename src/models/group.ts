@@ -1,14 +1,21 @@
 import { model, Schema } from "mongoose";
 import { CONFIG } from "../commons/config";
 import { PROSTAVA, LOCALE, CODE } from "../constants";
-import { GroupModel, GroupDocument } from "../types";
+import { GroupModel, GroupDocument, GroupSettings } from "../types";
 import { ProstavaTypeSchema } from "./prostava";
+import { ConverterUtils } from "../utils";
 
 const GroupSettinsSchema = new Schema(
     {
         name: {
             type: String,
             required: true
+        },
+        emoji: {
+            type: String,
+            default: CODE.ACTION.SETTINGS_EMOJI,
+            minLength: 1,
+            maxLength: 8
         },
         language: {
             type: String,
@@ -54,12 +61,12 @@ const GroupSettinsSchema = new Schema(
     { _id: false }
 );
 
-const GroupSchema = new Schema<GroupDocument, GroupModel>(
+const GroupSchema = new Schema<GroupDocument>(
     {
         _id: Number,
         settings: {
             type: GroupSettinsSchema,
-            default: {}
+            default: {} as GroupSettings
         },
         users: [
             {
@@ -80,7 +87,8 @@ const GroupSchema = new Schema<GroupDocument, GroupModel>(
 );
 GroupSchema.plugin(require("mongoose-autopopulate"));
 GroupSchema.virtual("group_photo").get(function (this: GroupDocument) {
-    return "https://cdn.jsdelivr.net/joypixels/assets/6.5/png/unicode/128/1f465.png";
+    const emojiImageUrl = ConverterUtils.getEmojiImageUrl(this.settings.emoji);
+    return emojiImageUrl ? emojiImageUrl : "https://cdn.jsdelivr.net/joypixels/assets/6.5/png/unicode/128/1f3ad.png";
 });
 GroupSchema.virtual("calendar_google").get(function (this: GroupDocument) {
     return `${CONFIG.PROSTAVA_SCHEME}://${CONFIG.PROSTAVA_HOST}/api/calendar/google/${this._id}`;

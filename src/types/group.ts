@@ -4,6 +4,7 @@ import { User } from "./user";
 
 export interface GroupSettings {
     name: string;
+    emoji?: string;
     language: string;
     currency: string;
     timezone: string;

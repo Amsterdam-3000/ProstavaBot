@@ -3,4 +3,7 @@ export * from "./help";
 export * from "./settings";
 export * from "./profile";
 export * from "./prostava";
-export * from "./calendar";
+export * from "./apiCalendar";
+export * from "./apiAuth";
+export * from "./apiGroup";
+export * from "./apiUser";

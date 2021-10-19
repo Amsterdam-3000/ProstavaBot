@@ -11,6 +11,15 @@ export const settingsScene = new Scenes.BaseScene<UpdateContext>(PROSTAVA.SCENE.
 settingsScene.enter(SettingsController.showSettings);
 settingsScene.use(CommonMiddleware.isCbMessageOrigin, GroupMiddleware.saveGroup);
 
+//Emoji
+CommonScene.actionInputRequest(settingsScene, PROSTAVA.ACTION.SETTINGS_EMOJI);
+settingsScene.hears(
+    RegexUtils.matchOneEmoji(),
+    CommonMiddleware.checkStateAction([PROSTAVA.ACTION.SETTINGS_EMOJI]),
+    GroupMiddleware.changeGroupEmoji,
+    CommonController.enterScene(PROSTAVA.SCENE.SETTINGS)
+);
+
 //Language
 settingsScene.action(RegexUtils.matchAction(PROSTAVA.ACTION.SETTINGS_LANGUAGE), SettingsController.showLanguages);
 settingsScene.action(
@@ -32,7 +41,7 @@ settingsScene.action(
 settingsScene.action(RegexUtils.matchAction(PROSTAVA.ACTION.SETTINGS_TYPE), SettingsController.showProstavaTypes);
 CommonScene.actionInputRequest(settingsScene, PROSTAVA.ACTION.SETTINGS_TYPENEW);
 settingsScene.hears(
-    RegexUtils.matchOneEmoji(),
+    RegexUtils.matchOneEmojiAndText(),
     CommonMiddleware.checkStateAction([PROSTAVA.ACTION.SETTINGS_TYPENEW]),
     GroupMiddleware.addNewProstavaType,
     SettingsController.showProstavaTypes

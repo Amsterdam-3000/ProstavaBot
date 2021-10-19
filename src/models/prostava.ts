@@ -83,7 +83,7 @@ export const ProstavaTypeSchema = new Schema(
         text: String,
         emoji: {
             type: String,
-            minLength: 2,
+            minLength: 1,
             maxLength: 8,
             required: true
         }
@@ -144,7 +144,7 @@ const ProstavaParticipantSchema = new Schema(
     { _id: false }
 );
 
-const ProstavaSchema = new Schema<ProstavaDocument, ProstavaModel>({
+const ProstavaSchema = new Schema<ProstavaDocument>({
     _id: {
         type: Schema.Types.ObjectId,
         default: new Types.ObjectId()

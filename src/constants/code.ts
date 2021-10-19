@@ -13,6 +13,7 @@ export const CODE: { [index: string]: { [index: string]: string } } = {
         SETTINGS_HOURS: "⏱",
         SETTINGS_GOOGLE: "🤖",
         SETTINGS_APPLE: "🍏",
+        SETTINGS_EMOJI: "🎭",
         PROFILE_BOT: "🤖",
         PROFILE_EMOJI: "🤡",
         PROFILE_BIRTHDAY: "🎂",

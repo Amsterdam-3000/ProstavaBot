@@ -1,14 +1,14 @@
 import { CODE, PROSTAVA } from "../constants";
 import { UpdateContext } from "../types";
-import { GroupUtils, TelegramUtils } from "../utils";
+import { GroupUtils, TelegramUtils, RegexUtils } from "../utils";
 
 export class GroupMiddleware {
-    static async addGroupToContext(ctx: UpdateContext, next: () => Promise<void>) {
+    static async addGroupToContext(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         const chat = TelegramUtils.getChatFromContext(ctx);
         if (!chat) {
             return;
         }
-        const group = await GroupUtils.findGroupByChatIdFromDB(chat.id);
+        const group = await GroupUtils.getGroupByChatIdFromDB(chat.id);
         if (group) {
             GroupUtils.populateGroupProstavas(group);
             ctx.group = group;
@@ -19,8 +19,14 @@ export class GroupMiddleware {
         await next();
     }
 
+    //Emoji
+    static async changeGroupEmoji(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
+        ctx.group.settings.emoji = TelegramUtils.getTextMessage(ctx).text;
+        await next();
+    }
+
     //Language and currency
-    static async changeLanguage(ctx: UpdateContext, next: () => Promise<void>) {
+    static async changeLanguage(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         const actionData = TelegramUtils.getActionDataFromCbQuery(ctx);
         if (actionData?.value === ctx.i18n.languageCode) {
             ctx.answerCbQuery();
@@ -29,7 +35,7 @@ export class GroupMiddleware {
         ctx.group.settings.language = actionData?.value || "";
         await next();
     }
-    static async changeCurrency(ctx: UpdateContext, next: () => Promise<void>) {
+    static async changeCurrency(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         const actionData = TelegramUtils.getActionDataFromCbQuery(ctx);
         if (actionData?.value === ctx.group.settings.currency) {
             ctx.answerCbQuery();
@@ -40,16 +46,17 @@ export class GroupMiddleware {
     }
 
     //Prostava type
-    static async addNewProstavaType(ctx: UpdateContext, next: () => Promise<void>) {
+    static async addNewProstavaType(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         const inputText = TelegramUtils.getTextMessage(ctx).text;
-        if (ctx.group.settings.prostava_types.find((type) => type.emoji === inputText)) {
+        const emoji = inputText.match(RegexUtils.matchEmoji());
+        if (!emoji || ctx.group.settings.prostava_types.find((type) => type.emoji === emoji[0])) {
             ctx.answerCbQuery();
             return;
         }
         GroupUtils.addNewPostavaTypeFromText(ctx.group, inputText);
         await next();
     }
-    static async changeOrDeleteProstavaType(ctx: UpdateContext, next: () => Promise<void>) {
+    static async changeOrDeleteProstavaType(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         const actionData = TelegramUtils.getActionDataFromSceneState(ctx);
         if (!actionData) {
             return;
@@ -74,7 +81,7 @@ export class GroupMiddleware {
     }
 
     //Others
-    static async changeSettings(ctx: UpdateContext, next: () => Promise<void>) {
+    static async changeSettings(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         const inputNumber = Number(TelegramUtils.getTextMessage(ctx).text);
         switch (TelegramUtils.getActionDataFromSceneState(ctx)?.action) {
             case PROSTAVA.ACTION.SETTINGS_DAYS:
@@ -100,11 +107,11 @@ export class GroupMiddleware {
         await next();
     }
 
-    static async applyGroupSettings(ctx: UpdateContext, next: () => Promise<void>) {
+    static async applyGroupSettings(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         ctx.i18n.locale(ctx.group.settings.language);
         await next();
     }
-    static async saveGroup(ctx: UpdateContext, next: () => Promise<void>) {
+    static async saveGroup(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         await next();
         if (!ctx.group || !GroupUtils.isGroupModified(ctx.group)) {
             return;

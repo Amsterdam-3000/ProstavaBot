@@ -10,6 +10,10 @@ export class SettingsView {
         return Markup.inlineKeyboard(
             [
                 Markup.button.callback(
+                    LocaleUtils.getActionText(i18n, PROSTAVA.ACTION.SETTINGS_EMOJI, group.settings.emoji),
+                    ConverterUtils.stringifyActionData(PROSTAVA.ACTION.SETTINGS_EMOJI)
+                ),
+                Markup.button.callback(
                     LocaleUtils.getActionText(
                         i18n,
                         PROSTAVA.ACTION.SETTINGS_LANGUAGE,

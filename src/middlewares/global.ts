@@ -12,7 +12,7 @@ export class GlobalMiddleware {
     static addLoggingContext = Telegraf.log();
     static addStageToContext = mainStage.middleware();
 
-    static async isGroupChat(ctx: UpdateContext, next: () => Promise<void>) {
+    static async isGroupChat(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         const chat = TelegramUtils.getChatFromContext(ctx);
         if (!chat) {
             return;
@@ -24,14 +24,14 @@ export class GlobalMiddleware {
         await next();
     }
 
-    static async isUserRealOrProstavaBot(ctx: UpdateContext, next: () => Promise<void>) {
+    static async isUserRealOrProstavaBot(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         const user = TelegramUtils.getUserFromContext(ctx);
         if (!TelegramUtils.isUserReal(user) && !TelegramUtils.isUserProstavaBot(ctx.botInfo, user)) {
             return;
         }
         await next();
     }
-    static async isUserAdmin(ctx: UpdateContext, next: () => Promise<void>) {
+    static async isUserAdmin(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         const user = TelegramUtils.getUserFromContext(ctx);
         if (!user) {
             return;
@@ -43,7 +43,7 @@ export class GlobalMiddleware {
         }
         await next();
     }
-    static async addChatToUserSession(ctx: UpdateContext, next: () => Promise<void>) {
+    static async addChatToUserSession(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         await next();
         if (!ctx.chat) {
             return;

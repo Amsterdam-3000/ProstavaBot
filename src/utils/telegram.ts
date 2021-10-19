@@ -1,4 +1,7 @@
 import { CallbackQuery, Chat, ChatMember, Message, Update, User } from "telegraf/typings/core/types/typegram";
+import { SHA256, HmacSHA256, enc } from "crypto-js";
+import { sign } from "jsonwebtoken";
+
 import { CONFIG } from "../commons/config";
 import { PROSTAVA, TELEGRAM } from "../constants";
 import { SceneState, UpdateContext } from "../types";
@@ -114,7 +117,24 @@ export class TelegramUtils {
         return ctx.message as Message.LocationMessage;
     }
 
-    static getUserString(user: User | undefined) {
+    static checkTelegramUserAuth(authUser: Record<string, unknown>): boolean {
+        const data_check_string = Object.entries(authUser)
+            .filter((a) => a[0] !== "hash")
+            .sort((a, b) => (a[0] !== b[0] ? (a[0] < b[0] ? -1 : 1) : 0))
+            .map((a) => `${a[0]}=${a[1]}`)
+            .join("\n");
+        const secret_key = SHA256(CONFIG.TELEGRAM_TOKEN!);
+        const hash = HmacSHA256(data_check_string, secret_key);
+        return authUser["hash"] === hash.toString(enc.Hex);
+    }
+    static signTelegramUser(authUser: Record<string, unknown>): string {
+        const user = { ...authUser };
+        delete user["hash"];
+        delete user["auth_date"];
+        return sign(user, CONFIG.TELEGRAM_TOKEN!, { expiresIn: "3 days" });
+    }
+
+    static getUserString(user: User | undefined): string {
         if (!user) {
             return "";
         }
@@ -124,20 +144,20 @@ export class TelegramUtils {
         return user.last_name ? `${user.first_name} ${user.last_name}` : user.first_name;
     }
 
-    static isChatGroup(chat: Chat) {
+    static isChatGroup(chat: Chat): boolean {
         return chat.type === TELEGRAM.CHAT_TYPE.GROUP || chat.type === TELEGRAM.CHAT_TYPE.SUPERGROUP;
     }
-    static isMemberAdmin(member: ChatMember) {
+    static isMemberAdmin(member: ChatMember): boolean {
         return (
             member.user.id === CONFIG.SUPER_ADMIN_ID ||
             member.status === TELEGRAM.MEMBER_STATUS.OWNER ||
             member.status === TELEGRAM.MEMBER_STATUS.ADMIN
         );
     }
-    static isUserReal(user: User | undefined) {
+    static isUserReal(user: User | undefined): boolean {
         return !user?.is_bot;
     }
-    static isUserProstavaBot(bot: User, user: User | undefined) {
-        return user?.is_bot && user?.id === bot.id;
+    static isUserProstavaBot(bot: User, user: User | undefined): boolean {
+        return Boolean(user?.is_bot && user?.id === bot.id);
     }
 }

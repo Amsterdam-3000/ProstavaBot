@@ -3,12 +3,13 @@ reply:
         language: "${code} Change Prostava language"
         currency: "${code} Change Prostava currency"
         type: "${code} Change Prostava types"
-        typenew: "${code} Send me emoji for type"
+        typenew: "${code} Send me emoji and text for new type"
         typedit: "${code} Send me text for type or ${value}"
         days: "${code} Send me expiration date of prostava in days (0-∞)"
         count: "${code} Send me chat members count (0-∞)"
         percentage: "${code} Send me minimum percent of participants (0-100)"
         hours: "${code} Send me pending time of prostava in hours (0-∞)"
+        emoji: "${code} Send me Group emoji"
     profile:
         emoji: "${code} Send me Your emoji"
         birthday: "${code} Send me Your date of birth (YYYY-MM-DD)"
@@ -40,6 +41,7 @@ action:
         hours: "${code} Prostava pending hours: ${value}"
         google: "${code} Google Calendar"
         apple: "${code} Apple Calendar"
+        emoji: "Emoji: ${value}"
     profile:
         emoji: "Emoji: ${value}"
         birthday: "Birthday: ${value}"

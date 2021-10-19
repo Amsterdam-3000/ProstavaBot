@@ -26,7 +26,7 @@ export class ProstavaUtils {
             prostavaData.shift();
         }
         const prostava = new ProstavaCollection({
-            _id: Types.ObjectId(),
+            _id: new Types.ObjectId(),
             group_id: group._id,
             author: author,
             creator: user,
@@ -98,7 +98,7 @@ export class ProstavaUtils {
         prostava.participants_min_count = Math.ceil(
             (prostava.participants_max_count * settings.participants_min_percent) / 100
         );
-        if (prostava.prostava_data.date.getTime() > Date.now()) {
+        if (!prostava.is_request && prostava.prostava_data.date.getTime() > Date.now()) {
             prostava.is_preview = true;
             prostava.closing_date = DateUtils.getDateDaysAfter(1, prostava.prostava_data.date);
         } else {
