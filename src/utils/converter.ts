@@ -8,10 +8,10 @@ import emojiUnicode from "emoji-unicode";
 
 export class ConverterUtils {
     //Value
-    static displaySelectedValue(value: string, selected: boolean) {
+    static displaySelectedValue(value: string, selected: boolean): string {
         return `${value} ${ConstantUtils.getSelectedCode(selected)}`;
     }
-    static displayValue(value: string | undefined, code = CODE.SELECTED.NOT_SELECTED) {
+    static displayValue(value: string | undefined, code = CODE.SELECTED.NOT_SELECTED): string {
         if (value) {
             return value;
         }
@@ -19,18 +19,19 @@ export class ConverterUtils {
     }
 
     //Action
-    static getSubAction(action: string) {
+    static getSubAction(action: string): string {
         return `${action}-`;
     }
-    static sliceProstavaAction(action: string) {
+    static sliceProstavaAction(action: string): string {
         return action.replace(RegexUtils.matchProstavaActionPrefix(), "");
     }
-    static sliceCalendarActionDate(action: string) {
+    static sliceCalendarActionDate(action: string): string {
         return action.replace(CALENDAR.ACTION.CALENDAR_DATE, "");
     }
     static stringifyActionData(action: string, value?: string, id?: string, isPublic = false): string {
         return action + "|" + (value || 0) + "|" + (id || 0) + "|" + (isPublic ? 1 : 0);
     }
+    //TODO Create type action data
     static parseActionData(data: string | undefined) {
         if (!data) {
             return undefined;
@@ -45,7 +46,7 @@ export class ConverterUtils {
     }
 
     //Calendar
-    static convertProstavaStatusToEvent(prostavaStatus: ProstavaStatus) {
+    static convertProstavaStatusToEvent(prostavaStatus: ProstavaStatus): ICalEventStatus {
         let eventStatus: ICalEventStatus;
         switch (prostavaStatus) {
             case ProstavaStatus.Approved:
@@ -60,12 +61,12 @@ export class ConverterUtils {
         }
         return eventStatus;
     }
-    static convertParticipantRatingToAttendee(participantRating: number) {
+    static convertParticipantRatingToAttendee(participantRating: number): ICalAttendeeStatus {
         return participantRating > 0 ? ICalAttendeeStatus.ACCEPTED : ICalAttendeeStatus.DECLINED;
     }
 
     //Session
-    static concatSessionKey(fromId?: number, chatId?: number) {
+    static concatSessionKey(fromId?: number, chatId?: number): string {
         //TODO Need local redis for dev
         let sessionKey = `${process.env.NODE_ENV}:${PROSTAVA.COLLECTION.SESSION}`;
         if (fromId) {
@@ -88,5 +89,27 @@ export class ConverterUtils {
             return `https://cdn.jsdelivr.net/joypixels/assets/6.5/png/unicode/128/${emojiCode}.png`;
         }
         return;
+    }
+    //Currency Url
+    static getCurrencyImageUrl(currency: string): string {
+        let currencyImageUrl: string;
+        switch (currency) {
+            case "RUBLE":
+                currencyImageUrl = "https://img.icons8.com/color/48/000000/ruble--v1.png";
+                break;
+            case "EURO":
+                currencyImageUrl = "https://img.icons8.com/color/48/000000/euro-pound-exchange--v1.png";
+                break;
+            case "DOLLAR":
+                currencyImageUrl = "https://img.icons8.com/color/48/000000/us-dollar--v1.png";
+                break;
+            case "SHEQEL":
+                currencyImageUrl = "https://img.icons8.com/color/48/000000/shekel--v1.png";
+                break;
+            default:
+                currencyImageUrl = "https://img.icons8.com/color/48/000000/currency.png";
+                break;
+        }
+        return currencyImageUrl;
     }
 }

@@ -18,7 +18,7 @@ export class ApiGroupMiddleware {
             res.sendStatus(404);
             return;
         }
-        req.group = group.toObject({ virtuals: true });
+        req.group = group;
         //Check Group auth
         if (!UserUtils.findUserByUserId(req.group.users, req.user!.id)) {
             //TODO Add message?

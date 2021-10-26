@@ -1,3 +1,4 @@
+import { I18nContext } from "@edjopato/telegraf-i18n/dist/source";
 import { Group, User as GroupUser } from ".";
 
 declare global {
@@ -14,6 +15,7 @@ declare global {
         export interface Request {
             group: Group;
             groupUser: GroupUser;
+            i18n: I18nContext;
         }
     }
 }

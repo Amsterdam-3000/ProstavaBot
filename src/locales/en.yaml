@@ -62,6 +62,14 @@ status:
     pending: "${code} ${value}"
     rejected: "${code}"
     approved: "${code}"
+language:
+    ru: "Russian"
+    en: "English"
+currency:
+    ruble: "Rouble"
+    euro: "Euro"
+    dollar: "US Dollar"
+    sheqel: "Sheqel"
 polling:
     0: "${code} No"
     1: "${code} Yes"
