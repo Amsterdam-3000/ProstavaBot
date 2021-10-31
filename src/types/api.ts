@@ -1,8 +1,9 @@
 export interface ApiBaseObject {
     id: string;
     name?: string;
+    link?: string;
+    emoji?: string;
     photo?: string;
-    link?: string
     string?: string;
 }
 
@@ -17,6 +18,7 @@ export interface ApiGroup extends ApiBaseObject {
     pending_hours: number;
     calendar_apple?: string;
     calendar_google?: string;
+    readonly?: boolean;
 }
 
 export interface ApiUser extends ApiBaseObject {

@@ -1,19 +1,18 @@
 import { Router } from "express";
 
-import { ApiUserMiddleware } from "../middlewares";
+import { ApiAuthMiddleware, ApiUserMiddleware } from "../middlewares";
 import { ApiGroupController } from "../controllers";
 
 import { userRouter } from "./user";
 
 export const groupRouter = Router();
 
-groupRouter.route("/").get(ApiGroupController.getGroup);
+groupRouter.route("/").get(ApiAuthMiddleware.isUserAdmin(), ApiGroupController.getGroup);
 groupRouter
     .route("/")
-    .patch(ApiUserMiddleware.addUserToRequest, ApiUserMiddleware.isUserAdmin, ApiGroupController.updateGroup);
+    //TODO Add Fields Checks Middleware
+    .patch(ApiAuthMiddleware.isUserAdmin(true), ApiUserMiddleware.addUserToRequest, ApiGroupController.updateGroup);
 
-groupRouter.route("/languages").get(ApiGroupController.getGroupLanguages);
-groupRouter.route("/currencies").get(ApiGroupController.getGroupCurrencies);
 groupRouter.route("/users").get(ApiGroupController.getGroupUsers);
 // groupRouter.route("/prostavas").get(ApiGroupController.getGroupProstavas);
 

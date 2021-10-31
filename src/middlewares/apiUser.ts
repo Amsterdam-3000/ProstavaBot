@@ -14,14 +14,4 @@ export class ApiUserMiddleware {
         req.groupUser = user;
         next();
     }
-
-    static async isUserAdmin(req: Request, res: Response, next: NextFunction): Promise<void> {
-        const chatMember = await bot.telegram.getChatMember(req.group._id, req.user!.id);
-        if (!TelegramUtils.isMemberAdmin(chatMember)) {
-            //TODO Add message?
-            res.sendStatus(403);
-            return;
-        }
-        next();
-    }
 }

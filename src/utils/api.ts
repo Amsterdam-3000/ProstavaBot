@@ -17,7 +17,7 @@ import { LocaleUtils } from "./locale";
 import { ConstantUtils } from "./constant";
 
 export class ApiUtils {
-    static convertGroupToApi(group: Group): ApiGroup {
+    static convertGroupToApi(group: Group, readOnly = true): ApiGroup {
         return {
             id: group._id.toString(),
             ...(group as GroupDocument).toObject({ virtuals: true }).settings,
@@ -26,7 +26,8 @@ export class ApiUtils {
             ),
             photo: group.group_photo,
             calendar_apple: group.calendar_apple,
-            calendar_google: group.calendar_google
+            calendar_google: group.calendar_google,
+            readonly: readOnly
         };
     }
     static convertGroupToObject(group: Group): ApiBaseObject {
@@ -39,6 +40,7 @@ export class ApiUtils {
     static convertApiToGroupSettings(group: ApiGroup): GroupSettings {
         return {
             name: group.name || "",
+            emoji: group.emoji,
             language: group.language,
             currency: group.currency,
             timezone: group.timezone,
@@ -73,6 +75,7 @@ export class ApiUtils {
         return {
             id: prostavaType.emoji,
             name: prostavaType.text,
+            emoji: prostavaType.emoji,
             photo: ConverterUtils.getEmojiImageUrl(prostavaType.emoji),
             string: prostavaType.string
         };

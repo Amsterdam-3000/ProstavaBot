@@ -11,6 +11,7 @@ declare global {
             photo_url?: string | undefined;
             iat: number;
             exp: number;
+            is_admin?: boolean;
         }
         export interface Request {
             group: Group;

@@ -19,7 +19,7 @@ export class ApiGlobalMiddleware {
     );
 
     static async addI18nToRequest(req: Request, res: Response, next: NextFunction): Promise<void> {
-        req.i18n = i18n.createContext(req.group.settings.language, {});
+        req.i18n = i18n.createContext(req.params.language || req.group.settings.language, {});
         next();
     }
 }
