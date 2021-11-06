@@ -1,4 +1,5 @@
 import { I18nContext } from "@edjopato/telegraf-i18n/dist/source";
+import { Express } from "express";
 
 import { CODE, LOCALE } from "../constants";
 import {
@@ -15,12 +16,14 @@ import {
 import { ConverterUtils } from "./converter";
 import { LocaleUtils } from "./locale";
 import { ConstantUtils } from "./constant";
+import { GroupUtils } from ".";
 
 export class ApiUtils {
-    static convertGroupToApi(group: Group, readOnly = true): ApiGroup {
+    static convertGroupToApi(group: Group, chat: Express.Chat, readOnly = true): ApiGroup {
         return {
             id: group._id.toString(),
             ...(group as GroupDocument).toObject({ virtuals: true }).settings,
+            chat_members_all: chat.chat_member_count,
             prostava_types: group.settings.prostava_types.map((prostavaType) =>
                 ApiUtils.convertProstavaTypeToObject(prostavaType)
             ),
@@ -77,7 +80,8 @@ export class ApiUtils {
             name: prostavaType.text,
             emoji: prostavaType.emoji,
             photo: ConverterUtils.getEmojiImageUrl(prostavaType.emoji),
-            string: prostavaType.string
+            string: prostavaType.string,
+            readonly: !GroupUtils.canDeleteProstavaType(prostavaType)
         };
     }
     static convertObjectToProstavaType(prostavaType: ApiBaseObject): ProstavaType {

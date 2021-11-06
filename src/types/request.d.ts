@@ -13,7 +13,11 @@ declare global {
             exp: number;
             is_admin?: boolean;
         }
+        export interface Chat {
+            chat_member_count: number
+        }
         export interface Request {
+            chat: Chat;
             group: Group;
             groupUser: GroupUser;
             i18n: I18nContext;

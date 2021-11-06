@@ -5,6 +5,7 @@ export interface ApiBaseObject {
     emoji?: string;
     photo?: string;
     string?: string;
+    readonly?: boolean;
 }
 
 export interface ApiGroup extends ApiBaseObject {
@@ -14,11 +15,11 @@ export interface ApiGroup extends ApiBaseObject {
     timezone: string;
     create_days_ago: number;
     chat_members_count: number;
+    chat_members_all: number;
     participants_min_percent: number;
     pending_hours: number;
     calendar_apple?: string;
     calendar_google?: string;
-    readonly?: boolean;
 }
 
 export interface ApiUser extends ApiBaseObject {

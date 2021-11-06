@@ -15,7 +15,7 @@ export class ApiGroupController {
     }
 
     static async getGroup(req: Request, res: Response): Promise<void> {
-        res.json(ApiUtils.convertGroupToApi(req.group, !req.user?.is_admin));
+        res.json(ApiUtils.convertGroupToApi(req.group, req.chat, !req.user?.is_admin));
     }
     static async updateGroup(
         req: Request<Record<string, unknown>, Record<string, unknown>, ApiGroup>,
@@ -28,7 +28,7 @@ export class ApiGroupController {
         }
         try {
             await GroupUtils.saveGroup(req.group);
-            res.json(ApiUtils.convertGroupToApi(req.group, !req.user?.is_admin));
+            res.json(ApiUtils.convertGroupToApi(req.group, req.chat, !req.user?.is_admin));
         } catch (error) {
             console.log(error);
             res.status(500).json(error);
