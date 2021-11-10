@@ -7,3 +7,4 @@ export * from "./telegram";
 export * from "./user";
 export * from "./prostava";
 export * from "./group";
+export * from "./api";

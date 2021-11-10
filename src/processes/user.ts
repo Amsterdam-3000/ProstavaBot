@@ -4,7 +4,7 @@ import { CODE, PROSTAVA } from "../constants";
 import { DateUtils, TelegramUtils, UserUtils } from "../utils";
 
 export class UserProcess {
-    static async announceReuestsForBithdayUsers(job: Queue.Job) {
+    static async announceReuestsForBithdayUsers(job: Queue.Job): Promise<void> {
         const nowNextWeek = DateUtils.getNowDateNextWeek();
         const birthdayUsers = await UserUtils.getBirthdayUsersOnDateFromDB(nowNextWeek);
         for (const user of birthdayUsers) {

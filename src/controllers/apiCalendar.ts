@@ -1,5 +1,6 @@
-import ical, { ICalAlarmType } from "ical-generator";
 import { Request, Response } from "express";
+import ical, { ICalAlarmType } from "ical-generator";
+
 import { Prostava, User } from "../types";
 import { GroupUtils, ProstavaUtils } from "../utils";
 import { i18n } from "../commons/locale";

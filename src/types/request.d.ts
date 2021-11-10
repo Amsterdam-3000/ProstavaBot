@@ -1,3 +1,4 @@
+import { I18nContext } from "@edjopato/telegraf-i18n/dist/source";
 import { Group, User as GroupUser } from ".";
 
 declare global {
@@ -10,10 +11,16 @@ declare global {
             photo_url?: string | undefined;
             iat: number;
             exp: number;
+            is_admin?: boolean;
+        }
+        export interface Chat {
+            chat_member_count: number
         }
         export interface Request {
+            chat: Chat;
             group: Group;
             groupUser: GroupUser;
+            i18n: I18nContext;
         }
     }
 }

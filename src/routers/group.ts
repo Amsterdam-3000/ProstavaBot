@@ -1,13 +1,17 @@
 import { Router } from "express";
 
-import { ApiUserMiddleware } from "../middlewares";
+import { ApiAuthMiddleware, ApiGroupMiddleware, ApiUserMiddleware } from "../middlewares";
 import { ApiGroupController } from "../controllers";
 
 import { userRouter } from "./user";
 
 export const groupRouter = Router();
 
-groupRouter.route("/").get(ApiGroupController.getGroup);
+groupRouter.route("/").get(ApiAuthMiddleware.isUserAdmin(), ApiGroupController.getGroup);
+groupRouter
+    .route("/")
+    .patch(ApiAuthMiddleware.isUserAdmin(true), ApiGroupMiddleware.canUpdateGroup, ApiGroupController.updateGroup);
+
 groupRouter.route("/users").get(ApiGroupController.getGroupUsers);
 // groupRouter.route("/prostavas").get(ApiGroupController.getGroupProstavas);
 
