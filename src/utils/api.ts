@@ -9,9 +9,9 @@ import {
     Group,
     GroupDocument,
     GroupSettings,
+    PersonalData,
     ProstavaType,
-    User,
-    UserDocument
+    User
 } from "../types";
 import { ConverterUtils } from "./converter";
 import { LocaleUtils } from "./locale";
@@ -22,6 +22,7 @@ export class ApiUtils {
     static convertGroupToApi(group: Group, chat: Express.Chat, readOnly = true): ApiGroup {
         return {
             id: group._id.toString(),
+            //TODO manual assign
             ...(group as GroupDocument).toObject({ virtuals: true }).settings,
             chat_members_all: chat.chat_member_count,
             prostava_types: group.settings.prostava_types.map((prostavaType) =>
@@ -57,12 +58,15 @@ export class ApiUtils {
         };
     }
 
-    static convertUserToApi(user: User): ApiUser {
+    static convertUserToApi(user: User, readOnly: boolean): ApiUser {
         return {
             id: user.user_id.toString(),
-            ...(user as UserDocument).toObject({ virtuals: true }).personal_data,
+            name: user.personal_data.name || "",
+            emoji: user.personal_data.emoji,
+            birthday: user.personal_data.birthday || null,
             photo: user.user_photo,
-            link: user.user_link
+            link: user.user_link,
+            readonly: readOnly
         };
     }
     static convertUserToObject(user: User): ApiBaseObject {
@@ -71,6 +75,13 @@ export class ApiUtils {
             name: user.personal_data.name,
             photo: user.user_photo,
             link: user.user_link
+        };
+    }
+    static convertApiToUserPersonalData(user: ApiUser): PersonalData {
+        return {
+            name: user.name || "",
+            emoji: user.emoji,
+            birthday: user.birthday || undefined
         };
     }
 

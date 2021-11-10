@@ -23,7 +23,8 @@ export class ApiGroupController {
     ): Promise<void> {
         req.group.settings = ApiUtils.convertApiToGroupSettings(req.body);
         if (!GroupUtils.isGroupModified(req.group)) {
-            //TODO Status?
+            //TODO Message?
+            res.sendStatus(406);
             return;
         }
         try {

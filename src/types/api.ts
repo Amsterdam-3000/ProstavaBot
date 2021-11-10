@@ -23,4 +23,5 @@ export interface ApiGroup extends ApiBaseObject {
 }
 
 export interface ApiUser extends ApiBaseObject {
+    birthday: Date | null;
 }

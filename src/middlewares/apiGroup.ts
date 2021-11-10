@@ -45,22 +45,27 @@ export class ApiGroupMiddleware {
         //Name
         if (!req.body.name || !RegexUtils.matchTitle().test(req.body.name)) {
             res.sendStatus(406);
+            return;
         }
         //Emoji
         if (!req.body.emoji || !RegexUtils.matchOneEmoji().test(req.body.emoji)) {
             res.sendStatus(406);
+            return;
         }
         //Language
         if (!req.body.language || !Object.values(LOCALE.LANGUAGE).includes(req.body.language)) {
             res.sendStatus(406);
+            return;
         }
         //Currency
         if (!req.body.currency || !Object.values(CODE.CURRENCY).includes(req.body.currency)) {
             res.sendStatus(406);
+            return;
         }
         //Timezone
         if (!req.body.timezone || !momentTZ.tz.names().includes(req.body.timezone)) {
             res.sendStatus(406);
+            return;
         }
         //Chat members count
         if (
@@ -69,10 +74,12 @@ export class ApiGroupMiddleware {
             req.body.chat_members_count > req.chat.chat_member_count
         ) {
             res.sendStatus(406);
+            return;
         }
         //Create days ago
         if (!req.body.create_days_ago || !RegexUtils.matchNumber().test(req.body.create_days_ago.toString())) {
             res.sendStatus(406);
+            return;
         }
         //Participants min percent
         if (
@@ -81,32 +88,29 @@ export class ApiGroupMiddleware {
             req.body.participants_min_percent > 100
         ) {
             res.sendStatus(406);
+            return;
         }
         //Pending hours
         if (!req.body.pending_hours || !RegexUtils.matchNumber().test(req.body.pending_hours.toString())) {
             res.sendStatus(406);
+            return;
         }
         //Prostava Types
         for (const requiredType of GroupUtils.getRequiredProstavaTypes()) {
             if (!req.body.prostava_types.find((prostavaType) => prostavaType.emoji === requiredType.emoji)) {
                 res.sendStatus(406);
-                break;
+                return;
             }
         }
         for (const prostavaType of req.body.prostava_types) {
             if (!prostavaType.emoji || !RegexUtils.matchOneEmoji().test(prostavaType.emoji)) {
                 res.sendStatus(406);
+                return;
             }
             if (!prostavaType.name || !RegexUtils.matchTitle().test(prostavaType.name)) {
                 res.sendStatus(406);
+                return;
             }
-            if (res.statusCode > 200) {
-                break;
-            }
-        }
-        //Exit
-        if (res.statusCode > 200) {
-            return;
         }
         next();
     }

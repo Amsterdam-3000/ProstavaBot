@@ -20,4 +20,13 @@ export class ApiAuthMiddleware {
             }
             next();
         };
+
+    static async isUserMe(req: Request, res: Response, next: NextFunction): Promise<void> {
+        if (req.groupUser.user_id !== req.user?.id) {
+            //TODO Add message?
+            res.sendStatus(403);
+            return;
+        }
+        next();
+    }
 }
