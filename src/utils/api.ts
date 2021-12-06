@@ -5,11 +5,13 @@ import { CODE, LOCALE } from "../constants";
 import {
     ApiBaseObject,
     ApiGroup,
+    ApiProstava,
     ApiUser,
     Group,
     GroupDocument,
     GroupSettings,
     PersonalData,
+    Prostava,
     ProstavaType,
     User
 } from "../types";
@@ -19,6 +21,7 @@ import { ConstantUtils } from "./constant";
 import { GroupUtils } from ".";
 
 export class ApiUtils {
+    //Group
     static convertGroupToApi(group: Group, chat: Express.Chat, readOnly = true): ApiGroup {
         return {
             id: group._id.toString(),
@@ -58,6 +61,7 @@ export class ApiUtils {
         };
     }
 
+    //User
     static convertUserToApi(user: User, readOnly: boolean): ApiUser {
         return {
             id: user.user_id.toString(),
@@ -71,7 +75,7 @@ export class ApiUtils {
     }
     static convertUserToObject(user: User): ApiBaseObject {
         return {
-            id: user._id.toString(),
+            id: user.user_id.toString(),
             name: user.personal_data.name,
             photo: user.user_photo,
             link: user.user_link
@@ -85,6 +89,45 @@ export class ApiUtils {
         };
     }
 
+    //Prostava
+    static convertProstavaToApi(prostava: Prostava, readOnly: boolean): ApiProstava {
+        return {
+            id: prostava._id.toString(),
+            name: prostava.prostava_data.title,
+            emoji: prostava.prostava_data.type,
+            photo: ConverterUtils.getEmojiImageUrl(prostava.prostava_data.type),
+            author: this.convertUserToObject(prostava.author as User),
+            creator: this.convertUserToObject(prostava.author as User),
+            creation_date: prostava.creation_date,
+            closing_date: prostava.closing_date,
+            status: prostava.status,
+            date: prostava.prostava_data.date,
+            timezone: prostava.prostava_data.timezone,
+            is_preview: prostava.is_preview,
+            is_request: prostava.is_request,
+            rating: prostava.rating,
+            participants_max_count: prostava.participants_max_count,
+            participants_min_count: prostava.participants_min_count,
+            venue: {
+                id: prostava.prostava_data.venue?.foursquare_id || prostava.prostava_data.venue?.google_place_id || "",
+                name: prostava.prostava_data.venue?.title,
+                link: prostava.prostava_data.venue?.url,
+                photo: prostava.prostava_data.venue?.photo,
+                address: prostava.prostava_data.venue?.address,
+                latitude: prostava.prostava_data.venue?.location?.latitude,
+                longitude: prostava.prostava_data.venue?.location?.longitude
+            },
+            amount: prostava.prostava_data.cost?.amount,
+            currency: prostava.prostava_data.cost?.currency,
+            participants: prostava.participants.map((participant) => ({
+                user: this.convertUserToObject(participant.user as User),
+                rating: participant.rating
+            })),
+            readonly: readOnly
+        };
+    }
+
+    //Global
     static convertProstavaTypeToObject(prostavaType: ProstavaType): ApiBaseObject {
         return {
             id: prostavaType.emoji,
@@ -101,7 +144,6 @@ export class ApiUtils {
             text: prostavaType.name
         };
     }
-
     static getLanguageObjects(i18n: I18nContext): ApiBaseObject[] {
         return Object.values(LOCALE.LANGUAGE).map((language) => ({
             id: language,

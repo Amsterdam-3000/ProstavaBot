@@ -10,7 +10,7 @@ export enum ProstavaStatus {
     Rejected = "rejected"
 }
 
-export type ProstavaRating = -1 | 0 | 1 | 2 | 3 | 4 | 5;
+// export type ProstavaRating = -1 | 0 | 1 | 2 | 3 | 4 | 5;
 
 export interface ProstavaType {
     text?: string;
@@ -25,6 +25,7 @@ export interface ProstavaCost {
 }
 export interface ProstavaVenue extends Venue {
     url?: string;
+    photo?: string;
     thumb?: string;
 }
 export interface ProstavaData {

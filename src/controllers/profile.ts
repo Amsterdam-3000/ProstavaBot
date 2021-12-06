@@ -6,7 +6,7 @@ import { ProfileView } from "../views";
 import { Message } from "telegraf/typings/core/types/typegram";
 
 export class ProfileController {
-    static async completeProfile(ctx: UpdateContext) {
+    static async completeProfile(ctx: UpdateContext): Promise<void> {
         const message = await ctx.reply(
             LocaleUtils.getCommandText(ctx.i18n, PROSTAVA.COMMAND.PROFILE, ctx.user?.personal_data?.name),
             ProfileView.getProfileKeyboard(ctx.i18n, ctx.user?.personal_data)
@@ -14,7 +14,7 @@ export class ProfileController {
         TelegramUtils.setSceneState(ctx, { messageId: message.message_id });
     }
 
-    static async showProfiles(ctx: UpdateContext) {
+    static async showProfiles(ctx: UpdateContext): Promise<void> {
         let message: Message.PhotoMessage;
         if (TelegramUtils.includesCommand(ctx, PROSTAVA.COMMAND.PROFILES_ME)) {
             const aztro = await AztroModel.getTodayHoroscope(ctx.user.personal_data.birthday);
@@ -26,12 +26,13 @@ export class ProfileController {
         } else {
             message = await ctx.replyWithPhoto(ctx.group.group_photo!, {
                 caption: LocaleUtils.getCommandText(ctx.i18n, PROSTAVA.COMMAND.PROFILES),
-                reply_markup: ProfileView.getUsersKeyboard(ctx.i18n, ctx.group.users).reply_markup
+                reply_markup: ProfileView.getUsersKeyboard(ctx.i18n, UserUtils.filterRealUsers(ctx.group.users))
+                    .reply_markup
             });
         }
         TelegramUtils.setSceneState(ctx, { messageId: message.message_id });
     }
-    static async showProfile(ctx: UpdateContext) {
+    static async showProfile(ctx: UpdateContext): Promise<void> {
         const actionData = TelegramUtils.getActionDataFromCbQuery(ctx);
         const user = UserUtils.findUserByUserId(ctx.group.users, Number(actionData?.value));
         if (!user) {
@@ -50,7 +51,7 @@ export class ProfileController {
             }
         );
     }
-    static async backToProfiles(ctx: UpdateContext) {
+    static async backToProfiles(ctx: UpdateContext): Promise<void> {
         await ctx.editMessageMedia(
             {
                 type: "photo",
@@ -58,7 +59,8 @@ export class ProfileController {
                 caption: LocaleUtils.getCommandText(ctx.i18n, PROSTAVA.COMMAND.PROFILES)
             },
             {
-                reply_markup: ProfileView.getUsersKeyboard(ctx.i18n, ctx.group.users).reply_markup
+                reply_markup: ProfileView.getUsersKeyboard(ctx.i18n, UserUtils.filterRealUsers(ctx.group.users))
+                    .reply_markup
             }
         );
     }

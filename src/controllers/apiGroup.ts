@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
-import { ApiGroup, GroupDocument, User } from "../types";
-import { GroupUtils, ApiUtils } from "../utils";
+import { ApiGroup, GroupDocument, Prostava, User } from "../types";
+import { GroupUtils, ApiUtils, UserUtils } from "../utils";
 
 export class ApiGroupController {
     static async getGroups(req: Request, res: Response): Promise<void> {
@@ -37,6 +37,17 @@ export class ApiGroupController {
     }
 
     static async getGroupUsers(req: Request, res: Response): Promise<void> {
-        res.json((req.group.users as User[]).map((user) => ApiUtils.convertUserToObject(user)));
+        res.json(
+            UserUtils.filterRealUsers(req.group.users).map((user) =>
+                ApiUtils.convertUserToApi(user, user.user_id !== req.user?.id)
+            )
+        );
+    }
+    static async getGroupProstavas(req: Request, res: Response): Promise<void> {
+        res.json(
+            (req.group.prostavas as Prostava[]).map((prostava) =>
+                ApiUtils.convertProstavaToApi(prostava, (prostava.author as User).user_id !== req.user?.id)
+            )
+        );
     }
 }

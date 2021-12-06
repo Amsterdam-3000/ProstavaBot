@@ -7,3 +7,4 @@ export * from "./apiCalendar";
 export * from "./apiAuth";
 export * from "./apiGroup";
 export * from "./apiUser";
+export * from "./apiGlobal";
