@@ -66,12 +66,22 @@ VenueSchema.virtual("url").get(function (this: ProstavaVenue) {
     }
     return undefined;
 });
+VenueSchema.virtual("photo").get(function (this: ProstavaVenue) {
+    if (this.location) {
+        return (
+            "https://static-maps.yandex.ru/1.x/?size=512,288&z=13&scale=1.5&l=map" +
+            `&ll=${this.location.longitude},${this.location.latitude}` +
+            `&pt=${this.location.longitude},${this.location.latitude},pm2vvm`
+        );
+    }
+    return undefined;
+});
 VenueSchema.virtual("thumb").get(function (this: ProstavaVenue) {
     if (this.location) {
         return (
             "https://static-maps.yandex.ru/1.x/?size=256,144&z=13&l=map" +
             `&ll=${this.location.longitude},${this.location.latitude}` +
-            `&pt=${this.location.longitude},${this.location.latitude},pm2dirm`
+            `&pt=${this.location.longitude},${this.location.latitude},pm2vvm`
         );
     }
     return undefined;

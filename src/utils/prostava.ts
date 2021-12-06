@@ -106,19 +106,20 @@ export class ProstavaUtils {
             prostava.closing_date = DateUtils.getNowDatePlusHours(settings.pending_hours);
         }
     }
-    static publishProstava(prostava: Prostava) {
+    static publishProstava(prostava: Prostava, settings: Group["settings"]) {
+        prostava.closing_date = new Date();
         if (ProstavaUtils.canApprovePendingProstava(prostava)) {
-            this.approveProstava(prostava);
+            this.approveProstava(prostava, settings);
         } else {
             this.rejectProstava(prostava);
         }
-        prostava.closing_date = new Date();
     }
-    static approveProstava(prostava: Prostava) {
+    static approveProstava(prostava: Prostava, settings: Group["settings"]) {
         if (prostava.is_request) {
             this.withdrawProstava(prostava);
             prostava.is_request = false;
             prostava.creation_date = new Date();
+            prostava.closing_date = DateUtils.getDateDaysAfter(settings.create_days_ago, prostava.creation_date);
         } else {
             prostava.status = ProstavaStatus.Approved;
         }

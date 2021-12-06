@@ -13,4 +13,5 @@ export interface Aztro {
     color: string;
     lucky_number: string;
     lucky_time: string;
+    photo?: string;
 }

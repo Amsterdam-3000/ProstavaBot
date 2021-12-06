@@ -236,7 +236,7 @@ export class ProstavaMiddleware {
     static async publishProstava(ctx: UpdateContext, next: () => Promise<void>) {
         const prostava = TelegramUtils.getProstavaFromContext(ctx);
         if (prostava) {
-            ProstavaUtils.publishProstava(prostava);
+            ProstavaUtils.publishProstava(prostava, ctx.group.settings);
         }
         await next();
     }

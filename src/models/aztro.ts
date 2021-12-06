@@ -1,10 +1,11 @@
 import zodiacSigns from "zodiac-signs";
-// import fetch from "node-fetch";
+import axios from "axios";
 import { Aztro } from "../types";
+import { ConverterUtils } from "../utils";
 
 export class AztroModel {
-    private static async getHoroscope(birthday: Date, day: string) {
-        const aztro: Aztro = {
+    private static async getHoroscope(birthday: Date, day: string): Promise<Aztro> {
+        let aztro: Aztro = {
             ...zodiacSigns().getSignByDate({
                 day: birthday.getDate(),
                 month: birthday.getMonth() + 1
@@ -12,8 +13,9 @@ export class AztroModel {
         };
         const url = `https://aztro.sameerkumar.website/?sign=${aztro.name.toLowerCase()}&day=${day}`;
         //TODO fix this
-        // const response = await fetch(url, { method: "POST" });
-        // aztro = { ...aztro, ...(await (response.json() as Promise<Record<string, unknown>>)) };
+        const response = await axios.post(url);
+        aztro = { ...aztro, ...response.data };
+        aztro.photo = ConverterUtils.getEmojiImageUrl(aztro.symbol);
         return aztro;
     }
 
