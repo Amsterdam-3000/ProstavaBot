@@ -1,8 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 
-import { ParamsDictionary } from "express-serve-static-core";
-import { RegexUtils, UserUtils } from "../utils";
-import { ApiUser } from "../types";
+import { ApiUtils, RegexUtils, UserUtils } from "../utils";
 
 export class ApiUserMiddleware {
     static async addUserToRequest(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -16,27 +14,41 @@ export class ApiUserMiddleware {
         next();
     }
 
-    static async canUpdateUser(
-        req: Request<ParamsDictionary, null, ApiUser>,
-        res: Response,
-        next: NextFunction
-    ): Promise<void> {
+    static async addUserPersonalDataFromBody(req: Request, res: Response, next: NextFunction): Promise<void> {
+        req.groupUser.personal_data = ApiUtils.convertApiToUserPersonalData(req.body);
+        next();
+    }
+
+    static async canUpdateUser(req: Request, res: Response, next: NextFunction): Promise<void> {
         //TODO Send Message?
         //Name
-        if (!req.body.name || !RegexUtils.matchTitle().test(req.body.name)) {
+        if (!req.groupUser.personal_data.name || !RegexUtils.matchTitle().test(req.groupUser.personal_data.name)) {
             res.sendStatus(406);
             return;
         }
         //Emoji
-        if (!req.body.emoji || !RegexUtils.matchOneEmoji().test(req.body.emoji)) {
+        if (!req.groupUser.personal_data.emoji || !RegexUtils.matchOneEmoji().test(req.groupUser.personal_data.emoji)) {
             res.sendStatus(406);
             return;
         }
         //Birthday
-        if (!req.body.birthday || isNaN(new Date(req.body.birthday).getTime())) {
+        if (!req.groupUser.personal_data.birthday || isNaN(new Date(req.groupUser.personal_data.birthday).getTime())) {
             res.sendStatus(406);
             return;
         }
         next();
+    }
+
+    static async saveUser(req: Request, res: Response, next: NextFunction): Promise<void> {
+        if (!UserUtils.isUserModified(req.groupUser)) {
+            next();
+        }
+        try {
+            await UserUtils.saveUser(req.groupUser);
+            next();
+        } catch (error) {
+            console.log(error);
+            res.status(500).json(error);
+        }
     }
 }

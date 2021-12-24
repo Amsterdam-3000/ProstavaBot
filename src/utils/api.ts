@@ -1,5 +1,6 @@
 import { I18nContext } from "@edjopato/telegraf-i18n/dist/source";
 import { Express } from "express";
+import { Types } from "mongoose";
 
 import { CODE, LOCALE } from "../constants";
 import {
@@ -18,11 +19,11 @@ import {
 import { ConverterUtils } from "./converter";
 import { LocaleUtils } from "./locale";
 import { ConstantUtils } from "./constant";
-import { GroupUtils } from ".";
+import { GroupUtils, ProstavaUtils, UserUtils } from ".";
 
 export class ApiUtils {
     //Group
-    static convertGroupToApi(group: Group, chat: Express.Chat, readOnly = true): ApiGroup {
+    static convertGroupToApi(group: Group, chat: Express.Chat, isAdmin: boolean): ApiGroup {
         return {
             id: group._id.toString(),
             //TODO manual assign
@@ -34,7 +35,7 @@ export class ApiUtils {
             photo: group.group_photo,
             calendar_apple: group.calendar_apple,
             calendar_google: group.calendar_google,
-            readonly: readOnly
+            readonly: !isAdmin
         };
     }
     static convertGroupToObject(group: Group): ApiBaseObject {
@@ -62,7 +63,7 @@ export class ApiUtils {
     }
 
     //User
-    static convertUserToApi(user: User, readOnly: boolean): ApiUser {
+    static convertUserToApi(user: User, isAuthorized: boolean): ApiUser {
         return {
             id: user.user_id.toString(),
             name: user.personal_data.name || "",
@@ -70,15 +71,15 @@ export class ApiUtils {
             birthday: user.personal_data.birthday || null,
             photo: user.user_photo,
             link: user.user_link,
-            readonly: readOnly
+            readonly: !isAuthorized
         };
     }
     static convertUserToObject(user: User): ApiBaseObject {
         return {
-            id: user.user_id.toString(),
-            name: user.personal_data.name,
-            photo: user.user_photo,
-            link: user.user_link
+            id: user?.user_id.toString(),
+            name: user?.personal_data.name,
+            photo: user?.user_photo,
+            link: user?.user_link
         };
     }
     static convertApiToUserPersonalData(user: ApiUser): PersonalData {
@@ -90,14 +91,18 @@ export class ApiUtils {
     }
 
     //Prostava
-    static convertProstavaToApi(prostava: Prostava, readOnly: boolean): ApiProstava {
+    static convertProstavaToApi(
+        prostava: Prostava,
+        isAuthorAuthorized: boolean,
+        isCreatorAuthorized: boolean
+    ): ApiProstava {
         return {
             id: prostava._id.toString(),
             name: prostava.prostava_data.title,
             emoji: prostava.prostava_data.type,
             photo: ConverterUtils.getEmojiImageUrl(prostava.prostava_data.type),
             author: this.convertUserToObject(prostava.author as User),
-            creator: this.convertUserToObject(prostava.author as User),
+            creator: this.convertUserToObject(prostava.creator as User),
             creation_date: prostava.creation_date,
             closing_date: prostava.closing_date,
             status: prostava.status,
@@ -123,7 +128,10 @@ export class ApiUtils {
                 user: this.convertUserToObject(participant.user as User),
                 rating: participant.rating
             })),
-            readonly: readOnly
+            readonly: !(
+                ((isAuthorAuthorized && !prostava.is_request) || (isCreatorAuthorized && prostava.is_request)) &&
+                ProstavaUtils.isProstavaNew(prostava)
+            )
         };
     }
 

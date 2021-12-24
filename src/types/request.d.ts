@@ -1,5 +1,5 @@
 import { I18nContext } from "@edjopato/telegraf-i18n/dist/source";
-import { Group, User as GroupUser } from ".";
+import { Group, Prostava, User as GroupUser } from ".";
 
 declare global {
     namespace Express {
@@ -12,6 +12,8 @@ declare global {
             iat: number;
             exp: number;
             is_admin?: boolean;
+            is_creator?: boolean;
+            is_author?: boolean;
         }
         export interface Chat {
             chat_member_count: number
@@ -20,6 +22,7 @@ declare global {
             chat: Chat;
             group: Group;
             groupUser: GroupUser;
+            prostava: Prostava;
             i18n: I18nContext;
         }
     }

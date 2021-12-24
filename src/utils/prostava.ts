@@ -11,7 +11,13 @@ import { GroupUtils } from "./group";
 import { DateTime } from "luxon";
 
 export class ProstavaUtils {
-    static createProstavaFromText(group: Group, user: User, text: string, isRequest = false) {
+    static createProstavaFromText(
+        group: Group,
+        user: User,
+        text: string,
+        isRequest = false,
+        id?: string
+    ): ProstavaDocument {
         let author = isRequest ? undefined : user;
         let prostavaType = CODE.COMMAND.PROSTAVA;
         let prostavaTitle: string | undefined;
@@ -26,7 +32,7 @@ export class ProstavaUtils {
             prostavaData.shift();
         }
         const prostava = new ProstavaCollection({
-            _id: new Types.ObjectId(),
+            _id: new Types.ObjectId(id),
             group_id: group._id,
             author: author,
             creator: user,
@@ -35,7 +41,9 @@ export class ProstavaUtils {
             prostava_data: {
                 type: prostavaType,
                 title:
-                    prostavaData[0] && RegexUtils.matchTitle().test(prostavaData[0]) ? prostavaData[0] : prostavaTitle,
+                    prostavaData[0] && RegexUtils.matchTitle().test(prostavaData[0])
+                        ? prostavaData[0]
+                        : prostavaTitle || "",
                 date: this.fillProstavaDateFromText(prostavaData[1], group.settings),
                 timezone: group.settings.timezone,
                 venue: {
@@ -159,6 +167,9 @@ export class ProstavaUtils {
     }
     static isProstavaModified(prostava: Prostava) {
         return (prostava as ProstavaDocument).isModified();
+    }
+    static isProstavaExists(prostava: Prostava): boolean {
+        return prostava._id && !(prostava as ProstavaDocument).isNew;
     }
     static saveProstava(prostava: Prostava) {
         return (prostava as ProstavaDocument).save();
@@ -378,7 +389,7 @@ export class ProstavaUtils {
     }
 
     static canAnnounceProstava(prostava: Prostava | undefined) {
-        if (!prostava) {
+        if (!prostava || !this.isProstavaNew(prostava)) {
             return false;
         }
         const error = (prostava as ProstavaDocument).validateSync() as Error.ValidationError;
