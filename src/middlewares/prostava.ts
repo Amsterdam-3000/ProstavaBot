@@ -3,13 +3,13 @@ import { UpdateContext } from "../types";
 import { LocaleUtils, ProstavaUtils, TelegramUtils, UserUtils } from "../utils";
 
 export class ProstavaMiddleware {
-    static async addPendingProstavaToContext(ctx: UpdateContext, next: () => Promise<void>) {
+    static async addPendingProstavaToContext(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         const user = TelegramUtils.getUserFromContext(ctx);
         const isRequest = TelegramUtils.includesCommand(ctx, PROSTAVA.COMMAND.REQUEST);
         ctx.prostava = ProstavaUtils.findUserPendingProstava(ctx.group.prostavas, user?.id, isRequest);
         await next();
     }
-    static async addNewProstavaToContext(ctx: UpdateContext, next: () => Promise<void>) {
+    static async addNewProstavaToContext(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         if (TelegramUtils.getProstavaFromContext(ctx)) {
             delete ctx.prostavas;
         } else {
@@ -31,7 +31,7 @@ export class ProstavaMiddleware {
         }
         await next();
     }
-    static async addProstavaFromRateActionToContext(ctx: UpdateContext, next: () => Promise<void>) {
+    static async addProstavaFromRateActionToContext(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         const prostavaId = TelegramUtils.getActionDataFromCbQuery(ctx)?.id;
         if (!prostavaId) {
             await ctx.answerCbQuery();
@@ -40,7 +40,7 @@ export class ProstavaMiddleware {
         ctx.prostava = ProstavaUtils.findProstavaById(ctx.group.prostavas, prostavaId);
         await next();
     }
-    static async addProstavaFromSelectActionToContext(ctx: UpdateContext, next: () => Promise<void>) {
+    static async addProstavaFromSelectActionToContext(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         const prostavaId = TelegramUtils.getActionDataFromCbQuery(ctx)?.value;
         if (!prostavaId || !ctx.prostavas?.length) {
             await ctx.answerCbQuery();
@@ -51,11 +51,20 @@ export class ProstavaMiddleware {
         await next();
     }
 
-    static async addAllNewProstavasToContext(ctx: UpdateContext, next: () => Promise<void>) {
-        ctx.prostavas = ProstavaUtils.filterNewProstavas(ctx.group.prostavas);
+    static async addNewRequiredProstavasToContext(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
+        ctx.prostavas = ProstavaUtils.filterNewRequiredProstavas(ctx.group.prostavas);
         await next();
     }
-    static async addDateProstavasToContext(ctx: UpdateContext, next: () => Promise<void>) {
+    static async addNewRequiredAndExpiredProstavasToContext(
+        ctx: UpdateContext,
+        next: () => Promise<void>
+    ): Promise<void> {
+        ctx.prostavas = ProstavaUtils.filterNewRequiredProstavas(ctx.group.prostavas).filter((prostava) =>
+            ProstavaUtils.isProstavaExpired(prostava)
+        );
+        await next();
+    }
+    static async addDateProstavasToContext(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         let date = new Date();
         if (TelegramUtils.getCbQueryData(ctx)) {
             date = new Date(TelegramUtils.getDateTextFromCalendarAction(ctx));
@@ -78,12 +87,12 @@ export class ProstavaMiddleware {
         ];
         await next();
     }
-    static async addQueryProstavasToContext(ctx: UpdateContext, next: () => Promise<void>) {
+    static async addQueryProstavasToContext(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         ctx.prostavas = ProstavaUtils.filterProstavasByQuery(ctx.group.prostavas, ctx.inlineQuery?.query);
         await next();
     }
 
-    static async changeProstavaAuthor(ctx: UpdateContext, next: () => Promise<void>) {
+    static async changeProstavaAuthor(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         const prostava = TelegramUtils.getProstavaFromContext(ctx);
         const actionData = TelegramUtils.getActionDataFromCbQuery(ctx);
         const user = UserUtils.findUserByUserId(ctx.group.users, Number(actionData?.value));
@@ -92,7 +101,7 @@ export class ProstavaMiddleware {
         }
         await next();
     }
-    static async changeProstavaType(ctx: UpdateContext, next: () => Promise<void>) {
+    static async changeProstavaType(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         const prostava = TelegramUtils.getProstavaFromContext(ctx);
         const actionData = TelegramUtils.getActionDataFromCbQuery(ctx);
         if (prostava && actionData?.value) {
@@ -100,7 +109,7 @@ export class ProstavaMiddleware {
         }
         await next();
     }
-    static async changeProstavaOrVenueTitle(ctx: UpdateContext, next: () => Promise<void>) {
+    static async changeProstavaOrVenueTitle(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         const prostava = TelegramUtils.getProstavaFromContext(ctx);
         if (prostava) {
             switch (TelegramUtils.getActionDataFromSceneState(ctx)?.action) {
@@ -114,35 +123,35 @@ export class ProstavaMiddleware {
         }
         await next();
     }
-    static async changeProstavaDate(ctx: UpdateContext, next: () => Promise<void>) {
+    static async changeProstavaDate(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         const prostava = TelegramUtils.getProstavaFromContext(ctx);
         if (prostava) {
             ProstavaUtils.changeProstavaDate(prostava, TelegramUtils.getDateTextFromCalendarAction(ctx));
         }
         await next();
     }
-    static async changeProstavaTime(ctx: UpdateContext, next: () => Promise<void>) {
+    static async changeProstavaTime(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         const prostava = TelegramUtils.getProstavaFromContext(ctx);
         if (prostava) {
             ProstavaUtils.changeProstavaTime(prostava, TelegramUtils.getTextMessage(ctx).text);
         }
         await next();
     }
-    static async changeProstavaVenue(ctx: UpdateContext, next: () => Promise<void>) {
+    static async changeProstavaVenue(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         const prostava = TelegramUtils.getProstavaFromContext(ctx);
         if (prostava) {
             prostava.prostava_data.venue = TelegramUtils.getVenueMessage(ctx).venue;
         }
         await next();
     }
-    static async changeProstavaLocation(ctx: UpdateContext, next: () => Promise<void>) {
+    static async changeProstavaLocation(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         const prostava = TelegramUtils.getProstavaFromContext(ctx);
         if (prostava) {
             prostava.prostava_data.venue.location = TelegramUtils.getLocationMessage(ctx).location;
         }
         await next();
     }
-    static async changeProstavaCost(ctx: UpdateContext, next: () => Promise<void>) {
+    static async changeProstavaCost(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         const prostava = TelegramUtils.getProstavaFromContext(ctx);
         if (prostava) {
             prostava.prostava_data.cost = ProstavaUtils.fillProstavaCostFromText(
@@ -153,7 +162,13 @@ export class ProstavaMiddleware {
         await next();
     }
 
-    static async canAnnounceProstava(ctx: UpdateContext, next: () => Promise<void>) {
+    static async hasProstavas(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
+        if (!ctx.prostavas || !ctx.prostavas.length) {
+            return;
+        }
+        await next();
+    }
+    static async canAnnounceProstava(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         const prostava = TelegramUtils.getProstavaFromContext(ctx);
         if (!ProstavaUtils.canAnnounceProstava(prostava)) {
             ctx.answerCbQuery(LocaleUtils.getErrorText(ctx.i18n, CODE.ERROR.NOT_CREATE));
@@ -161,7 +176,7 @@ export class ProstavaMiddleware {
         }
         await next();
     }
-    static async isUserParticipantOfProstava(ctx: UpdateContext, next: () => Promise<void>) {
+    static async isUserParticipantOfProstava(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         const prostava = TelegramUtils.getProstavaFromContext(ctx);
         const user = TelegramUtils.getUserFromContext(ctx);
         if (!prostava) {
@@ -174,28 +189,28 @@ export class ProstavaMiddleware {
         }
         await next();
     }
-    static async isProstavaPendingCompleted(ctx: UpdateContext, next: () => Promise<void>) {
+    static async isProstavaPendingCompleted(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         const prostava = TelegramUtils.getProstavaFromContext(ctx);
         if (!prostava || !ProstavaUtils.canCompletePendingProstava(prostava)) {
             return;
         }
         await next();
     }
-    static async hasUserPendingProstava(ctx: UpdateContext, next: () => Promise<void>) {
+    static async hasUserPendingProstava(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         const prostava = TelegramUtils.getProstavaFromContext(ctx);
         if (!prostava || !ProstavaUtils.isProstavaPending(prostava)) {
             return;
         }
         await next();
     }
-    static async hasProstavaUsersPendingToRate(ctx: UpdateContext, next: () => Promise<void>) {
+    static async hasProstavaUsersPendingToRate(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         const prostava = TelegramUtils.getProstavaFromContext(ctx);
         if (!prostava || !ProstavaUtils.filterUsersPendingToRateProstava(ctx.group.users, prostava)?.length) {
             return;
         }
         await next();
     }
-    static async isUserCreatorOfProstava(ctx: UpdateContext, next: () => Promise<void>) {
+    static async isUserCreatorOfProstava(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         const prostava = TelegramUtils.getProstavaFromContext(ctx);
         if (!prostava || !ProstavaUtils.isUserCreatorOfPrastava(prostava, ctx.user.user_id)) {
             ctx.answerCbQuery(LocaleUtils.getErrorText(ctx.i18n, CODE.ERROR.NOT_CHANGE));
@@ -204,21 +219,21 @@ export class ProstavaMiddleware {
         await next();
     }
 
-    static async announceProstava(ctx: UpdateContext, next: () => Promise<void>) {
+    static async announceProstava(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         const prostava = TelegramUtils.getProstavaFromContext(ctx);
         if (prostava) {
             ProstavaUtils.announceProstava(prostava, ctx.group.settings);
         }
         await next();
     }
-    static async withdrawProstava(ctx: UpdateContext, next: () => Promise<void>) {
+    static async withdrawProstava(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         const prostava = TelegramUtils.getProstavaFromContext(ctx);
         if (prostava) {
             ProstavaUtils.withdrawProstava(prostava);
         }
         await next();
     }
-    static async changeProstavaParticipantRating(ctx: UpdateContext, next: () => Promise<void>) {
+    static async changeProstavaParticipantRating(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         const prostava = TelegramUtils.getProstavaFromContext(ctx);
         if (!prostava) {
             ctx.answerCbQuery();
@@ -233,15 +248,21 @@ export class ProstavaMiddleware {
         ProstavaUtils.updateParticipantRating(prostava, ctx.user, rating);
         await next();
     }
-    static async publishProstava(ctx: UpdateContext, next: () => Promise<void>) {
+    static async publishProstava(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         const prostava = TelegramUtils.getProstavaFromContext(ctx);
         if (prostava) {
             ProstavaUtils.publishProstava(prostava, ctx.group.settings);
         }
         await next();
     }
+    static async rejectProstavas(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
+        ctx.prostavas?.forEach((prostava) => {
+            ProstavaUtils.rejectProstava(prostava);
+        });
+        await next();
+    }
 
-    static async saveProstava(ctx: UpdateContext, next: () => Promise<void>) {
+    static async saveProstava(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         let prostava = TelegramUtils.getProstavaFromContext(ctx);
         await next();
         prostava = TelegramUtils.getProstavaFromContext(ctx) || prostava;
@@ -249,5 +270,14 @@ export class ProstavaMiddleware {
             return;
         }
         await ProstavaUtils.saveProstava(prostava).catch((err) => console.log(err));
+    }
+
+    static async saveProstavas(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
+        let prostavas = ctx.prostavas;
+        await next();
+        prostavas = ctx.prostavas || prostavas;
+        prostavas?.forEach(async (prostava) => {
+            await ProstavaUtils.saveProstava(prostava).catch((err) => console.log(err));
+        });
     }
 }

@@ -5,7 +5,7 @@ import { LocaleUtils, ProstavaUtils, TelegramUtils, UserUtils } from "../utils";
 import { ProfileView, ProstavaView } from "../views";
 
 export class ProstavaController {
-    static async showSelectProstava(ctx: UpdateContext, next: () => Promise<void>) {
+    static async showSelectProstava(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         const prostava = TelegramUtils.getProstavaFromContext(ctx);
         if (ctx.prostavas?.length && !prostava) {
             const message = await ctx.reply(
@@ -17,7 +17,7 @@ export class ProstavaController {
         }
         await next();
     }
-    static async showCreateProstava(ctx: UpdateContext, next: () => Promise<void>) {
+    static async showCreateProstava(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         const prostava = TelegramUtils.getProstavaFromContext(ctx);
         if (prostava && ProstavaUtils.isProstavaNew(prostava)) {
             const command = ProstavaUtils.getProstavaCommand(prostava);
@@ -35,7 +35,7 @@ export class ProstavaController {
         }
         await next();
     }
-    static async showRateProstava(ctx: UpdateContext, next: () => Promise<void>) {
+    static async showRateProstava(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         const prostava = TelegramUtils.getProstavaFromContext(ctx);
         if (prostava && ProstavaUtils.isProstavaPending(prostava)) {
             const message = await ctx.reply(await ProstavaView.getProstavaHtml(ctx.i18n, prostava), {
@@ -48,7 +48,7 @@ export class ProstavaController {
         }
         await next();
     }
-    static async backToSelectProstava(ctx: UpdateContext) {
+    static async backToSelectProstava(ctx: UpdateContext): Promise<void> {
         if (!ctx.prostavas?.length) {
             await ctx.answerCbQuery();
             return;
@@ -61,7 +61,7 @@ export class ProstavaController {
             .catch((err) => console.log(err));
         TelegramUtils.setSceneState(ctx, { prostavaId: "" });
     }
-    static async backToCreateProstava(ctx: UpdateContext) {
+    static async backToCreateProstava(ctx: UpdateContext): Promise<void> {
         const prostava = TelegramUtils.getProstavaFromContext(ctx);
         if (!prostava) {
             await ctx.answerCbQuery();
@@ -80,7 +80,7 @@ export class ProstavaController {
             )
             .catch((err) => console.log(err));
     }
-    static async refreshProstava(ctx: UpdateContext) {
+    static async refreshProstava(ctx: UpdateContext): Promise<void> {
         const prostava = TelegramUtils.getProstavaFromContext(ctx);
         if (!prostava) {
             await ctx.answerCbQuery();
@@ -93,7 +93,7 @@ export class ProstavaController {
             })
             .catch((err) => console.log(err));
     }
-    static async showProstava(ctx: UpdateContext, next: () => Promise<void>) {
+    static async showProstava(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         const prostava = TelegramUtils.getProstavaFromContext(ctx);
         if (!prostava) {
             return;
@@ -104,7 +104,7 @@ export class ProstavaController {
         await next();
     }
 
-    static async showProstavaAuthors(ctx: UpdateContext) {
+    static async showProstavaAuthors(ctx: UpdateContext): Promise<void> {
         await ctx
             .editMessageText(
                 LocaleUtils.getActionReplyText(ctx.i18n, PROSTAVA.ACTION.PROSTAVA_AUTHOR),
@@ -115,7 +115,7 @@ export class ProstavaController {
             )
             .catch((err) => console.log(err));
     }
-    static async showProstavaTypes(ctx: UpdateContext) {
+    static async showProstavaTypes(ctx: UpdateContext): Promise<void> {
         await ctx
             .editMessageText(
                 LocaleUtils.getActionReplyText(ctx.i18n, PROSTAVA.ACTION.PROSTAVA_TYPE),
@@ -123,7 +123,7 @@ export class ProstavaController {
             )
             .catch((err) => console.log(err));
     }
-    static async showProstavaCalendar(ctx: UpdateContext) {
+    static async showProstavaCalendar(ctx: UpdateContext): Promise<void> {
         await ctx
             .editMessageText(
                 LocaleUtils.getActionReplyText(ctx.i18n, PROSTAVA.ACTION.PROSTAVA_DATE),
@@ -132,7 +132,7 @@ export class ProstavaController {
             .catch((err) => console.log(err));
     }
 
-    static async showProstavaUsersPendingToRate(ctx: UpdateContext) {
+    static async showProstavaUsersPendingToRate(ctx: UpdateContext): Promise<void> {
         const prostava = TelegramUtils.getProstavaFromContext(ctx);
         if (!prostava) {
             return;
@@ -148,12 +148,12 @@ export class ProstavaController {
     }
 
     //Reminders and Calendar
-    static async showProstavas(ctx: UpdateContext) {
+    static async showProstavas(ctx: UpdateContext): Promise<void> {
         await ctx.reply(await ProstavaView.getProstavasHtml(ctx.i18n, ctx.prostavas), {
             parse_mode: "HTML"
         });
     }
-    static async showCalendarOfProstavas(ctx: UpdateContext) {
+    static async showCalendarOfProstavas(ctx: UpdateContext): Promise<void> {
         const prostavas = ProstavaUtils.filterScheduledProstavas(ctx.group.prostavas);
         const message = await ctx.reply(await ProstavaView.getProstavasHtml(ctx.i18n, ctx.prostavas, new Date()), {
             reply_markup: ProstavaView.getCalendarOfProstavasKeyboard(ctx.i18n, prostavas, ctx.group.users)
@@ -162,7 +162,7 @@ export class ProstavaController {
         });
         TelegramUtils.setSceneState(ctx, { messageId: message.message_id });
     }
-    static async refreshCalendarOfProstavas(ctx: UpdateContext, date: string) {
+    static async refreshCalendarOfProstavas(ctx: UpdateContext, date: string): Promise<void> {
         const selectedDate = new Date(date);
         const prostavas = ProstavaUtils.filterScheduledProstavas(ctx.group.prostavas);
         await ctx.editMessageText(await ProstavaView.getProstavasHtml(ctx.i18n, ctx.prostavas, selectedDate), {
@@ -176,7 +176,7 @@ export class ProstavaController {
         });
     }
 
-    static async showQueryProstavas(ctx: UpdateContext) {
+    static async showQueryProstavas(ctx: UpdateContext): Promise<void> {
         if (!ctx.prostavas?.length) {
             await ctx.answerInlineQuery([]);
             return;

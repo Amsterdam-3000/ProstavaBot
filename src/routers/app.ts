@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { ApiGroupMiddleware, ApiGlobalMiddleware } from "../middlewares";
+import { ApiGroupMiddleware, ApiGlobalMiddleware, ApiAuthMiddleware, ApiTelegramMiddleware } from "../middlewares";
 import { ApiGroupController } from "../controllers";
 
 import { groupRouter } from "./group";
@@ -13,6 +13,8 @@ appRouter.route("/groups").get(ApiGroupController.getGroups);
 appRouter.use(
     "/group/:groupId",
     ApiGroupMiddleware.addGroupToRequest,
+    ApiAuthMiddleware.isMyGroup,
+    ApiTelegramMiddleware.addChatDataToRequest,
     ApiGlobalMiddleware.addI18nToRequest,
     groupRouter
 );

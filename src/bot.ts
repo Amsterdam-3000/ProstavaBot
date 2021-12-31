@@ -73,7 +73,15 @@ export function launchBot(): void {
     //Reminders and Calendar
     bot.command(
         PROSTAVA.COMMAND.REMINDERS,
-        ProstavaMiddleware.addAllNewProstavasToContext,
+        ProstavaMiddleware.addNewRequiredProstavasToContext,
+        ProstavaController.showProstavas
+    );
+    bot.command(
+        PROSTAVA.COMMAND.PROSTAVAS_REJECT,
+        ProstavaMiddleware.addNewRequiredAndExpiredProstavasToContext,
+        ProstavaMiddleware.hasProstavas,
+        ProstavaMiddleware.rejectProstavas,
+        ProstavaMiddleware.saveProstavas,
         ProstavaController.showProstavas
     );
     bot.command(PROSTAVA.COMMAND.CALENDAR, CommonController.enterScene(PROSTAVA.SCENE.CALENDAR));
@@ -92,6 +100,7 @@ export function launchBot(): void {
     //Background jobs
     prostavaQueue.process(PROSTAVA.JOB.PROSTAVA_AUTO_PUBLISH, ProstavaProcess.publishOrWithdrawCompletedProstavas);
     prostavaQueue.process(PROSTAVA.JOB.PROSTAVA_RATE_REMINDER, ProstavaProcess.remindUsersRateProstavas);
+    prostavaQueue.process(PROSTAVA.JOB.PROSTAVA_REJECT_EXPIRED, ProstavaProcess.rejectExpiredProstavas);
     prostavaQueue.process(PROSTAVA.JOB.USER_BIRTHDAY_REMINDER, UserProcess.announceReuestsForBithdayUsers);
 
     //Enable graceful stop

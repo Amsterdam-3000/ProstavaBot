@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
 import ical, { ICalAlarmType } from "ical-generator";
+import { DateTime } from "luxon";
 
 import { Prostava, User } from "../types";
 import { GroupUtils, ProstavaUtils } from "../utils";
 import { i18n } from "../commons/locale";
 import { CalendarView } from "../views";
-import { DateTime } from "luxon";
 
 export class ApiCalendarController {
     static async sendGroupCalendarOfProstavas(req: Request, res: Response): Promise<void> {

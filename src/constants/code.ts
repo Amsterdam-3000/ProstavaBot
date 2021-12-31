@@ -88,6 +88,7 @@ export const CODE: { [index: string]: { [index: string]: string } } = {
         PROSTAVA_UNDO: "🔚",
         PROSTAVA_SAVE: "💾",
         PROSTAVA_RATE: "🚨",
+        PROSTAVAS_REJECT: "❌",
         REQUEST: "🥛",
         REQUEST_UNDO: "🔚",
         REQUEST_SAVE: "💾",
