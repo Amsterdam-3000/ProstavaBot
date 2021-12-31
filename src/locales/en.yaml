@@ -94,6 +94,7 @@ command:
     prostava_undo: "${code} Withdraw announced prostava"
     prostava_save: "${code} Save announced prostava"
     prostava_rate: "${code} Remind participants to rate prostava"
+    prostavas_reject: "${code} Reject all expired prostavas"
     request: "${code} Request prostava for"
     request_undo: "${code} Withdraw requested prostava"
     request_save: "${code} Save requested prostava"

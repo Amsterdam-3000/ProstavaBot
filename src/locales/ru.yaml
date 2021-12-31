@@ -94,6 +94,7 @@ command:
     prostava_undo: "${code} Вернуть на доработку проставу"
     prostava_save: "${code} Сохранить объявленную проставу"
     prostava_rate: "${code} Напомнить участникам оценить проставу"
+    prostavas_reject: "${code} Отклонить все просроченные проставы"
     request: "${code} Запросить проставу для"
     request_undo: "${code} Вернуть на доработку проставу"
     request_save: "${code} Сохранить запрошенную проставу"

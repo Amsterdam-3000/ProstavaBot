@@ -43,6 +43,7 @@ export const PROSTAVA = {
         PROSTAVA_UNDO: "prostava_undo",
         PROSTAVA_SAVE: "prostava_save",
         PROSTAVA_RATE: "prostava_rate",
+        PROSTAVAS_REJECT: "prostavas_reject",
         REQUEST: "request",
         REQUEST_UNDO: "request_undo",
         REQUEST_SAVE: "request_save",
@@ -71,6 +72,7 @@ export const PROSTAVA = {
     JOB: {
         USER_BIRTHDAY_REMINDER: "userBirthdayReminderJob",
         PROSTAVA_AUTO_PUBLISH: "prostavaAutoPublishJob",
-        PROSTAVA_RATE_REMINDER: "prostavaRateReminderJob"
+        PROSTAVA_RATE_REMINDER: "prostavaRateReminderJob",
+        PROSTAVA_REJECT_EXPIRED: "prostavaRejectExpired"
     }
 };

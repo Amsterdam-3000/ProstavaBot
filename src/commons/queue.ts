@@ -30,6 +30,16 @@ prostavaQueue.add(
     }
 );
 prostavaQueue.add(
+    PROSTAVA.JOB.PROSTAVA_REJECT_EXPIRED,
+    {},
+    {
+        repeat: {
+            cron: "11 22 * * *",
+            tz: "Europe/Moscow"
+        }
+    }
+);
+prostavaQueue.add(
     PROSTAVA.JOB.USER_BIRTHDAY_REMINDER,
     {},
     {

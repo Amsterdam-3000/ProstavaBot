@@ -4,7 +4,7 @@ import { sign } from "jsonwebtoken";
 
 import { CONFIG } from "../commons/config";
 import { PROSTAVA, TELEGRAM } from "../constants";
-import { SceneState, UpdateContext } from "../types";
+import { Prostava, SceneState, UpdateContext } from "../types";
 import { ConverterUtils } from "./converter";
 import { RegexUtils } from "./regex";
 
@@ -43,13 +43,13 @@ export class TelegramUtils {
         };
     }
 
-    static getChatFromContext(ctx: UpdateContext) {
+    static getChatFromContext(ctx: UpdateContext): Chat | undefined {
         return ctx.chat || ctx.session?.chat;
     }
-    static getUserFromContext(ctx: UpdateContext) {
+    static getUserFromContext(ctx: UpdateContext): User | undefined {
         return ctx.callbackQuery?.from || ctx.from;
     }
-    static getProstavaFromContext(ctx: UpdateContext) {
+    static getProstavaFromContext(ctx: UpdateContext): Prostava | undefined {
         return ctx.prostava;
     }
 
