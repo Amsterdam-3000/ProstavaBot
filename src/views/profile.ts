@@ -1,8 +1,9 @@
+import { InlineKeyboardMarkup } from "telegraf/typings/core/types/typegram";
 import { I18nContext } from "@edjopato/telegraf-i18n/dist/source";
 import { renderFile } from "ejs";
 import { resolve } from "path";
 import { Markup } from "telegraf";
-import { InlineKeyboardMarkup } from "telegraf/typings/core/types/typegram";
+
 import { PROSTAVA, CODE } from "../constants";
 import { Aztro, Group, PersonalData, User } from "../types";
 import { DateUtils, LocaleUtils, ConverterUtils } from "../utils";
@@ -51,15 +52,6 @@ export class ProfileView {
         );
     }
 
-    static getUserKeyboard(i18n: I18nContext): Markup.Markup<InlineKeyboardMarkup> {
-        return Markup.inlineKeyboard(
-            [
-                CommonView.getBackButton(i18n, false, i18n.t("reply.profile.all_profiles", { code: CODE.ACTION.BACK })),
-                CommonView.getExitButton(i18n)
-            ],
-            { columns: 1 }
-        );
-    }
     static getProfileHtml(i18n: I18nContext, user: User, aztro: Aztro | undefined): Promise<string> {
         return renderFile(resolve(__dirname, "profile.ejs"), {
             i18n: i18n,

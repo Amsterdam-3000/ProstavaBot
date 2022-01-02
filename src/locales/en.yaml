@@ -14,7 +14,6 @@ reply:
         emoji: "${code} Send me Your emoji"
         birthday: "${code} Send me Your date of birth (YYYY-MM-DD)"
         username: "${code} Send me Your username"
-        all_profiles: "${code} All profiles"
     prostava:
         prostava: "${code} Select prostava"
         author: "${code} Select prostava author"
@@ -30,7 +29,6 @@ reply:
         no_prostavas: "${code} No prostavas"
     stats:
         no_stats: "${code} No stats"
-        all_stats: "${code} All stats"
         number:
             approved: "${code} Number of approved prostavas where user is author"
             rejected: "${code} Number of rejected prostavas where user is author"

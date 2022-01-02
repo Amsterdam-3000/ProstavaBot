@@ -1,6 +1,5 @@
-import { UserStats } from "stats";
-import { UserUtils } from ".";
-import { Group, Prostava, User } from "../types";
+import { Group, Prostava, User, UserStats } from "../types";
+import { UserUtils } from "./user";
 import { ProstavaUtils } from "./prostava";
 
 export class StatsUtils {
@@ -143,10 +142,13 @@ export class StatsUtils {
         const usersStatsSorted = usersStats.sort((a, b) =>
             descending ? Number(b.rating) - Number(a.rating) : Number(a.rating) - Number(b.rating)
         );
-        const ratingMax = descending ? usersStats[0].rating : usersStats[usersStats.length - 1].rating;
+        const ratingMaxLength = usersStats.reduce(
+            (length, userStats) => (length < userStats.rating.length ? userStats.rating.length : length),
+            0
+        );
         return usersStatsSorted.map((userStats) => ({
             ...userStats,
-            rating: userStats.rating.padStart(ratingMax.length, " ")
+            rating: userStats.rating.padStart(ratingMaxLength, " ")
         }));
     }
 }

@@ -17,7 +17,8 @@ export class ProfileController {
         const aztro = await AztroModel.getTodayHoroscope(ctx.user.personal_data.birthday);
         const message = await ctx.replyWithPhoto(ctx.user.user_photo || "", {
             caption: await ProfileView.getProfileHtml(ctx.i18n, ctx.user, aztro),
-            reply_markup: ProfileView.getUserKeyboard(ctx.i18n).reply_markup,
+            reply_markup: ProfileView.getUsersKeyboard(ctx.i18n, UserUtils.filterRealUsers(ctx.group.users))
+                .reply_markup,
             parse_mode: "HTML"
         });
         TelegramUtils.setSceneState(ctx, { messageId: message.message_id });
@@ -35,18 +36,6 @@ export class ProfileController {
                 media: user.user_photo || "",
                 caption: await ProfileView.getProfileHtml(ctx.i18n, user, aztro),
                 parse_mode: "HTML"
-            },
-            {
-                reply_markup: ProfileView.getUserKeyboard(ctx.i18n).reply_markup
-            }
-        );
-    }
-    static async showProfiles(ctx: UpdateContext): Promise<void> {
-        await ctx.editMessageMedia(
-            {
-                type: "photo",
-                media: ctx.group.group_photo || "",
-                caption: LocaleUtils.getCommandText(ctx.i18n, PROSTAVA.COMMAND.PROFILES)
             },
             {
                 reply_markup: ProfileView.getUsersKeyboard(ctx.i18n, UserUtils.filterRealUsers(ctx.group.users))
