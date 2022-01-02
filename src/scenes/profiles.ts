@@ -1,4 +1,5 @@
 import { Scenes } from "telegraf";
+
 import { PROSTAVA } from "../constants";
 import { CommonController, ProfileController } from "../controllers";
 import { CommonMiddleware } from "../middlewares";
@@ -13,8 +14,6 @@ profilesScene.use(CommonMiddleware.isCbMessageOrigin);
 
 profilesScene.action(RegexUtils.matchAction(PROSTAVA.ACTION.PROFILES_USER), ProfileController.showUserProfile);
 
-//Back
-CommonScene.actionBack(profilesScene, ProfileController.showProfiles);
 //Exit
 CommonScene.actionExit(profilesScene);
 //Hide

@@ -5,3 +5,4 @@ export * from "./scene";
 export * from "./prostava";
 export * from "./aztro";
 export * from "./api";
+export * from "./stats";

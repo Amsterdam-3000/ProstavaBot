@@ -2,7 +2,6 @@ import { NextFunction, Request, Response } from "express";
 import expressJwt from "express-jwt";
 
 import { CONFIG } from "../commons/config";
-import { User } from "../types";
 import { UserUtils } from "../utils";
 
 export class ApiAuthMiddleware {

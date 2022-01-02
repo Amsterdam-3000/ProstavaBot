@@ -1,4 +1,5 @@
 import { Scenes } from "telegraf";
+
 import { PROSTAVA } from "../constants";
 import { CommonController, StatsController } from "../controllers";
 import { CommonMiddleware } from "../middlewares";
@@ -19,8 +20,6 @@ statsScene.action(RegexUtils.matchAction(PROSTAVA.ACTION.STATS_NUMBER_APPROVED),
 statsScene.action(RegexUtils.matchAction(PROSTAVA.ACTION.STATS_NUMBER_REJECTED), StatsController.showStats);
 statsScene.action(RegexUtils.matchAction(PROSTAVA.ACTION.STATS_NUMBER_PARTICIPATIONS), StatsController.showStats);
 
-//Back
-CommonScene.actionBack(statsScene, StatsController.switchStats);
 //Exit
 CommonScene.actionExit(statsScene);
 //Hide

@@ -1,7 +1,6 @@
-import { UserStats } from "stats";
 import { PROSTAVA } from "../constants";
-import { UpdateContext } from "../types";
-import { LocaleUtils, StatsUtils, TelegramUtils } from "../utils";
+import { UpdateContext, UserStats } from "../types";
+import { StatsUtils, TelegramUtils } from "../utils";
 import { StatsView } from "../views";
 
 export class StatsController {
@@ -51,12 +50,6 @@ export class StatsController {
         await ctx.editMessageText(await StatsView.getStatsHtml(ctx.i18n, actionData?.action || "", usersStats), {
             reply_markup: StatsView.getStatsKeyboard(ctx.i18n).reply_markup,
             parse_mode: "HTML"
-        });
-    }
-
-    static async switchStats(ctx: UpdateContext): Promise<void> {
-        await ctx.editMessageText(LocaleUtils.getCommandText(ctx.i18n, PROSTAVA.COMMAND.STATS), {
-            reply_markup: StatsView.getSwitchStatsKeyboard(ctx.i18n).reply_markup
         });
     }
 }

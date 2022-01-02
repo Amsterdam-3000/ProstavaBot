@@ -14,7 +14,6 @@ reply:
         emoji: "${code} Отправь мне свой эмодзи"
         birthday: "${code} Отправь мне свою дату рождения (ГГГГ-ММ-ДД)"
         username: "${code} Отправь мне свое имя пользователя"
-        all_profiles: "${code} Все профили"
     prostava:
         prostava: "${code} Выбери проставу"
         author: "${code} Выбери автора проставы"
@@ -30,7 +29,6 @@ reply:
         no_prostavas: "${code} Нет простав"
     stats:
         no_stats: "${code} Нет статистики"
-        all_stats: "${code} Вся статистика"
         number:
             approved: "${code} Количество утвержденных простав, где пользователь автор"
             rejected: "${code} Количество отклоненных простав, где пользователь автор"
