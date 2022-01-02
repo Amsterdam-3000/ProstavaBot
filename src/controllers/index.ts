@@ -3,6 +3,7 @@ export * from "./help";
 export * from "./settings";
 export * from "./profile";
 export * from "./prostava";
+export * from "./stats";
 export * from "./apiCalendar";
 export * from "./apiAuth";
 export * from "./apiGroup";

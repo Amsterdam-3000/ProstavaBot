@@ -30,7 +30,14 @@ export const CODE: { [index: string]: { [index: string]: string } } = {
         PROSTAVA_PARTICIPANTS: "👥",
         PROSTAVA_RATING: "🍻",
         PROSTAVA_POLLING: "🗳",
-        PROSTAVA_COMING: "🏃🏼"
+        PROSTAVA_COMING: "🏃🏼",
+        STATS_NUMBER_APPROVED: "✅",
+        STATS_NUMBER_REJECTED: "❌",
+        STATS_NUMBER_PARTICIPATIONS: "👥",
+        STATS_RATING_AVERAGE: "🍻",
+        STATS_RATING_MAX: "⬆️",
+        STATS_RATING_MIN: "⬇️",
+        STATS_RATING_TOTAL: "🔝"
     },
     ERROR: {
         NOT_GROUP: "🚫",
@@ -83,7 +90,6 @@ export const CODE: { [index: string]: { [index: string]: string } } = {
         SETTINGS: "🛠",
         PROFILE: "👤",
         PROFILES: "👥",
-        PROFILES_ME: "👤",
         PROSTAVA: "🍺",
         PROSTAVA_UNDO: "🔚",
         PROSTAVA_SAVE: "💾",
@@ -95,7 +101,8 @@ export const CODE: { [index: string]: { [index: string]: string } } = {
         REQUEST_RATE: "🚨",
         SEARCH: "🔎",
         REMINDERS: "⏰",
-        CALENDAR: "📅"
+        CALENDAR: "📅",
+        STATS: "📊"
     },
     TEXT_COMMAND: {
         DELETE: "DELETE"

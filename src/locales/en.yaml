@@ -14,6 +14,7 @@ reply:
         emoji: "${code} Send me Your emoji"
         birthday: "${code} Send me Your date of birth (YYYY-MM-DD)"
         username: "${code} Send me Your username"
+        all_profiles: "${code} All profiles"
     prostava:
         prostava: "${code} Select prostava"
         author: "${code} Select prostava author"
@@ -27,6 +28,18 @@ reply:
         polling: "${code} Please, vote for prostava:"
         coming: "${code} Are you coming to prostava?"
         no_prostavas: "${code} No prostavas"
+    stats:
+        no_stats: "${code} No stats"
+        all_stats: "${code} All stats"
+        number:
+            approved: "${code} Number of approved prostavas where user is author"
+            rejected: "${code} Number of rejected prostavas where user is author"
+            participations: "${code} Number of prostavas where user is author or participant"
+        rating:
+            average: "${code} Average rating of prostavas where user is author"
+            max: "${code} Max rating of prostavas where user is author"
+            min: "${code} Min rating of prostavas where user is author"
+            total: "${code} Total rating = (Number of approved) - (Number of rejected) + (Number of participations)/(All approved prostavas) + Average rating"
 action:
     back: "${code} Back"
     exit: "${code} Exit"
@@ -57,6 +70,16 @@ action:
         create: "${value} Announce prostava"
         participants: "${code} Participants: ${value}"
         rating: "${code} Rating: ${value}"
+    stats:
+        number:
+            approved: "${code} Number of approved"
+            rejected: "${code} Number of rejected"
+            participations: "${code} Number of participations"
+        rating:
+            average: "${code} Average rating"
+            max: "${code} Max rating"
+            min: "${code} Min rating"
+            total: "${code} Total rating"
 status:
     new: "${code}"
     pending: "${code} ${value}"
@@ -89,7 +112,6 @@ command:
     settings: "${code} Change Prostava settings"
     profile: "${code} Complete Your profile ${value}"
     profiles: "${code} Show user profile"
-    profiles_me: "${code} Show Your profile"
     prostava: "${code} Announce prostava ${value}"
     prostava_undo: "${code} Withdraw announced prostava"
     prostava_save: "${code} Save announced prostava"
@@ -102,10 +124,12 @@ command:
     search: "${code} Search for prostavas"
     reminders: "${code} Show scheduled prostavas"
     calendar: "${code} Show calendar of prostavas"
+    stats: "${code} Show statistics and ratings"
 command_text:
     prostava: "type|title|date|venue|cost"
     request: "author|type|title"
     search: "author|type|title|date"
+    stats: "year"
 command_group:
     bot: "Bot"
     user: "User"

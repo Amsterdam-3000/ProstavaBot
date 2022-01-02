@@ -3,8 +3,8 @@ help - 🚑 Show Prostava help
 settings - 🛠 Change Prostava settings
 profile - 👤 Complete Your profile 
 profiles - 👥 Show user profile
-profiles_me - 👤 Show Your profile
 prostava - 🍺 Announce prostava
 request - 🥛 Request prostava for
 reminders - ⏰ Show scheduled prostavas
 calendar - 📅 Show calendar of prostavas
+stats - 📊 Show statistics and ratings

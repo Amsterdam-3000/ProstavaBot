@@ -31,7 +31,6 @@ export function launchBot(): void {
     //User
     bot.command(PROSTAVA.COMMAND.PROFILE, CommonController.enterScene(PROSTAVA.SCENE.PROFILE));
     bot.command(PROSTAVA.COMMAND.PROFILES, CommonController.enterScene(PROSTAVA.SCENE.PROFILES));
-    bot.command(PROSTAVA.COMMAND.PROFILES_ME, CommonController.enterScene(PROSTAVA.SCENE.PROFILES));
 
     //Prostava
     bot.command(PROSTAVA.COMMAND.PROSTAVA, CommonController.enterScene(PROSTAVA.SCENE.PROSTAVA));
@@ -85,6 +84,9 @@ export function launchBot(): void {
         ProstavaController.showProstavas
     );
     bot.command(PROSTAVA.COMMAND.CALENDAR, CommonController.enterScene(PROSTAVA.SCENE.CALENDAR));
+
+    //Stats
+    bot.command(PROSTAVA.COMMAND.STATS, CommonController.enterScene(PROSTAVA.SCENE.STATS));
 
     //Search prostavas
     bot.on("inline_query", ProstavaMiddleware.addQueryProstavasToContext, ProstavaController.showQueryProstavas);
