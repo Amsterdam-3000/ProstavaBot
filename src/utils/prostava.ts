@@ -215,6 +215,9 @@ export class ProstavaUtils {
                 : this.isUserAuthorOfPrastava(prostava, userId)
         );
     }
+    static filterParticipantProstavas(prostavas: Group["prostavas"], userId: number | undefined): Prostava[] {
+        return this.filterProstavas(prostavas).filter((prostava) => this.isUserParticipantOfPrastava(prostava, userId));
+    }
     static filterProstavasByQuery(prostavas: Group["prostavas"], query: string | undefined): Prostava[] {
         return this.filterApprovedProstavas(prostavas).filter((prostava) => this.matchProstavaByQuery(prostava, query));
     }
@@ -266,7 +269,7 @@ export class ProstavaUtils {
         return false;
     }
 
-    static getProstavaRatingString(rating: Prostava["rating"], ratingString: Prostava["rating_string"]) {
+    static getProstavaRatingString(rating: Prostava["rating"], ratingString: Prostava["rating_string"]): string {
         const missCode = Object.values(CODE.RATING)[0];
         return (
             Object.entries(CODE.RATING)
@@ -284,7 +287,7 @@ export class ProstavaUtils {
         participants: Prostava["participants"],
         minCount: Prostava["participants_min_count"],
         withRating = true
-    ) {
+    ): string {
         const participantsWere = this.filterParticipantsWere(participants);
         let participantsString = participantsWere?.reduce(
             (participantsString, participant) =>
@@ -306,22 +309,22 @@ export class ProstavaUtils {
     static getParticipantsVotesString(
         participantsCount: Prostava["participants_string"],
         participantsMaxCount: number
-    ) {
+    ): string {
         return participantsCount + "/" + participantsMaxCount.toString();
     }
-    static getVenueDisplayString(venue: Venue | undefined) {
+    static getVenueDisplayString(venue: Venue | undefined): string {
         return (
             ConverterUtils.displayValue(venue?.location ? CODE.ACTION.PROSTAVA_LOCATION : "") +
             ConverterUtils.displayValue(venue?.title)
         );
     }
-    static getProstavaTypesString(types: ProstavaType[]) {
+    static getProstavaTypesString(types: ProstavaType[]): string {
         return types.reduce((typesString, type) => typesString + type.emoji, "");
     }
-    static getProstavaCommand(prostava: Prostava) {
+    static getProstavaCommand(prostava: Prostava): string {
         return prostava.is_request ? PROSTAVA.COMMAND.REQUEST : PROSTAVA.COMMAND.PROSTAVA;
     }
-    static getMinDateOfProstavas(prostavas: Prostava[] | undefined) {
+    static getMinDateOfProstavas(prostavas: Prostava[] | undefined): Date {
         if (!prostavas?.length) {
             return new Date();
         }
@@ -331,7 +334,7 @@ export class ProstavaUtils {
             new Date()
         );
     }
-    static getMaxDateOfProstavas(prostavas: Prostava[] | undefined) {
+    static getMaxDateOfProstavas(prostavas: Prostava[] | undefined): Date {
         if (!prostavas?.length) {
             return new Date();
         }
@@ -341,7 +344,10 @@ export class ProstavaUtils {
             new Date()
         );
     }
-    static getProstavasDateTexts(prostavas: Prostava[] | undefined, users: Group["users"]) {
+    static getProstavasDateTexts(
+        prostavas: Prostava[] | undefined,
+        users: Group["users"]
+    ): Map<string, string> | undefined {
         if (!prostavas?.length) {
             return undefined;
         }
@@ -374,6 +380,14 @@ export class ProstavaUtils {
         return dateTexts;
     }
 
+    static isUserParticipantOfPrastava(prostava: Prostava, userId: number | undefined): boolean {
+        return (
+            this.isUserAuthorOfPrastava(prostava, userId) ||
+            this.filterParticipantsWere(prostava.participants).some(
+                (participant) => (participant.user as User).user_id === userId
+            )
+        );
+    }
     static isUserAuthorOfPrastava(prostava: Prostava, userId: number | undefined): boolean {
         return (prostava.author as User)?.user_id === userId;
     }

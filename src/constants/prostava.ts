@@ -30,7 +30,14 @@ export const PROSTAVA = {
         PROSTAVA_RATING: "prostava-prostava-rating",
         PROSTAVA_POLLING: "prostava-prostava-polling",
         PROSTAVA_COMING: "prostava-prostava-coming",
-        PROSTAVA_PARTICIPANTS: "prostava-prostava-participants"
+        PROSTAVA_PARTICIPANTS: "prostava-prostava-participants",
+        STATS_NUMBER_APPROVED: "prostava-stats-number-approved",
+        STATS_NUMBER_REJECTED: "prostava-stats-number-rejected",
+        STATS_NUMBER_PARTICIPATIONS: "prostava-stats-number-participations",
+        STATS_RATING_AVERAGE: "prostava-stats-rating-average",
+        STATS_RATING_MAX: "prostava-stats-rating-max",
+        STATS_RATING_MIN: "prostava-stats-rating-min",
+        STATS_RATING_TOTAL: "prostava-stats-rating-total"
     },
     COMMAND: {
         START: "start",
@@ -38,7 +45,6 @@ export const PROSTAVA = {
         SETTINGS: "settings",
         PROFILE: "profile",
         PROFILES: "profiles",
-        PROFILES_ME: "profiles_me",
         PROSTAVA: "prostava",
         PROSTAVA_UNDO: "prostava_undo",
         PROSTAVA_SAVE: "prostava_save",
@@ -50,14 +56,16 @@ export const PROSTAVA = {
         REQUEST_RATE: "request_rate",
         SEARCH: "search",
         REMINDERS: "reminders",
-        CALENDAR: "calendar"
+        CALENDAR: "calendar",
+        STATS: "stats"
     },
     SCENE: {
         SETTINGS: "settings",
         PROFILE: "profile",
         PROFILES: "profiles",
         PROSTAVA: "prostava",
-        CALENDAR: "calendar"
+        CALENDAR: "calendar",
+        STATS: "stats"
     },
     COLLECTION: {
         GROUP: "Group",

@@ -142,7 +142,7 @@ export class SettingsView {
     private static getProstavaTypeButtons(types: ProstavaType[]) {
         return types.map((type) =>
             Markup.button.callback(
-                type.string!,
+                type.string || "",
                 ConverterUtils.stringifyActionData(PROSTAVA.ACTION.SETTINGS_TYPEDIT, type.emoji)
             )
         );
