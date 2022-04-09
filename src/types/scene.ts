@@ -7,3 +7,10 @@ export interface SceneState {
     actionData?: string;
     prostavaId?: string;
 }
+
+export interface ActionData {
+    action: string,
+    value: string,
+    id: string,
+    isPublic: boolean
+}

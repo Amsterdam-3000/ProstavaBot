@@ -4,7 +4,7 @@ import { sign } from "jsonwebtoken";
 
 import { CONFIG } from "../commons/config";
 import { PROSTAVA, TELEGRAM } from "../constants";
-import { Prostava, SceneState, UpdateContext } from "../types";
+import { ActionData, Prostava, SceneState, UpdateContext } from "../types";
 import { ConverterUtils } from "./converter";
 import { RegexUtils } from "./regex";
 
@@ -53,67 +53,67 @@ export class TelegramUtils {
         return ctx.prostava;
     }
 
-    static getActionDataFromCbQuery(ctx: UpdateContext) {
+    static getActionDataFromCbQuery(ctx: UpdateContext): ActionData | undefined {
         return ConverterUtils.parseActionData(this.getCbQueryData(ctx));
     }
-    static getActionDataFromSceneState(ctx: UpdateContext) {
+    static getActionDataFromSceneState(ctx: UpdateContext): ActionData | undefined {
         return ConverterUtils.parseActionData(this.getSceneState(ctx).actionData);
     }
-    static getDateTextFromCalendarAction(ctx: UpdateContext) {
+    static getDateTextFromCalendarAction(ctx: UpdateContext): string {
         return ConverterUtils.sliceCalendarActionDate(TelegramUtils.getCbQueryData(ctx));
     }
 
-    static isMessageProstavaCommand(ctx: UpdateContext) {
+    static isMessageProstavaCommand(ctx: UpdateContext): boolean {
         return this.isProstavaCommand(this.getMessageCommand(ctx));
     }
-    static includesCommand(ctx: UpdateContext, command: string) {
+    static includesCommand(ctx: UpdateContext, command: string): boolean {
         if (this.isMessageCommand(ctx)) {
             return this.includesMessageCommand(ctx, command);
         }
         return this.includesSceneCommand(ctx, command);
     }
-    static isMessageCommand(ctx: UpdateContext, command?: string) {
+    static isMessageCommand(ctx: UpdateContext, command?: string): boolean {
         const messageCommand = this.getMessageCommand(ctx);
         return command ? messageCommand === command : Boolean(messageCommand);
     }
-    private static includesMessageCommand(ctx: UpdateContext, command: string) {
+    private static includesMessageCommand(ctx: UpdateContext, command: string): boolean {
         return this.getTextMessage(ctx)?.text.includes(command);
     }
-    private static includesSceneCommand(ctx: UpdateContext, command: string) {
-        return this.getSceneState(ctx).command?.includes(command);
+    private static includesSceneCommand(ctx: UpdateContext, command: string): boolean {
+        return this.getSceneState(ctx) && this.getSceneState(ctx).command?.includes(command) ? true : false;
     }
-    static isProstavaCommand(command: string | undefined) {
+    static isProstavaCommand(command: string | undefined): boolean {
         return command === PROSTAVA.COMMAND.PROSTAVA || command === PROSTAVA.COMMAND.REQUEST;
     }
 
-    static getSceneCommand(ctx: UpdateContext) {
+    static getSceneCommand(ctx: UpdateContext): string | undefined {
         return this.getSceneState(ctx).command;
     }
-    static setSceneState(ctx: UpdateContext, sceneState: SceneState) {
+    static setSceneState(ctx: UpdateContext, sceneState: SceneState): void {
         const sceneStateNew = { ...this.getSceneState(ctx), ...sceneState };
         ctx.scene.state = sceneStateNew;
     }
-    static getSceneState(ctx: UpdateContext) {
+    static getSceneState(ctx: UpdateContext): SceneState {
         return ctx.scene.state as SceneState;
     }
 
-    static getMessageCommand(ctx: UpdateContext) {
+    static getMessageCommand(ctx: UpdateContext): string | undefined {
         const command = this.getTextMessage(ctx)?.text?.match(RegexUtils.matchCommand());
         return command ? command[0].slice(1).replace(RegexUtils.matchUser(), "") : undefined;
     }
-    static getMessageCommandText(ctx: UpdateContext) {
+    static getMessageCommandText(ctx: UpdateContext): string {
         return this.getTextMessage(ctx)?.text?.replace(RegexUtils.matchCommand(), "").trim();
     }
-    static getCbQueryData(ctx: UpdateContext) {
+    static getCbQueryData(ctx: UpdateContext): CallbackQuery.DataCallbackQuery["data"] {
         return (ctx.callbackQuery as CallbackQuery.DataCallbackQuery)?.data;
     }
-    static getTextMessage(ctx: UpdateContext) {
+    static getTextMessage(ctx: UpdateContext): Message.TextMessage {
         return ctx.message as Message.TextMessage;
     }
-    static getVenueMessage(ctx: UpdateContext) {
+    static getVenueMessage(ctx: UpdateContext): Message.VenueMessage {
         return ctx.message as Message.VenueMessage;
     }
-    static getLocationMessage(ctx: UpdateContext) {
+    static getLocationMessage(ctx: UpdateContext): Message.LocationMessage {
         return ctx.message as Message.LocationMessage;
     }
 
@@ -123,7 +123,7 @@ export class TelegramUtils {
             .sort((a, b) => (a[0] !== b[0] ? (a[0] < b[0] ? -1 : 1) : 0))
             .map((a) => `${a[0]}=${a[1]}`)
             .join("\n");
-        const secret_key = SHA256(CONFIG.TELEGRAM_TOKEN!);
+        const secret_key = SHA256(CONFIG.TELEGRAM_TOKEN || "");
         const hash = HmacSHA256(data_check_string, secret_key);
         return authUser["hash"] === hash.toString(enc.Hex);
     }
@@ -131,7 +131,7 @@ export class TelegramUtils {
         const user = { ...authUser };
         delete user["hash"];
         delete user["auth_date"];
-        return sign(user, CONFIG.TELEGRAM_TOKEN!, { expiresIn: "3 days" });
+        return sign(user, CONFIG.TELEGRAM_TOKEN || "", { expiresIn: "3 days" });
     }
 
     static getUserString(user: User | undefined): string {

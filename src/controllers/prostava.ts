@@ -149,23 +149,27 @@ export class ProstavaController {
 
     //Reminders and Calendar
     static async showProstavas(ctx: UpdateContext): Promise<void> {
-        await ctx.reply(await ProstavaView.getProstavasHtml(ctx.i18n, ctx.prostavas), {
+        const isReminders = TelegramUtils.includesCommand(ctx, PROSTAVA.COMMAND.REMINDERS);
+        await ctx.reply(await ProstavaView.getProstavasHtml(ctx.i18n, ctx.prostavas, isReminders), {
             parse_mode: "HTML"
         });
     }
     static async showCalendarOfProstavas(ctx: UpdateContext): Promise<void> {
         const prostavas = ProstavaUtils.filterScheduledProstavas(ctx.group.prostavas);
-        const message = await ctx.reply(await ProstavaView.getProstavasHtml(ctx.i18n, ctx.prostavas, new Date()), {
-            reply_markup: ProstavaView.getCalendarOfProstavasKeyboard(ctx.i18n, prostavas, ctx.group.users)
-                .reply_markup,
-            parse_mode: "HTML"
-        });
+        const message = await ctx.reply(
+            await ProstavaView.getProstavasHtml(ctx.i18n, ctx.prostavas, false, new Date()),
+            {
+                reply_markup: ProstavaView.getCalendarOfProstavasKeyboard(ctx.i18n, prostavas, ctx.group.users)
+                    .reply_markup,
+                parse_mode: "HTML"
+            }
+        );
         TelegramUtils.setSceneState(ctx, { messageId: message.message_id });
     }
     static async refreshCalendarOfProstavas(ctx: UpdateContext, date: string): Promise<void> {
         const selectedDate = new Date(date);
         const prostavas = ProstavaUtils.filterScheduledProstavas(ctx.group.prostavas);
-        await ctx.editMessageText(await ProstavaView.getProstavasHtml(ctx.i18n, ctx.prostavas, selectedDate), {
+        await ctx.editMessageText(await ProstavaView.getProstavasHtml(ctx.i18n, ctx.prostavas, false, selectedDate), {
             reply_markup: ProstavaView.getCalendarOfProstavasKeyboard(
                 ctx.i18n,
                 prostavas,

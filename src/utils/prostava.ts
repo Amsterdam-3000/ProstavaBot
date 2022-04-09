@@ -136,7 +136,7 @@ export class ProstavaUtils {
         prostava.status = ProstavaStatus.Rejected;
         prostava.rating = 0;
     }
-    static withdrawProstava(prostava: Prostava) {
+    static withdrawProstava(prostava: Prostava): void {
         prostava.status = ProstavaStatus.New;
         prostava.participants = [];
         prostava.rating = 0;
@@ -225,6 +225,9 @@ export class ProstavaUtils {
         return (prostavas as Prostava[]).filter(
             (prostava) => prostava.prostava_data.date.toDateString() === date.toDateString()
         );
+    }
+    static filterProstavasByYear(prostavas: Group["prostavas"], year: number): Prostava[] {
+        return (prostavas as Prostava[]).filter((prostava) => prostava.closing_date?.getFullYear() === year);
     }
     static filterScheduledProstavas(prostavas: Group["prostavas"]): Prostava[] {
         return [
@@ -436,6 +439,12 @@ export class ProstavaUtils {
                 : false;
         }
         return false;
+    }
+    static canWithdrawProstava(prostava: Prostava | undefined): boolean {
+        if (!prostava || !this.isProstavaPending(prostava)) {
+            return false;
+        }
+        return true;
     }
     static isRequest(prostava: Prostava | undefined): boolean {
         return prostava && prostava.is_request ? true : false;

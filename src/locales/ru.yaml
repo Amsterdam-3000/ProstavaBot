@@ -29,6 +29,8 @@ reply:
         no_prostavas: "${code} Нет простав"
     stats:
         no_stats: "${code} Нет статистики"
+        stats_year: "Статистика за ${value}"
+        stats_all: "Статистика за все время"
         number:
             approved: "${code} Количество утвержденных простав, где пользователь автор"
             rejected: "${code} Количество отклоненных простав, где пользователь автор"
@@ -110,6 +112,7 @@ command:
     settings: "${code} Изменить настройки Проставы"
     profile: "${code} Заполнить свой профиль ${value}"
     profiles: "${code} Показать профиль пользователя"
+    profiles_me: "${code} Показать ваш профиль"
     prostava: "${code} Объявить проставу ${value}"
     prostava_undo: "${code} Вернуть на доработку проставу"
     prostava_save: "${code} Сохранить объявленную проставу"
@@ -123,6 +126,7 @@ command:
     reminders: "${code} Показать запланированные проставы"
     calendar: "${code} Показать календарь простав"
     stats: "${code} Показать статистику и рейтинг"
+    stats_total: "${code} Показать итоговый рейтинг"
 command_text:
     prostava: "вариант|название|дата|место|стоимость"
     request: "автор|вариант|название"
@@ -132,6 +136,7 @@ command_group:
     bot: "Бот"
     user: "Пользователь"
     prostava: "Простава"
+    stats: "Статистика"
 aztro:
     compatibility: "Совместимость: ${value}"
     mood: "Настроение: ${value}"

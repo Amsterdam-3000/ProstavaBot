@@ -1,5 +1,5 @@
 import { ICalAttendeeStatus, ICalEventStatus } from "ical-generator";
-import { ProstavaStatus } from "../types";
+import { ActionData, ProstavaStatus } from "../types";
 import { CALENDAR, CODE, PROSTAVA } from "../constants";
 import { ConstantUtils } from "./constant";
 import { RegexUtils } from "./regex";
@@ -32,7 +32,7 @@ export class ConverterUtils {
         return action + "|" + (value || 0) + "|" + (id || 0) + "|" + (isPublic ? 1 : 0);
     }
     //TODO Create type action data
-    static parseActionData(data: string | undefined) {
+    static parseActionData(data: string | undefined): ActionData | undefined {
         if (!data) {
             return undefined;
         }

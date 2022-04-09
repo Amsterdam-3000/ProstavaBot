@@ -1,10 +1,16 @@
 import { bot } from "./commons/bot";
 import { PROSTAVA } from "./constants";
 import { UserMiddleware, GroupMiddleware, GlobalMiddleware, CommonMiddleware, ProstavaMiddleware } from "./middlewares";
-import { CommonController, HelpController, ProstavaController } from "./controllers";
+import {
+    CommonController,
+    HelpController,
+    ProfileController,
+    ProstavaController,
+    StatsController
+} from "./controllers";
 import { RegexUtils } from "./utils";
 import { prostavaQueue } from "./commons/queue";
-import { ProstavaProcess, UserProcess } from "./processes";
+import { ProstavaProcess, StatsProcess, UserProcess } from "./processes";
 import { Scenes } from "telegraf";
 import { UpdateContext } from "./types";
 
@@ -31,6 +37,7 @@ export function launchBot(): void {
     //User
     bot.command(PROSTAVA.COMMAND.PROFILE, CommonController.enterScene(PROSTAVA.SCENE.PROFILE));
     bot.command(PROSTAVA.COMMAND.PROFILES, CommonController.enterScene(PROSTAVA.SCENE.PROFILES));
+    bot.command(PROSTAVA.COMMAND.PROFILES_ME, ProfileController.showMyProfile);
 
     //Prostava
     bot.command(PROSTAVA.COMMAND.PROSTAVA, CommonController.enterScene(PROSTAVA.SCENE.PROSTAVA));
@@ -87,6 +94,7 @@ export function launchBot(): void {
 
     //Stats
     bot.command(PROSTAVA.COMMAND.STATS, CommonController.enterScene(PROSTAVA.SCENE.STATS));
+    bot.command(PROSTAVA.COMMAND.STATS_TOTAL, StatsController.showTotalStats);
 
     //Search prostavas
     bot.on("inline_query", ProstavaMiddleware.addQueryProstavasToContext, ProstavaController.showQueryProstavas);
@@ -104,6 +112,7 @@ export function launchBot(): void {
     prostavaQueue.process(PROSTAVA.JOB.PROSTAVA_RATE_REMINDER, ProstavaProcess.remindUsersRateProstavas);
     prostavaQueue.process(PROSTAVA.JOB.PROSTAVA_REJECT_EXPIRED, ProstavaProcess.rejectExpiredProstavas);
     prostavaQueue.process(PROSTAVA.JOB.USER_BIRTHDAY_REMINDER, UserProcess.announceReuestsForBithdayUsers);
+    prostavaQueue.process(PROSTAVA.JOB.STATS_SHOW_LAST_YEAR, StatsProcess.showLastYearStats);
 
     //Enable graceful stop
     process.once("SIGINT", () => bot.stop("SIGINT"));

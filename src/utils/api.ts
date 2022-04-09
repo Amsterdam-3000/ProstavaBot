@@ -131,7 +131,11 @@ export class ApiUtils {
             readonly: !(
                 ((isAuthorAuthorized && !prostava.is_request) || (isCreatorAuthorized && prostava.is_request)) &&
                 ProstavaUtils.isProstavaNew(prostava)
-            )
+            ),
+            canWithdraw:
+                ((isAuthorAuthorized && !prostava.is_request) || (isCreatorAuthorized && prostava.is_request)) &&
+                ProstavaUtils.isProstavaPending(prostava),
+            canRate: !isAuthorAuthorized && ProstavaUtils.isProstavaPending(prostava)
         };
     }
 

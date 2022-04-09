@@ -47,13 +47,14 @@ export class StatsView {
         );
     }
 
-    static getStatsHtml(i18n: I18nContext, action: string, stats: UserStats[]): Promise<string> {
+    static getStatsHtml(i18n: I18nContext, action: string, stats: UserStats[], year?: number): Promise<string> {
         return renderFile(resolve(__dirname, "stats.ejs"), {
             i18n: i18n,
             CODE: CODE,
             LocaleUtils: LocaleUtils,
             action: action,
-            usersStats: stats
+            usersStats: stats,
+            year: year
         });
     }
 }

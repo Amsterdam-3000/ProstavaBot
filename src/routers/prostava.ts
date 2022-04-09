@@ -18,3 +18,12 @@ prostavaRouter
         ApiProstavaMiddleware.saveProstava,
         ApiProstavaController.getProstava
     );
+prostavaRouter
+    .route("/withdraw")
+    .put(
+        ApiAuthMiddleware.isProstavaAnnouncerMe,
+        ApiProstavaMiddleware.canWithdrawProstava,
+        ApiProstavaMiddleware.withdrawProstava,
+        ApiProstavaMiddleware.saveProstava,
+        ApiProstavaController.getProstava
+    );

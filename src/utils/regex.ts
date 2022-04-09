@@ -18,6 +18,9 @@ export class RegexUtils {
     static matchNumber(): RegExp {
         return /^\d+$/;
     }
+    static matchYear(): RegExp {
+        return /^\d\d\d\d$/;
+    }
 
     static matchProstavaActionPrefix(): RegExp {
         return /^prostava-/;

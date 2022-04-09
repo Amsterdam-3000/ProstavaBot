@@ -56,4 +56,6 @@ export interface ApiProstava extends ApiBaseObject {
     participants_max_count?: number;
     creation_date?: Date;
     closing_date?: Date;
+    canWithdraw?: boolean;
+    canRate?: boolean;
 }

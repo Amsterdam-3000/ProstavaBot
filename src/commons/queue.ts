@@ -49,3 +49,13 @@ prostavaQueue.add(
         }
     }
 );
+prostavaQueue.add(
+    PROSTAVA.JOB.STATS_SHOW_LAST_YEAR,
+    {},
+    {
+        repeat: {
+            cron: "11 11 1 1 *",
+            tz: "Europe/Moscow"
+        }
+    }
+);
