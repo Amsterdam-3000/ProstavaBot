@@ -45,6 +45,7 @@ export const PROSTAVA = {
         SETTINGS: "settings",
         PROFILE: "profile",
         PROFILES: "profiles",
+        PROFILES_ME: "profiles_me",
         PROSTAVA: "prostava",
         PROSTAVA_UNDO: "prostava_undo",
         PROSTAVA_SAVE: "prostava_save",
@@ -57,7 +58,8 @@ export const PROSTAVA = {
         SEARCH: "search",
         REMINDERS: "reminders",
         CALENDAR: "calendar",
-        STATS: "stats"
+        STATS: "stats",
+        STATS_TOTAL: "stats_total"
     },
     SCENE: {
         SETTINGS: "settings",
@@ -81,6 +83,7 @@ export const PROSTAVA = {
         USER_BIRTHDAY_REMINDER: "userBirthdayReminderJob",
         PROSTAVA_AUTO_PUBLISH: "prostavaAutoPublishJob",
         PROSTAVA_RATE_REMINDER: "prostavaRateReminderJob",
-        PROSTAVA_REJECT_EXPIRED: "prostavaRejectExpired"
+        PROSTAVA_REJECT_EXPIRED: "prostavaRejectExpired",
+        STATS_SHOW_LAST_YEAR: "statsShowLastYear"
     }
 };

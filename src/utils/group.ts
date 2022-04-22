@@ -65,6 +65,9 @@ export class GroupUtils {
         });
     }
 
+    static getGroupsFromDB(): Promise<GroupDocument[] | null> {
+        return GroupCollection.find().exec();
+    }
     static getGroupByChatIdFromDB(chatId: number): Promise<GroupDocument | null> {
         return GroupCollection.findById(chatId).exec();
     }

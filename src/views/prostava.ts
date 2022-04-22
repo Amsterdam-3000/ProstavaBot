@@ -1,7 +1,9 @@
+import { InlineKeyboardMarkup } from "telegraf/typings/core/types/typegram";
 import { I18nContext } from "@edjopato/telegraf-i18n/dist/source";
 import { Markup } from "telegraf";
 import { renderFile } from "ejs";
 import { resolve } from "path";
+
 import { ConstantUtils, DateUtils, LocaleUtils, ConverterUtils, ProstavaUtils, TelegramUtils } from "../utils";
 import { CODE, PROSTAVA } from "../constants";
 import { Group, GroupSettings, Prostava, ProstavaType, User } from "../types";
@@ -9,7 +11,12 @@ import { prostavaCalendar } from "../commons/calendar";
 import { CommonView } from "./common";
 
 export class ProstavaView {
-    static getProstavaCreateKeyboard(i18n: I18nContext, prostava: Prostava, canCreate: boolean, backButton = false) {
+    static getProstavaCreateKeyboard(
+        i18n: I18nContext,
+        prostava: Prostava,
+        canCreate: boolean,
+        backButton = false
+    ): Markup.Markup<InlineKeyboardMarkup> {
         return Markup.inlineKeyboard(
             [
                 Markup.button.callback(
@@ -95,7 +102,7 @@ export class ProstavaView {
             { columns: 1 }
         );
     }
-    static getProstavaKeyboard(i18n: I18nContext, prostavas: Prostava[]) {
+    static getProstavaKeyboard(i18n: I18nContext, prostavas: Prostava[]): Markup.Markup<InlineKeyboardMarkup> {
         return Markup.inlineKeyboard([...this.getProstavaButtons(prostavas), CommonView.getExitButton(i18n)], {
             columns: 1
         });
@@ -103,7 +110,7 @@ export class ProstavaView {
     private static getProstavaButtons(prostavas: Prostava[]) {
         return prostavas.map((prostava) =>
             Markup.button.callback(
-                prostava.title!,
+                prostava.title || "",
                 ConverterUtils.stringifyActionData(
                     PROSTAVA.ACTION.PROSTAVA_PROSTAVA,
                     ProstavaUtils.getProstavaId(prostava)
@@ -113,7 +120,7 @@ export class ProstavaView {
     }
 
     //Rating
-    static getProstavaRatingKeyboard(i18n: I18nContext, prostava: Prostava) {
+    static getProstavaRatingKeyboard(i18n: I18nContext, prostava: Prostava): Markup.Markup<InlineKeyboardMarkup> {
         return Markup.inlineKeyboard(this.getProstavaRatingButtons(i18n, prostava));
     }
     private static getProstavaRatingButtons(i18n: I18nContext, prostava: Prostava) {
@@ -135,7 +142,7 @@ export class ProstavaView {
     }
 
     //Prostava type
-    static getProstavaTypeKeyboard(i18n: I18nContext, types: ProstavaType[]) {
+    static getProstavaTypeKeyboard(i18n: I18nContext, types: ProstavaType[]): Markup.Markup<InlineKeyboardMarkup> {
         return Markup.inlineKeyboard([...this.getProstavaTypeButtons(types), CommonView.getExitButton(i18n)], {
             columns: 1
         });
@@ -143,7 +150,7 @@ export class ProstavaView {
     private static getProstavaTypeButtons(types: ProstavaType[]) {
         return types.map((type) =>
             Markup.button.callback(
-                type.string!,
+                type.string || "",
                 ConverterUtils.stringifyActionData(
                     ConverterUtils.getSubAction(PROSTAVA.ACTION.PROSTAVA_TYPE),
                     type.emoji
@@ -152,7 +159,10 @@ export class ProstavaView {
         );
     }
 
-    static getProstavaCalendarKeyboard(i18n: I18nContext, settings: GroupSettings) {
+    static getProstavaCalendarKeyboard(
+        i18n: I18nContext,
+        settings: GroupSettings
+    ): Markup.Markup<InlineKeyboardMarkup> {
         return prostavaCalendar
             .setMinDate(DateUtils.getDateDaysAgo(settings.create_days_ago))
             .setMaxDate(DateUtils.getDateDaysAfter(settings.create_days_ago))
@@ -162,7 +172,7 @@ export class ProstavaView {
             .getCalendar(new Date());
     }
 
-    static getProstavaHtml(i18n: I18nContext, prostava: Prostava) {
+    static getProstavaHtml(i18n: I18nContext, prostava: Prostava): Promise<string> {
         return renderFile(resolve(__dirname, "prostava.ejs"), {
             i18n: i18n,
             prostava: prostava,
@@ -175,7 +185,7 @@ export class ProstavaView {
         });
     }
 
-    static getPendingUsersHtml(i18n: I18nContext, prostava: Prostava, users: Group["users"]) {
+    static getPendingUsersHtml(i18n: I18nContext, prostava: Prostava, users: Group["users"]): Promise<string> {
         return renderFile(resolve(__dirname, "pending.ejs"), {
             i18n: i18n,
             prostava: prostava,
@@ -186,14 +196,20 @@ export class ProstavaView {
     }
 
     //Reminders and Calendar
-    static getProstavasHtml(i18n: I18nContext, prostavas: Prostava[] | undefined, date?: Date) {
+    static getProstavasHtml(
+        i18n: I18nContext,
+        prostavas: Prostava[] | undefined,
+        isReminders = false,
+        date?: Date
+    ): Promise<string> {
         return renderFile(resolve(__dirname, "prostavas.ejs"), {
             i18n: i18n,
             prostavas: prostavas,
             date: date,
             DateUtils: DateUtils,
             LocaleUtils: LocaleUtils,
-            CODE: CODE
+            CODE: CODE,
+            isReminders: isReminders
         });
     }
     static getCalendarOfProstavasKeyboard(
@@ -201,7 +217,7 @@ export class ProstavaView {
         prostavas: Prostava[] | undefined,
         users: Group["users"],
         date: Date = new Date()
-    ) {
+    ): Markup.Markup<InlineKeyboardMarkup> {
         return prostavaCalendar
             .setMinDate(DateUtils.getFirstDayOfYear(ProstavaUtils.getMinDateOfProstavas(prostavas)))
             .setMaxDate(DateUtils.getLastDayOfYear(ProstavaUtils.getMaxDateOfProstavas(prostavas)))
@@ -213,10 +229,10 @@ export class ProstavaView {
     }
 
     //Inline Query
-    static getProstavaTitle(i18n: I18nContext, prostava: Prostava) {
+    static getProstavaTitle(i18n: I18nContext, prostava: Prostava): string {
         return `${prostava.title} • ${LocaleUtils.getStatusText(i18n, prostava.status)}`;
     }
-    static getProstavaDescription(i18n: I18nContext, prostava: Prostava) {
+    static getProstavaDescription(i18n: I18nContext, prostava: Prostava): string {
         const author = prostava.author as User;
         return (
             `${author.user_string} • ${DateUtils.getDateString(i18n.languageCode, prostava.prostava_data.date)}` +

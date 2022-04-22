@@ -14,14 +14,18 @@ export class ProfileController {
     }
 
     static async showMyProfile(ctx: UpdateContext): Promise<void> {
+        const isProfilesAll = TelegramUtils.getMessageCommand(ctx) === PROSTAVA.COMMAND.PROFILES;
         const aztro = await AztroModel.getTodayHoroscope(ctx.user.personal_data.birthday);
         const message = await ctx.replyWithPhoto(ctx.user.user_photo || "", {
             caption: await ProfileView.getProfileHtml(ctx.i18n, ctx.user, aztro),
-            reply_markup: ProfileView.getUsersKeyboard(ctx.i18n, UserUtils.filterRealUsers(ctx.group.users))
-                .reply_markup,
+            reply_markup: isProfilesAll
+                ? ProfileView.getUsersKeyboard(ctx.i18n, UserUtils.filterRealUsers(ctx.group.users)).reply_markup
+                : undefined,
             parse_mode: "HTML"
         });
-        TelegramUtils.setSceneState(ctx, { messageId: message.message_id });
+        if (isProfilesAll) {
+            TelegramUtils.setSceneState(ctx, { messageId: message.message_id });
+        }
     }
     static async showUserProfile(ctx: UpdateContext): Promise<void> {
         const actionData = TelegramUtils.getActionDataFromCbQuery(ctx);
@@ -30,17 +34,21 @@ export class ProfileController {
             return;
         }
         const aztro = await AztroModel.getTodayHoroscope(user.personal_data.birthday);
-        await ctx.editMessageMedia(
-            {
-                type: "photo",
-                media: user.user_photo || "",
-                caption: await ProfileView.getProfileHtml(ctx.i18n, user, aztro),
-                parse_mode: "HTML"
-            },
-            {
-                reply_markup: ProfileView.getUsersKeyboard(ctx.i18n, UserUtils.filterRealUsers(ctx.group.users))
-                    .reply_markup
-            }
-        );
+        try {
+            await ctx.editMessageMedia(
+                {
+                    type: "photo",
+                    media: user.user_photo || "",
+                    caption: await ProfileView.getProfileHtml(ctx.i18n, user, aztro),
+                    parse_mode: "HTML"
+                },
+                {
+                    reply_markup: ProfileView.getUsersKeyboard(ctx.i18n, UserUtils.filterRealUsers(ctx.group.users))
+                        .reply_markup
+                }
+            );
+        } catch {
+            ctx.answerCbQuery();
+        }
     }
 }

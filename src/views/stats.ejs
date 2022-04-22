@@ -1,6 +1,7 @@
 <% if (!usersStats?.length) { %>
 <%= i18n.t('reply.stats.no_stats', { code: CODE.COMMAND.STATS }) %>
-<% } else { %><%= LocaleUtils.getActionReplyText(i18n, action) %>
+<% } else { %><% if (year) { %><%= i18n.t('reply.stats.stats_year', { value: year }) %><% } else { %><%= i18n.t('reply.stats.stats_all') %><% } %>
+<%= LocaleUtils.getActionReplyText(i18n, action) %>
 
 <% usersStats.forEach(function(userStats){ %><code><%= userStats.rating %></code> <%= userStats.user.user_string %>
 <% }); %>

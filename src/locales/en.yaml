@@ -29,6 +29,8 @@ reply:
         no_prostavas: "${code} No prostavas"
     stats:
         no_stats: "${code} No stats"
+        stats_year: "Statistics for ${value}"
+        stats_all: "Lifetime statistics"
         number:
             approved: "${code} Number of approved prostavas where user is author"
             rejected: "${code} Number of rejected prostavas where user is author"
@@ -110,6 +112,7 @@ command:
     settings: "${code} Change Prostava settings"
     profile: "${code} Complete Your profile ${value}"
     profiles: "${code} Show user profile"
+    profiles_me: "${code} Show your profile"
     prostava: "${code} Announce prostava ${value}"
     prostava_undo: "${code} Withdraw announced prostava"
     prostava_save: "${code} Save announced prostava"
@@ -123,6 +126,7 @@ command:
     reminders: "${code} Show scheduled prostavas"
     calendar: "${code} Show calendar of prostavas"
     stats: "${code} Show statistics and ratings"
+    stats_total: "${code} Show total rating"
 command_text:
     prostava: "type|title|date|venue|cost"
     request: "author|type|title"
@@ -132,6 +136,7 @@ command_group:
     bot: "Bot"
     user: "User"
     prostava: "Prostava"
+    stats: "Stats"
 aztro:
     compatibility: "Compatibility: ${value}"
     mood: "Mood: ${value}"

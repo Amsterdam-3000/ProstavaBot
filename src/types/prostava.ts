@@ -10,8 +10,6 @@ export enum ProstavaStatus {
     Rejected = "rejected"
 }
 
-// export type ProstavaRating = -1 | 0 | 1 | 2 | 3 | 4 | 5;
-
 export interface ProstavaType {
     text?: string;
     emoji: string;

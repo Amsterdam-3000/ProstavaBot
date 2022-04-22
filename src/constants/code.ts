@@ -90,6 +90,7 @@ export const CODE: { [index: string]: { [index: string]: string } } = {
         SETTINGS: "🛠",
         PROFILE: "👤",
         PROFILES: "👥",
+        PROFILES_ME: "👤",
         PROSTAVA: "🍺",
         PROSTAVA_UNDO: "🔚",
         PROSTAVA_SAVE: "💾",
@@ -102,7 +103,8 @@ export const CODE: { [index: string]: { [index: string]: string } } = {
         SEARCH: "🔎",
         REMINDERS: "⏰",
         CALENDAR: "📅",
-        STATS: "📊"
+        STATS: "📊",
+        STATS_TOTAL: "🔝"
     },
     TEXT_COMMAND: {
         DELETE: "DELETE"

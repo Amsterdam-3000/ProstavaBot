@@ -50,6 +50,6 @@ export class GlobalMiddleware {
         }
         const user = TelegramUtils.getUserFromContext(ctx);
         //Save chat id for future inline queries
-        cache.saveSession(ConverterUtils.concatSessionKey(user?.id)!, { chat: ctx.chat });
+        cache.saveSession(ConverterUtils.concatSessionKey(user?.id) || "", { chat: ctx.chat });
     }
 }

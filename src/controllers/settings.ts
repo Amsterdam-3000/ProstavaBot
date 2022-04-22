@@ -4,7 +4,7 @@ import { SettingsView } from "../views";
 import { LocaleUtils, TelegramUtils } from "../utils";
 
 export class SettingsController {
-    static async showSettings(ctx: UpdateContext) {
+    static async showSettings(ctx: UpdateContext): Promise<void> {
         const message = await ctx.reply(
             LocaleUtils.getCommandText(ctx.i18n, PROSTAVA.COMMAND.SETTINGS),
             SettingsView.getSettingsKeyboard(ctx.i18n, ctx.group)
@@ -12,7 +12,7 @@ export class SettingsController {
         TelegramUtils.setSceneState(ctx, { messageId: message.message_id });
     }
 
-    static async showLanguages(ctx: UpdateContext) {
+    static async showLanguages(ctx: UpdateContext): Promise<void> {
         await ctx
             .editMessageText(
                 LocaleUtils.getActionReplyText(ctx.i18n, PROSTAVA.ACTION.SETTINGS_LANGUAGE),
@@ -20,7 +20,7 @@ export class SettingsController {
             )
             .catch((err) => console.log(err));
     }
-    static async showCurrencies(ctx: UpdateContext) {
+    static async showCurrencies(ctx: UpdateContext): Promise<void> {
         await ctx
             .editMessageText(
                 LocaleUtils.getActionReplyText(ctx.i18n, PROSTAVA.ACTION.SETTINGS_CURRENCY),
@@ -28,7 +28,7 @@ export class SettingsController {
             )
             .catch((err) => console.log(err));
     }
-    static async showProstavaTypes(ctx: UpdateContext) {
+    static async showProstavaTypes(ctx: UpdateContext): Promise<void> {
         const sceneState = TelegramUtils.getSceneState(ctx);
         await ctx.telegram
             .editMessageText(
@@ -41,7 +41,7 @@ export class SettingsController {
             .catch((err) => console.log(err));
     }
 
-    static async backToSettings(ctx: UpdateContext) {
+    static async backToSettings(ctx: UpdateContext): Promise<void> {
         await ctx
             .editMessageText(
                 LocaleUtils.getCommandText(ctx.i18n, PROSTAVA.COMMAND.SETTINGS),

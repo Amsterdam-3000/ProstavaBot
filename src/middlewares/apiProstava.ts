@@ -13,7 +13,7 @@ export class ApiProstavaMiddleware {
                 req.group,
                 req.groupUser,
                 "",
-                Boolean(req.query.isRequest),
+                Boolean(req.query.isRequest || req.body.is_request),
                 req.body.id
             );
         if (!prostava) {
@@ -137,6 +137,14 @@ export class ApiProstavaMiddleware {
         }
         next();
     }
+    static async canWithdrawProstava(req: Request, res: Response, next: NextFunction): Promise<void> {
+        //TODO Send Message?
+        if (!ProstavaUtils.canWithdrawProstava(req.prostava)) {
+            res.sendStatus(406);
+            return;
+        }
+        next();
+    }
 
     static async saveProstava(req: Request, res: Response, next: NextFunction): Promise<void> {
         if (!ProstavaUtils.isProstavaModified(req.prostava)) {
@@ -151,6 +159,10 @@ export class ApiProstavaMiddleware {
         }
     }
 
+    static async withdrawProstava(req: Request, res: Response, next: NextFunction): Promise<void> {
+        ProstavaUtils.withdrawProstava(req.prostava);
+        next();
+    }
     static async announceProstava(req: Request, res: Response, next: NextFunction): Promise<void> {
         ProstavaUtils.announceProstava(req.prostava, req.group.settings);
         next();
