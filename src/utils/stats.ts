@@ -39,7 +39,11 @@ export class StatsUtils {
                         (userStats) => userStats.user.user_id === userStatsYear.user.user_id
                     );
                     if (userIndex >= 0) {
-                        usersStats[userIndex].rating += userStatsYear.rating;
+                        usersStats[userIndex].rating = (
+                            Number(usersStats[userIndex].rating) + Number(userStatsYear.rating)
+                        )
+                            .toFixed(1)
+                            .toString();
                     } else {
                         usersStats.push(userStatsYear);
                     }
