@@ -8,7 +8,7 @@ export const cache = new RedisSession({
     store: {
         host: "",
         port: "",
-        url: CONFIG.REDIS_URI
+        url: CONFIG.REDIS_URL
     },
     getSessionKey: (ctx: Context) => ConverterUtils.concatSessionKey(ctx.from?.id, ctx.chat?.id)
 });

@@ -6,8 +6,8 @@ config({ path: resolve(process.cwd(), "private", ".env") });
 
 export const CONFIG = {
     TELEGRAM_TOKEN: process.env.TELEGRAM_TOKEN,
-    MONGODB_URI: process.env.MONGODB_URI,
-    REDIS_URI: process.env.REDIS_URI,
+    MONGODB_URL: process.env.MONGODB_URL,
+    REDIS_URL: process.env.REDIS_URL,
     PROSTAVA_HOST: process.env.HOST,
     PROSTAVA_PORT: process.env.PORT,
     PROSTAVA_SCHEME: process.env.SCHEME || "https",

@@ -2,7 +2,7 @@ import Queue from "bull";
 import { PROSTAVA } from "../constants";
 import { CONFIG } from "./config";
 
-export const prostavaQueue = new Queue(PROSTAVA.QUEUE.PROSTAVA, CONFIG.REDIS_URI, {
+export const prostavaQueue = new Queue(PROSTAVA.QUEUE.PROSTAVA, CONFIG.REDIS_URL, {
     //TODO Need local redis for dev
     prefix: `${process.env.NODE_ENV}:${PROSTAVA.COLLECTION.QUEUE}`,
     defaultJobOptions: {
