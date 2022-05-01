@@ -1,6 +1,5 @@
 import { I18nContext } from "@edjopato/telegraf-i18n/dist/source";
 import { Express } from "express";
-import { Types } from "mongoose";
 
 import { CODE, LOCALE } from "../constants";
 import {
@@ -19,7 +18,7 @@ import {
 import { ConverterUtils } from "./converter";
 import { LocaleUtils } from "./locale";
 import { ConstantUtils } from "./constant";
-import { GroupUtils, ProstavaUtils, UserUtils } from ".";
+import { GroupUtils, ProstavaUtils } from ".";
 
 export class ApiUtils {
     //Group
