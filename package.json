@@ -1,6 +1,10 @@
 {
   "name": "prostavabot",
   "version": "0.2.0",
+  "engines": {
+    "node": "14.x",
+    "npm": "6.x"
+  },
   "description": "Я контролирую проставы твоих друзей",
   "scripts": {
     "start-dev": "nodemon src",
