@@ -22,7 +22,7 @@ export class ProstavaMiddleware {
             delete ctx.prostavas;
         } else if (ctx.prostavas?.length) {
             const prostavaId = TelegramUtils.getSceneState(ctx).prostavaId;
-            ctx.prostava = ProstavaUtils.findProstavaById(ctx.prostavas, prostavaId);
+            ctx.prostava = ProstavaUtils.findProstavaById(ctx.prostavas, prostavaId || "");
         } else if (!ctx.prostava && TelegramUtils.isMessageProstavaCommand(ctx)) {
             const commandText = TelegramUtils.getMessageCommandText(ctx);
             const isRequest = TelegramUtils.includesCommand(ctx, PROSTAVA.COMMAND.REQUEST);
@@ -88,6 +88,7 @@ export class ProstavaMiddleware {
         await next();
     }
     static async addQueryProstavasToContext(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
+        console.log(ctx.session);
         ctx.prostavas = ProstavaUtils.filterProstavasByQuery(ctx.group.prostavas, ctx.inlineQuery?.query);
         await next();
     }

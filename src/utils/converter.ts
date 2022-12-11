@@ -1,6 +1,6 @@
 import { ICalAttendeeStatus, ICalEventStatus } from "ical-generator";
 import { ActionData, ProstavaStatus } from "../types";
-import { CALENDAR, CODE, PROSTAVA } from "../constants";
+import { CALENDAR, CODE } from "../constants";
 import { ConstantUtils } from "./constant";
 import { RegexUtils } from "./regex";
 import emojiToolkit from "emoji-toolkit";
@@ -45,6 +45,14 @@ export class ConverterUtils {
         };
     }
 
+    static convertObjectSortEntriesToString(object: Record<string, unknown>): string {
+        return Object.entries(object)
+            .filter((a) => a[0] !== "hash")
+            .sort((a, b) => (a[0] !== b[0] ? (a[0] < b[0] ? -1 : 1) : 0))
+            .map((a) => `${a[0]}=${a[1]}`)
+            .join("\n");
+    }
+
     //Calendar
     static convertProstavaStatusToEvent(prostavaStatus: ProstavaStatus): ICalEventStatus {
         let eventStatus: ICalEventStatus;
@@ -63,19 +71,6 @@ export class ConverterUtils {
     }
     static convertParticipantRatingToAttendee(participantRating: number): ICalAttendeeStatus {
         return participantRating > 0 ? ICalAttendeeStatus.ACCEPTED : ICalAttendeeStatus.DECLINED;
-    }
-
-    //Session
-    static concatSessionKey(fromId?: number, chatId?: number): string {
-        //TODO Need local redis for dev
-        let sessionKey = `${process.env.NODE_ENV}:${PROSTAVA.COLLECTION.SESSION}`;
-        if (fromId) {
-            sessionKey = `${sessionKey}:${fromId}`;
-        }
-        if (chatId) {
-            sessionKey = `${sessionKey}:${chatId}`;
-        }
-        return sessionKey;
     }
 
     //Emoji Url

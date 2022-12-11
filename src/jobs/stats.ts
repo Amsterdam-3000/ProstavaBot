@@ -1,11 +1,9 @@
-import Queue from "bull";
-
 import { bot } from "../commons/bot";
 import { PROSTAVA } from "../constants";
 import { GroupUtils, TelegramUtils } from "../utils";
 
 export class StatsProcess {
-    static async showLastYearStats(job: Queue.Job): Promise<void> {
+    static async showLastYearStats(): Promise<void> {
         const groups = await GroupUtils.getGroupsFromDB();
         if (!groups?.length) {
             return;

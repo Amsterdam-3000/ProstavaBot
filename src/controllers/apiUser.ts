@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { ApiUtils, UserUtils } from "../utils";
+import { ApiUtils } from "../utils";
 
 export class ApiUserController {
     static async getUser(req: Request, res: Response): Promise<void> {

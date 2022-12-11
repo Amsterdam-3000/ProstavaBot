@@ -41,6 +41,7 @@ export const CODE: { [index: string]: { [index: string]: string } } = {
     },
     ERROR: {
         NOT_GROUP: "🚫",
+        NOT_GROUPS: "⭕️",
         NOT_ADMIN: "🔞",
         APP_WRONG: "📵",
         ARE_GOING: "🚷",
@@ -88,6 +89,7 @@ export const CODE: { [index: string]: { [index: string]: string } } = {
         START: "🎬",
         HELP: "🚑",
         SETTINGS: "🛠",
+        GROUP: "🏠",
         PROFILE: "👤",
         PROFILES: "👥",
         PROFILES_ME: "👤",

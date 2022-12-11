@@ -1,5 +1,5 @@
 import { InlineKeyboardMarkup } from "telegraf/typings/core/types/typegram";
-import { I18nContext } from "@edjopato/telegraf-i18n/dist/source";
+import { I18nContext } from "@grammyjs/i18n";
 import { renderFile } from "ejs";
 import { resolve } from "path";
 import { Markup } from "telegraf";

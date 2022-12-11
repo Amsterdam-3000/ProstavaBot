@@ -1,32 +1,16 @@
 <%= i18n.t('header.help') %>
 
-<b><%= i18n.t('command_group.bot') %></b>
-/<%= COMMAND.START %> - <%= LocaleUtils.getCommandText(i18n, COMMAND.START) %>
-/<%= COMMAND.HELP %> - <%= LocaleUtils.getCommandText(i18n, COMMAND.HELP) %>
-/<%= COMMAND.SETTINGS %> - <%= LocaleUtils.getCommandText(i18n, COMMAND.SETTINGS) %>
+<b><%= i18n.t('command_group.bot') %></b><% ConstantUtils.getBotCommandsForHelp(i18n, "Bot", isChatPrivate).forEach(function(botCommand){ %>
+/<%= botCommand.command %> - <%= botCommand.description %><% }); %>
 
-<b><%= i18n.t('command_group.user') %></b>
-/<%= COMMAND.PROFILE %> - <%= LocaleUtils.getCommandText(i18n, COMMAND.PROFILE) %>
-/<%= COMMAND.PROFILES %> - <%= LocaleUtils.getCommandText(i18n, COMMAND.PROFILES) %>
-/<%= COMMAND.PROFILES_ME %> - <%= LocaleUtils.getCommandText(i18n, COMMAND.PROFILES_ME) %>
+<b><%= i18n.t('command_group.group') %></b><% ConstantUtils.getBotCommandsForHelp(i18n, "Group", isChatPrivate).forEach(function(botCommand){ %>
+/<%= botCommand.command %> - <%= botCommand.description %><% }); %>
 
-<b><%= i18n.t('command_group.prostava') %></b>
-/<%= COMMAND.PROSTAVA %> <%= LocaleUtils.getCommandPlaceholder(i18n, COMMAND.PROSTAVA) %> - <%= LocaleUtils.getCommandText(i18n, COMMAND.PROSTAVA) %>
-/<%= COMMAND.PROSTAVA_UNDO %> - <%= LocaleUtils.getCommandText(i18n, COMMAND.PROSTAVA_UNDO) %>
-/<%= COMMAND.PROSTAVA_SAVE %> - <%= LocaleUtils.getCommandText(i18n, COMMAND.PROSTAVA_SAVE) %>
-/<%= COMMAND.PROSTAVA_RATE %> - <%= LocaleUtils.getCommandText(i18n, COMMAND.PROSTAVA_RATE) %>
-/<%= COMMAND.PROSTAVAS_REJECT %> - <%= LocaleUtils.getCommandText(i18n, COMMAND.PROSTAVAS_REJECT) %>
+<b><%= i18n.t('command_group.user') %></b><% ConstantUtils.getBotCommandsForHelp(i18n, "User", isChatPrivate).forEach(function(botCommand){ %>
+/<%= botCommand.command %> - <%= botCommand.description %><% }); %>
 
-/<%= COMMAND.REQUEST %> <%= LocaleUtils.getCommandPlaceholder(i18n, COMMAND.REQUEST) %> - <%= LocaleUtils.getCommandText(i18n, COMMAND.REQUEST) %>
-/<%= COMMAND.REQUEST_UNDO %> - <%= LocaleUtils.getCommandText(i18n, COMMAND.REQUEST_UNDO) %>
-/<%= COMMAND.REQUEST_SAVE %> - <%= LocaleUtils.getCommandText(i18n, COMMAND.REQUEST_SAVE) %>
-/<%= COMMAND.REQUEST_RATE %> - <%= LocaleUtils.getCommandText(i18n, COMMAND.REQUEST_RATE) %>
+<b><%= i18n.t('command_group.prostava') %></b><% ConstantUtils.getBotCommandsForHelp(i18n, "Prostava", isChatPrivate).forEach(function(botCommand){ %>
+/<%= botCommand.command %> - <%= botCommand.description %><% }); %>
 
-/<%= COMMAND.REMINDERS %> - <%= LocaleUtils.getCommandText(i18n, COMMAND.REMINDERS) %>
-/<%= COMMAND.CALENDAR %> - <%= LocaleUtils.getCommandText(i18n, COMMAND.CALENDAR) %>
-
-<b><%= i18n.t('command_group.stats') %></b>
-/<%= COMMAND.STATS %> <%= LocaleUtils.getCommandPlaceholder(i18n, COMMAND.STATS) %> - <%= LocaleUtils.getCommandText(i18n, COMMAND.STATS) %>
-/<%= COMMAND.STATS_TOTAL %> <%= LocaleUtils.getCommandPlaceholder(i18n, COMMAND.STATS) %> - <%= LocaleUtils.getCommandText(i18n, COMMAND.STATS_TOTAL) %>
-
-@ProstavaBot <%= LocaleUtils.getCommandPlaceholder(i18n, COMMAND.SEARCH) %> - <%= LocaleUtils.getCommandText(i18n, COMMAND.SEARCH) %>
+<b><%= i18n.t('command_group.stats') %></b><% ConstantUtils.getBotCommandsForHelp(i18n, "Stats", isChatPrivate).forEach(function(botCommand){ %>
+/<%= botCommand.command %> - <%= botCommand.description %><% }); %>

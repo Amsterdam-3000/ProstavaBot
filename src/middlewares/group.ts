@@ -1,22 +1,64 @@
 import { CODE, PROSTAVA } from "../constants";
-import { UpdateContext } from "../types";
-import { GroupUtils, TelegramUtils, RegexUtils } from "../utils";
+import { Group, UpdateContext } from "../types";
+import { GroupUtils, TelegramUtils, RegexUtils, LocaleUtils, SessionUtils } from "../utils";
 
 export class GroupMiddleware {
     static async addGroupToContext(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         const chat = TelegramUtils.getChatFromContext(ctx);
-        if (!chat) {
+        const chatId = TelegramUtils.isChatGroup(chat) ? chat?.id : TelegramUtils.getChatIdFromSession(ctx);
+        let group: Group | null = null;
+        if (chatId) {
+            group = await GroupUtils.getGroupByChatIdFromDB(chatId);
+        }
+        if (!group && TelegramUtils.isChatGroup(chat) && chat) {
+            const chatMembersCount = await ctx.getChatMembersCount();
+            group = GroupUtils.createGroupForChat(chat, chatMembersCount);
+        }
+        if (!group && ctx.groups?.length) {
+            group = ctx.groups[0];
+            ctx.session.chat_id = group._id;
+        }
+        if (!group) {
+            ctx.reply(LocaleUtils.getErrorText(ctx.i18n, CODE.ERROR.NOT_GROUPS));
             return;
         }
-        const group = await GroupUtils.getGroupByChatIdFromDB(chat.id);
-        if (group) {
-            GroupUtils.populateGroupProstavas(group);
-            ctx.group = group;
-        } else {
-            const chatMembersCount = await ctx.getChatMembersCount();
-            ctx.group = GroupUtils.createGroupForChat(chat, chatMembersCount);
+        GroupUtils.populateGroupProstavas(group);
+        ctx.group = group;
+        await next();
+    }
+    static async addGroupsToContext(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
+        const chat = TelegramUtils.getChatFromContext(ctx);
+        const user = TelegramUtils.getUserFromContext(ctx);
+        if (TelegramUtils.isChatPrivate(chat) && user) {
+            ctx.groups = await GroupUtils.getGroupsByUserIdFromDB(user.id);
         }
         await next();
+    }
+    static async changeGroup(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
+        const actionData = TelegramUtils.getActionDataFromCbQuery(ctx);
+        const groupId = Number(actionData?.value);
+        if (groupId === ctx.group._id) {
+            ctx.answerCbQuery();
+            return;
+        }
+        const group = ctx.groups?.find((group) => group._id === groupId);
+        if (!group) {
+            ctx.answerCbQuery();
+            return;
+        }
+        ctx.session.chat_id = groupId;
+        GroupUtils.populateGroupProstavas(group);
+        ctx.group = group;
+        await next();
+    }
+    static async addGroupIdToUserSession(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
+        await next();
+        if (!ctx.group) {
+            return;
+        }
+        const user = TelegramUtils.getUserFromContext(ctx);
+        //Save group id for future inline queries
+        SessionUtils.saveChatIdToUserSession(user?.id, ctx.group._id);
     }
 
     //Emoji

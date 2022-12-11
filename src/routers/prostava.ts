@@ -1,7 +1,8 @@
 import { Router } from "express";
 
-import { ApiAuthMiddleware, ApiGroupMiddleware, ApiProstavaMiddleware } from "../middlewares";
+import { ApiAuthMiddleware, ApiGroupMiddleware, ApiProstavaMiddleware, ApiTelegramMiddleware } from "../middlewares";
 import { ApiProstavaController } from "../controllers";
+import { PROSTAVA } from "../constants";
 
 export const prostavaRouter = Router();
 
@@ -16,6 +17,7 @@ prostavaRouter
         ApiProstavaMiddleware.announceProstava,
         ApiGroupMiddleware.saveGroup,
         ApiProstavaMiddleware.saveProstava,
+        ApiTelegramMiddleware.executeBotCommandInChat(PROSTAVA.COMMAND.PROSTAVA),
         ApiProstavaController.getProstava
     );
 prostavaRouter
@@ -25,5 +27,6 @@ prostavaRouter
         ApiProstavaMiddleware.canWithdrawProstava,
         ApiProstavaMiddleware.withdrawProstava,
         ApiProstavaMiddleware.saveProstava,
+        ApiTelegramMiddleware.executeBotCommandInChat(PROSTAVA.COMMAND.PROSTAVA),
         ApiProstavaController.getProstava
     );

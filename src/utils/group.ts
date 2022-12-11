@@ -71,7 +71,7 @@ export class GroupUtils {
     static getGroupByChatIdFromDB(chatId: number): Promise<GroupDocument | null> {
         return GroupCollection.findById(chatId).exec();
     }
-    static async getGroupsByUserIdFromDB(userId: number): Promise<GroupDocument[]> {
+    static async getGroupsByUserIdFromDB(userId: number, autopopulate = true): Promise<GroupDocument[]> {
         //TODO Need denormalization of users property (add id)
         const users = await UserUtils.getUsersByUserIdFromDB(userId);
         return GroupCollection.find(
@@ -79,7 +79,7 @@ export class GroupUtils {
             { _id: { $in: users.map((user) => user.group_id) } },
             {},
             {
-                autopopulate: false
+                autopopulate: autopopulate
             }
         );
     }

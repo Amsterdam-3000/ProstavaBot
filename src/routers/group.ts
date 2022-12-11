@@ -8,6 +8,7 @@ import {
     ApiAuthMiddleware
 } from "../middlewares";
 import { ApiGroupController, ApiProstavaController } from "../controllers";
+import { PROSTAVA } from "../constants";
 
 import { userRouter } from "./user";
 import { prostavaRouter } from "./prostava";
@@ -23,6 +24,7 @@ groupRouter
         ApiGroupMiddleware.addGroupSettingsFromBody,
         ApiGroupMiddleware.canUpdateGroup,
         ApiGroupMiddleware.saveGroup,
+        ApiTelegramMiddleware.executeBotCommandInChat(PROSTAVA.COMMAND.SETTINGS),
         ApiGroupController.getGroup
     );
 

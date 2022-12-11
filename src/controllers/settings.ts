@@ -5,10 +5,16 @@ import { LocaleUtils, TelegramUtils } from "../utils";
 
 export class SettingsController {
     static async showSettings(ctx: UpdateContext): Promise<void> {
-        const message = await ctx.reply(
-            LocaleUtils.getCommandText(ctx.i18n, PROSTAVA.COMMAND.SETTINGS),
-            SettingsView.getSettingsKeyboard(ctx.i18n, ctx.group)
-        );
+        const message = TelegramUtils.isChatPrivate(ctx.chat)
+            ? await ctx.replyWithPhoto(ctx.group.group_photo || "", {
+                  reply_markup: SettingsView.getSettingsKeyboardWebApp(ctx.i18n, ctx.group).reply_markup,
+                  caption: ctx.group.settings.name,
+                  parse_mode: "HTML"
+              })
+            : await ctx.reply(
+                  LocaleUtils.getCommandText(ctx.i18n, PROSTAVA.COMMAND.SETTINGS),
+                  SettingsView.getSettingsKeyboard(ctx.i18n, ctx.group)
+              );
         TelegramUtils.setSceneState(ctx, { messageId: message.message_id });
     }
 

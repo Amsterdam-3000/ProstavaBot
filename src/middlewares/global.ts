@@ -1,24 +1,37 @@
 import { Telegraf } from "telegraf";
-import { cache } from "../commons/cache";
+import { session } from "telegraf-session-mongodb";
 import { i18n } from "../commons/locale";
 import { CODE } from "../constants";
 import { UpdateContext } from "../types";
 import { mainStage } from "../scenes";
-import { LocaleUtils, ConverterUtils, TelegramUtils } from "../utils";
+import { LocaleUtils, TelegramUtils } from "../utils";
+import { SessionUtils } from "../utils";
 
 export class GlobalMiddleware {
-    static addSessionToContext = cache.middleware();
     static addI18nToContext = i18n.middleware();
     static addLoggingContext = Telegraf.log();
     static addStageToContext = mainStage.middleware();
+    static addSessionToContext = (db) => session(db, { sessionKeyFn: SessionUtils.getSessionKey });
 
-    static async isGroupChat(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
+    static async isProstavaBotAndGroupChat(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
+        const user = TelegramUtils.getUserFromContext(ctx);
+        if (!user) {
+            return;
+        }
+        const chat = TelegramUtils.getChatFromContext(ctx);
+        if (TelegramUtils.isUserProstavaBot(ctx.botInfo, user) && chat && !TelegramUtils.isChatGroup(chat)) {
+            ctx.reply(LocaleUtils.getErrorText(ctx.i18n, CODE.ERROR.NOT_GROUP));
+            return;
+        }
+        await next();
+    }
+
+    static async isPrivateChat(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         const chat = TelegramUtils.getChatFromContext(ctx);
         if (!chat) {
             return;
         }
-        if (!TelegramUtils.isChatGroup(chat)) {
-            ctx.reply(LocaleUtils.getErrorText(ctx.i18n, CODE.ERROR.NOT_GROUP));
+        if (!TelegramUtils.isChatPrivate(chat)) {
             return;
         }
         await next();
@@ -42,14 +55,5 @@ export class GlobalMiddleware {
             return;
         }
         await next();
-    }
-    static async addChatToUserSession(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
-        await next();
-        if (!ctx.chat) {
-            return;
-        }
-        const user = TelegramUtils.getUserFromContext(ctx);
-        //Save chat id for future inline queries
-        cache.saveSession(ConverterUtils.concatSessionKey(user?.id) || "", { chat: ctx.chat });
     }
 }

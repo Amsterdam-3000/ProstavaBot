@@ -1,7 +1,16 @@
 import { Types, Error } from "mongoose";
 import { Venue } from "telegraf/typings/core/types/typegram";
 import { CODE, PROSTAVA } from "../constants";
-import { Group, Prostava, ProstavaDocument, ProstavaParticipant, ProstavaStatus, ProstavaType, User } from "../types";
+import {
+    Group,
+    Prostava,
+    ProstavaCost,
+    ProstavaDocument,
+    ProstavaParticipant,
+    ProstavaStatus,
+    ProstavaType,
+    User
+} from "../types";
 import { DateUtils } from "./date";
 import { RegexUtils } from "./regex";
 import { ConverterUtils } from "./converter";
@@ -57,14 +66,14 @@ export class ProstavaUtils {
         }
         return prostava;
     }
-    static fillProstavaCostFromText(costText: string, currency?: string) {
+    static fillProstavaCostFromText(costText: string, currency?: string): ProstavaCost {
         const cost = costText?.split(/(?=\p{Sc})/u) || [];
         return {
             amount: Number(cost[0]),
             currency: cost[1] || currency
         };
     }
-    static fillProstavaDateFromText(dateText: string, settings: Group["settings"]) {
+    static fillProstavaDateFromText(dateText: string, settings: Group["settings"]): Date {
         const dateNow = new Date(Date.now());
         //TODO Default hours
         dateNow.setHours(20);
@@ -80,27 +89,27 @@ export class ProstavaUtils {
         }
         return dateIn;
     }
-    static fillFakeProstavaFromUser(user: User) {
+    static fillFakeProstavaFromUser(user: User): ProstavaDocument {
         return new ProstavaCollection({ status: "", author: user, prostava_data: {} });
     }
-    static getProstavaId(prostava: Prostava) {
+    static getProstavaId(prostava: Prostava): string {
         return (prostava as ProstavaDocument).id;
     }
 
-    static changeProstavaDate(prostava: Prostava, dateText: string) {
+    static changeProstavaDate(prostava: Prostava, dateText: string): void {
         const date = new Date(dateText);
         date.setHours(prostava.prostava_data.date.getHours());
         date.setMinutes(prostava.prostava_data.date.getMinutes());
         prostava.prostava_data.date = date;
     }
-    static changeProstavaTime(prostava: Prostava, timeText: string) {
+    static changeProstavaTime(prostava: Prostava, timeText: string): void {
         const time = timeText.split(":");
         const dateTime = DateTime.fromJSDate(prostava.prostava_data.date)
             .setZone(prostava.prostava_data.timezone)
             .set({ hour: Number(time[0]), minute: Number(time[1]) });
         prostava.prostava_data.date = dateTime.toJSDate();
     }
-    static announceProstava(prostava: Prostava, settings: Group["settings"]) {
+    static announceProstava(prostava: Prostava, settings: Group["settings"]): void {
         prostava.status = ProstavaStatus.Pending;
         prostava.participants_max_count = settings.chat_members_count - 1;
         prostava.participants_min_count = Math.ceil(
@@ -114,7 +123,7 @@ export class ProstavaUtils {
             prostava.closing_date = DateUtils.getNowDatePlusHours(settings.pending_hours);
         }
     }
-    static publishProstava(prostava: Prostava, settings: Group["settings"]) {
+    static publishProstava(prostava: Prostava, settings: Group["settings"]): void {
         prostava.closing_date = new Date();
         if (ProstavaUtils.canApprovePendingProstava(prostava)) {
             this.approveProstava(prostava, settings);
@@ -122,7 +131,7 @@ export class ProstavaUtils {
             this.rejectProstava(prostava);
         }
     }
-    static approveProstava(prostava: Prostava, settings: Group["settings"]) {
+    static approveProstava(prostava: Prostava, settings: Group["settings"]): void {
         if (prostava.is_request) {
             this.withdrawProstava(prostava);
             prostava.is_request = false;
@@ -132,7 +141,7 @@ export class ProstavaUtils {
             prostava.status = ProstavaStatus.Approved;
         }
     }
-    static rejectProstava(prostava: Prostava) {
+    static rejectProstava(prostava: Prostava): void {
         prostava.status = ProstavaStatus.Rejected;
         prostava.rating = 0;
     }
@@ -145,7 +154,7 @@ export class ProstavaUtils {
         prostava.participants_max_count = 0;
         prostava.participants_min_count = 0;
     }
-    static updateParticipantRating(prostava: Prostava, user: User, rating: number) {
+    static updateParticipantRating(prostava: Prostava, user: User, rating: number): void {
         let participant = ProstavaUtils.findParticipantByUserId(prostava.participants, user.user_id);
         if (!participant) {
             prostava.participants.push({ user: user, rating: 0 });
@@ -156,7 +165,7 @@ export class ProstavaUtils {
             prostava.rating = ProstavaUtils.updateTotalRating(prostava.participants);
         }
     }
-    static updateTotalRating(participants: Prostava["participants"]) {
+    static updateTotalRating(participants: Prostava["participants"]): number {
         const participantsWere = this.filterParticipantsWere(participants);
         if (!participantsWere?.length) {
             return 0;
@@ -166,28 +175,38 @@ export class ProstavaUtils {
             participantsWere.length
         );
     }
-    static isProstavaModified(prostava: Prostava) {
+    static isProstavaModified(prostava: Prostava): boolean {
         return (prostava as ProstavaDocument).isModified();
     }
     static isProstavaExists(prostava: Prostava): boolean {
         return prostava._id && !(prostava as ProstavaDocument).isNew;
     }
-    static saveProstava(prostava: Prostava) {
+    static saveProstava(prostava: Prostava): Promise<ProstavaDocument> {
         return (prostava as ProstavaDocument).save();
     }
 
-    static findParticipantByUserId(participants: Prostava["participants"], userId: number | undefined) {
+    static findParticipantByUserId(
+        participants: Prostava["participants"],
+        userId: number | undefined
+    ): ProstavaParticipant | undefined {
         return participants?.find((participant) => (participant.user as User).user_id === userId);
     }
-    static findProstavaById(prostavas: Group["prostavas"], prostavaId: Prostava["_id"] | string | undefined) {
-        return (prostavas as Prostava[]).find((prostava) => prostava._id.equals(prostavaId!));
+    static findProstavaById(prostavas: Group["prostavas"], prostavaId: Prostava["_id"] | string): Prostava | undefined {
+        return (prostavas as Prostava[]).find((prostava) => prostava._id.equals(prostavaId));
     }
-    static deleteProstavaById(prostavas: Group["prostavas"], deletedProstava: Prostava | Types.ObjectId) {
+    static deleteProstavaById(
+        prostavas: Group["prostavas"],
+        deletedProstava: Prostava | Types.ObjectId
+    ): (Prostava | Types.ObjectId)[] {
         return prostavas.filter(
             (prostava) => !(prostava as Prostava)._id.equals((deletedProstava as Prostava)._id)
         ) as (Prostava | Types.ObjectId)[];
     }
-    static findUserPendingProstava(prostavas: Group["prostavas"], userId: number | undefined, withinRequests = false) {
+    static findUserPendingProstava(
+        prostavas: Group["prostavas"],
+        userId: number | undefined,
+        withinRequests = false
+    ): Prostava | undefined {
         return ProstavaUtils.filterUserProstavas(prostavas, userId, withinRequests).find((prostava) =>
             ProstavaUtils.isProstavaPending(prostava)
         );
@@ -326,6 +345,16 @@ export class ProstavaUtils {
     }
     static getProstavaCommand(prostava: Prostava): string {
         return prostava.is_request ? PROSTAVA.COMMAND.REQUEST : PROSTAVA.COMMAND.PROSTAVA;
+    }
+    static getProstavaWithdrawCommand(prostava: Prostava): string {
+        return prostava.is_request ? PROSTAVA.COMMAND.REQUEST_UNDO : PROSTAVA.COMMAND.PROSTAVA_UNDO;
+    }
+    static getProstavaCompleteCommand(prostava: Prostava): string {
+        return prostava.is_request
+            ? PROSTAVA.COMMAND.REQUEST_SAVE
+            : prostava.is_preview
+            ? PROSTAVA.COMMAND.PROSTAVA_UNDO
+            : PROSTAVA.COMMAND.PROSTAVA_SAVE;
     }
     static getMinDateOfProstavas(prostavas: Prostava[] | undefined): Date {
         if (!prostavas?.length) {

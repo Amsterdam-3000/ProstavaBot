@@ -1,7 +1,7 @@
 import { Group, User, UserDocument } from "../types";
 import { Types } from "mongoose";
 import { TelegramUtils } from "./telegram";
-import { User as TelegramUser } from "typegram";
+import { User as TelegramUser } from "telegraf/typings/core/types/typegram";
 import { UserCollection } from "../models";
 import { CODE } from "../constants";
 

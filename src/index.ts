@@ -1,13 +1,16 @@
-import { db } from "./commons/db";
-import { launchBot } from "./bot";
+import { mongo } from "./commons/db";
+import { launchBot, setBotCommands } from "./bot";
 import { launchServer } from "./api";
+import { launchJobs } from "./job";
 
-db.on("error", (err) => {
+mongo.on("error", (err) => {
     console.log(err);
     process.exit(1);
 });
 
-db.once("open", () => {
+mongo.once("open", () => {
+    setBotCommands();
     launchBot();
     launchServer();
+    launchJobs();
 });

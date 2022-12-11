@@ -14,17 +14,24 @@ export class TelegramUtils {
         userId: number | undefined,
         command: string,
         is_bot = false,
-        commandText?: string
+        commandText?: string,
+        isPrivateChat = false
     ): Update.MessageUpdate {
         return {
             update_id: 0,
             message: {
                 message_id: 0,
-                chat: {
-                    id: chatId,
-                    type: "supergroup",
-                    title: ""
-                },
+                chat: isPrivateChat
+                    ? {
+                          id: chatId,
+                          type: "private",
+                          first_name: ""
+                      }
+                    : {
+                          id: chatId,
+                          type: "supergroup",
+                          title: ""
+                      },
                 from: {
                     id: userId || 0,
                     is_bot: is_bot,
@@ -44,13 +51,16 @@ export class TelegramUtils {
     }
 
     static getChatFromContext(ctx: UpdateContext): Chat | undefined {
-        return ctx.chat || ctx.session?.chat;
+        return ctx.chat;
     }
     static getUserFromContext(ctx: UpdateContext): User | undefined {
         return ctx.callbackQuery?.from || ctx.from;
     }
     static getProstavaFromContext(ctx: UpdateContext): Prostava | undefined {
         return ctx.prostava;
+    }
+    static getChatIdFromSession(ctx: UpdateContext): number | undefined {
+        return ctx.session?.chat_id;
     }
 
     static getActionDataFromCbQuery(ctx: UpdateContext): ActionData | undefined {
@@ -104,8 +114,8 @@ export class TelegramUtils {
     static getMessageCommandText(ctx: UpdateContext): string {
         return this.getTextMessage(ctx)?.text?.replace(RegexUtils.matchCommand(), "").trim();
     }
-    static getCbQueryData(ctx: UpdateContext): CallbackQuery.DataCallbackQuery["data"] {
-        return (ctx.callbackQuery as CallbackQuery.DataCallbackQuery)?.data;
+    static getCbQueryData(ctx: UpdateContext): string {
+        return (ctx.callbackQuery as CallbackQuery)?.data || "";
     }
     static getTextMessage(ctx: UpdateContext): Message.TextMessage {
         return ctx.message as Message.TextMessage;
@@ -118,14 +128,16 @@ export class TelegramUtils {
     }
 
     static checkTelegramUserAuth(authUser: Record<string, unknown>): boolean {
-        const data_check_string = Object.entries(authUser)
-            .filter((a) => a[0] !== "hash")
-            .sort((a, b) => (a[0] !== b[0] ? (a[0] < b[0] ? -1 : 1) : 0))
-            .map((a) => `${a[0]}=${a[1]}`)
-            .join("\n");
+        const data_check_string = ConverterUtils.convertObjectSortEntriesToString(authUser);
         const secret_key = SHA256(CONFIG.TELEGRAM_TOKEN || "");
         const hash = HmacSHA256(data_check_string, secret_key);
         return authUser["hash"] === hash.toString(enc.Hex);
+    }
+    static checkTelegramWebAppUserAuth(initData: Record<string, unknown>): boolean {
+        const data_check_string = ConverterUtils.convertObjectSortEntriesToString(initData);
+        const secret_key = HmacSHA256(CONFIG.TELEGRAM_TOKEN || "", "WebAppData");
+        const hash = HmacSHA256(data_check_string, secret_key);
+        return initData["hash"] === hash.toString(enc.Hex);
     }
     static signTelegramUser(authUser: Record<string, unknown>): string {
         const user = { ...authUser };
@@ -144,8 +156,11 @@ export class TelegramUtils {
         return user.last_name ? `${user.first_name} ${user.last_name}` : user.first_name;
     }
 
-    static isChatGroup(chat: Chat): boolean {
-        return chat.type === TELEGRAM.CHAT_TYPE.GROUP || chat.type === TELEGRAM.CHAT_TYPE.SUPERGROUP;
+    static isChatGroup(chat?: Chat): boolean {
+        return !!chat && (chat.type === TELEGRAM.CHAT_TYPE.GROUP || chat.type === TELEGRAM.CHAT_TYPE.SUPERGROUP);
+    }
+    static isChatPrivate(chat?: Chat): boolean {
+        return !!chat && chat.type === TELEGRAM.CHAT_TYPE.PRIVATE;
     }
     static isMemberAdmin(member: ChatMember): boolean {
         return (

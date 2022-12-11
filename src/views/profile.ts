@@ -1,5 +1,5 @@
 import { InlineKeyboardMarkup } from "telegraf/typings/core/types/typegram";
-import { I18nContext } from "@edjopato/telegraf-i18n/dist/source";
+import { I18nContext } from "@grammyjs/i18n";
 import { renderFile } from "ejs";
 import { resolve } from "path";
 import { Markup } from "telegraf";
@@ -8,6 +8,7 @@ import { PROSTAVA, CODE } from "../constants";
 import { Aztro, Group, PersonalData, User } from "../types";
 import { DateUtils, LocaleUtils, ConverterUtils } from "../utils";
 import { CommonView } from "./common";
+import { CONFIG } from "../commons/config";
 
 export class ProfileView {
     static getProfileKeyboard(i18n: I18nContext, personalData: PersonalData): Markup.Markup<InlineKeyboardMarkup> {
@@ -37,6 +38,18 @@ export class ProfileView {
             { columns: 1 }
         );
     }
+    static getProfileKeyboardWebApp(i18n: I18nContext, user: User): Markup.Markup<InlineKeyboardMarkup> {
+        return Markup.inlineKeyboard(
+            [
+                Markup.button.webApp(
+                    LocaleUtils.getCommandText(i18n, PROSTAVA.COMMAND.PROFILE),
+                    `${CONFIG.PROSTAVAWEB_URL}/webapp/${user.group_id}/profile/${user.user_id}`
+                ),
+                CommonView.getExitButton(i18n)
+            ],
+            { columns: 1 }
+        );
+    }
 
     static getUsersKeyboard(i18n: I18nContext, users: Group["users"]): Markup.Markup<InlineKeyboardMarkup> {
         return Markup.inlineKeyboard([...this.getUserButtons(users), CommonView.getExitButton(i18n)], {
@@ -51,8 +64,21 @@ export class ProfileView {
             )
         );
     }
+    static getUsersKeyboardWebApp(i18n: I18nContext, users: Group["users"]): Markup.Markup<InlineKeyboardMarkup> {
+        return Markup.inlineKeyboard([...this.getUserButtonsWebApp(users), CommonView.getExitButton(i18n)], {
+            columns: users.length > 10 ? 7 : 1
+        });
+    }
+    private static getUserButtonsWebApp(users: Group["users"]) {
+        return (users as User[]).map((user) =>
+            Markup.button.webApp(
+                user.user_string || "",
+                `${CONFIG.PROSTAVAWEB_URL}/webapp/${user.group_id}/profile/${user.user_id}`
+            )
+        );
+    }
 
-    static getProfileHtml(i18n: I18nContext, user: User, aztro: Aztro | undefined): Promise<string> {
+    static getProfileHtml(i18n: I18nContext, user: User, aztro?: Aztro): Promise<string> {
         return renderFile(resolve(__dirname, "profile.ejs"), {
             i18n: i18n,
             user: user,

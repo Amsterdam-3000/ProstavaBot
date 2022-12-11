@@ -1,15 +1,15 @@
-import { I18nContext } from "@edjopato/telegraf-i18n/dist/source";
+import { I18nContext } from "@grammyjs/i18n";
 import { renderFile } from "ejs";
 import { resolve } from "path";
-import { PROSTAVA } from "../constants";
-import { LocaleUtils } from "../utils";
+import { ConstantUtils, LocaleUtils } from "../utils";
 
 export class HelpView {
-    static getHelpHtml(i18n: I18nContext) {
+    static getHelpHtml(i18n: I18nContext, isChatPrivate: boolean): Promise<string> {
         return renderFile(resolve(__dirname, "help.ejs"), {
             i18n: i18n,
-            COMMAND: PROSTAVA.COMMAND,
-            LocaleUtils: LocaleUtils
+            ConstantUtils: ConstantUtils,
+            LocaleUtils: LocaleUtils,
+            isChatPrivate: isChatPrivate
         });
     }
 }
