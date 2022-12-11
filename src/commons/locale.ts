@@ -1,5 +1,5 @@
 import { resolve } from "path";
-import { I18n, pluralize } from "@edjopato/telegraf-i18n";
+import { I18n, pluralize } from "@grammyjs/i18n";
 import { LOCALE } from "../constants";
 
 //Load .yaml files from the locales folder

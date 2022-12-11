@@ -1,4 +1,4 @@
-import { I18nContext } from "@edjopato/telegraf-i18n/dist/source";
+import { I18nContext } from "@grammyjs/i18n";
 import { getVtimezoneComponent } from "@touch4it/ical-timezones";
 import { ICalAttendeeData, ICalAttendeeStatus, ICalCalendarData, ICalEventData } from "ical-generator";
 import { DateTime } from "luxon";

@@ -1,12 +1,15 @@
-import { I18nContext } from "@edjopato/telegraf-i18n/dist/source";
+import { I18nContext } from "@grammyjs/i18n";
 import { Markup } from "telegraf";
+import { InlineKeyboardMarkup } from "telegraf/typings/core/types/typegram";
+
+import { CONFIG } from "../commons/config";
 import { PROSTAVA, LOCALE, CODE } from "../constants";
 import { ConstantUtils, LocaleUtils, ConverterUtils, ProstavaUtils } from "../utils";
 import { Group, ProstavaType } from "../types";
 import { CommonView } from "./common";
 
 export class SettingsView {
-    static getSettingsKeyboard(i18n: I18nContext, group: Group) {
+    static getSettingsKeyboard(i18n: I18nContext, group: Group): Markup.Markup<InlineKeyboardMarkup> {
         return Markup.inlineKeyboard(
             [
                 Markup.button.callback(
@@ -67,11 +70,23 @@ export class SettingsView {
                 ),
                 Markup.button.url(
                     LocaleUtils.getActionText(i18n, PROSTAVA.ACTION.SETTINGS_APPLE),
-                    group.calendar_apple!
+                    group.calendar_apple || ""
                 ),
                 Markup.button.url(
                     LocaleUtils.getActionText(i18n, PROSTAVA.ACTION.SETTINGS_GOOGLE),
-                    group.calendar_google!
+                    group.calendar_google || ""
+                ),
+                CommonView.getExitButton(i18n)
+            ],
+            { columns: 1 }
+        );
+    }
+    static getSettingsKeyboardWebApp(i18n: I18nContext, group: Group): Markup.Markup<InlineKeyboardMarkup> {
+        return Markup.inlineKeyboard(
+            [
+                Markup.button.webApp(
+                    LocaleUtils.getCommandText(i18n, PROSTAVA.COMMAND.SETTINGS),
+                    `${CONFIG.PROSTAVAWEB_URL}/webapp/${group._id}/settings`
                 ),
                 CommonView.getExitButton(i18n)
             ],
@@ -80,7 +95,7 @@ export class SettingsView {
     }
 
     //Language
-    static getLanguageKeyboard(i18n: I18nContext) {
+    static getLanguageKeyboard(i18n: I18nContext): Markup.Markup<InlineKeyboardMarkup> {
         return Markup.inlineKeyboard(
             [...this.getLanguageCodeButtons(i18n), CommonView.getBackButton(i18n), CommonView.getExitButton(i18n)],
             { columns: 1 }
@@ -102,7 +117,7 @@ export class SettingsView {
     }
 
     //Currency
-    static getCurrencyKeyboard(i18n: I18nContext, currencyNow: string) {
+    static getCurrencyKeyboard(i18n: I18nContext, currencyNow: string): Markup.Markup<InlineKeyboardMarkup> {
         return Markup.inlineKeyboard(
             [
                 ...this.getCurrencyCodeButtons(i18n, currencyNow),
@@ -125,7 +140,7 @@ export class SettingsView {
     }
 
     //Prostava types
-    static getProstavaTypesKeyboard(i18n: I18nContext, types: ProstavaType[]) {
+    static getProstavaTypesKeyboard(i18n: I18nContext, types: ProstavaType[]): Markup.Markup<InlineKeyboardMarkup> {
         return Markup.inlineKeyboard(
             [
                 ...this.getProstavaTypeButtons(types),

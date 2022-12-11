@@ -14,6 +14,7 @@ export const PROSTAVA = {
         SETTINGS_GOOGLE: "prostava-settings-google",
         SETTINGS_APPLE: "prostava-settings-apple",
         SETTINGS_EMOJI: "prostava-settings-emoji",
+        GROUP_GROUP: "prostava-group-group",
         PROFILE_EMOJI: "prostava-profile-emoji",
         PROFILE_BIRTHDAY: "prostava-profile-birthday",
         PROFILE_USERNAME: "prostava-profile-username",
@@ -43,6 +44,7 @@ export const PROSTAVA = {
         START: "start",
         HELP: "help",
         SETTINGS: "settings",
+        GROUP: "group",
         PROFILE: "profile",
         PROFILES: "profiles",
         PROFILES_ME: "profiles_me",
@@ -63,6 +65,7 @@ export const PROSTAVA = {
     },
     SCENE: {
         SETTINGS: "settings",
+        GROUP: "group",
         PROFILE: "profile",
         PROFILES: "profiles",
         PROSTAVA: "prostava",

@@ -210,7 +210,8 @@ ProstavaSchema.set("validateBeforeSave", false);
 ProstavaSchema.virtual("title").get(function (this: ProstavaDocument) {
     return this.prostava_data.title
         ? `${this.prostava_data.type} ${this.prostava_data.title}`
-        : this.prostava_data.type;
+        : //TODO i18n
+          `${this.prostava_data.type} Prostava`;
 });
 ProstavaSchema.virtual("rating_string").get(function (this: ProstavaDocument) {
     return this.rating?.toFixed(1);

@@ -98,6 +98,7 @@ polling:
     1: "${code} Да"
 error:
     not_group: "${code} Работаю только в группах!"
+    not_groups: "${code} Бот не добавлен ни в одну группу!"
     not_admin: "${code} Ты не админ в этой группе!"
     app_wrong: "${code} Что-то пошло не так!"
     are_going: "${code} Куда ты лезешь!?"
@@ -109,7 +110,8 @@ header:
 command:
     start: "${code} Запустить Проставу"
     help: "${code} Показать команды Проставы"
-    settings: "${code} Изменить настройки Проставы"
+    settings: "${code} Изменить настройки группы"
+    group: "${code} Выбрать группу Проставы"
     profile: "${code} Заполнить свой профиль ${value}"
     profiles: "${code} Показать профиль пользователя"
     profiles_me: "${code} Показать ваш профиль"
@@ -134,6 +136,7 @@ command_text:
     stats: "год"
 command_group:
     bot: "Бот"
+    group: "Группа"
     user: "Пользователь"
     prostava: "Простава"
     stats: "Статистика"

@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { connect } from "http2";
 import momentTZ from "moment-timezone";
 
 import { LOCALE, CODE } from "../constants";
@@ -60,16 +61,16 @@ export class ApiGroupMiddleware {
         }
         //Chat members count
         if (
-            !req.group.settings.chat_members_count ||
-            !RegexUtils.matchNumber().test(req.group.settings.chat_members_count.toString()) ||
-            req.group.settings.chat_members_count > req.chat.chat_member_count
+            req.group.settings.chat_members_count &&
+            (!RegexUtils.matchNumber().test(req.group.settings.chat_members_count.toString()) ||
+                req.group.settings.chat_members_count > req.chat.chat_member_count)
         ) {
             res.sendStatus(406);
             return;
         }
         //Create days ago
         if (
-            !req.group.settings.create_days_ago ||
+            req.group.settings.create_days_ago &&
             !RegexUtils.matchNumber().test(req.group.settings.create_days_ago.toString())
         ) {
             res.sendStatus(406);
@@ -77,16 +78,16 @@ export class ApiGroupMiddleware {
         }
         //Participants min percent
         if (
-            !req.group.settings.participants_min_percent ||
-            !RegexUtils.matchNumber().test(req.group.settings.participants_min_percent.toString()) ||
-            req.group.settings.participants_min_percent > 100
+            req.group.settings.participants_min_percent &&
+            (!RegexUtils.matchNumber().test(req.group.settings.participants_min_percent.toString()) ||
+                req.group.settings.participants_min_percent > 100)
         ) {
             res.sendStatus(406);
             return;
         }
         //Pending hours
         if (
-            !req.group.settings.pending_hours ||
+            req.group.settings.pending_hours &&
             !RegexUtils.matchNumber().test(req.group.settings.pending_hours.toString())
         ) {
             res.sendStatus(406);
@@ -100,11 +101,11 @@ export class ApiGroupMiddleware {
             }
         }
         for (const prostavaType of req.group.settings.prostava_types) {
-            if (!prostavaType.emoji || !RegexUtils.matchOneEmoji().test(prostavaType.emoji)) {
+            if (prostavaType.emoji && !RegexUtils.matchOneEmoji().test(prostavaType.emoji)) {
                 res.sendStatus(406);
                 return;
             }
-            if (!prostavaType.text || !RegexUtils.matchTitle().test(prostavaType.text)) {
+            if (prostavaType.text && !RegexUtils.matchTitle().test(prostavaType.text)) {
                 res.sendStatus(406);
                 return;
             }

@@ -1,5 +1,5 @@
 import { InlineKeyboardMarkup } from "telegraf/typings/core/types/typegram";
-import { I18nContext } from "@edjopato/telegraf-i18n/dist/source";
+import { I18nContext } from "@grammyjs/i18n";
 import { Markup } from "telegraf";
 import { renderFile } from "ejs";
 import { resolve } from "path";
@@ -8,6 +8,7 @@ import { ConstantUtils, DateUtils, LocaleUtils, ConverterUtils, ProstavaUtils, T
 import { CODE, PROSTAVA } from "../constants";
 import { Group, GroupSettings, Prostava, ProstavaType, User } from "../types";
 import { prostavaCalendar } from "../commons/calendar";
+import { CONFIG } from "../commons/config";
 import { CommonView } from "./common";
 
 export class ProstavaView {
@@ -102,10 +103,35 @@ export class ProstavaView {
             { columns: 1 }
         );
     }
-    static getProstavaKeyboard(i18n: I18nContext, prostavas: Prostava[]): Markup.Markup<InlineKeyboardMarkup> {
-        return Markup.inlineKeyboard([...this.getProstavaButtons(prostavas), CommonView.getExitButton(i18n)], {
-            columns: 1
-        });
+    static getProstavaCreateKeyboardWebApp(i18n: I18nContext, prostava: Prostava): Markup.Markup<InlineKeyboardMarkup> {
+        return Markup.inlineKeyboard(
+            [
+                Markup.button.webApp(
+                    prostava.title || "",
+                    `${CONFIG.PROSTAVAWEB_URL}/webapp/${prostava.group_id}/prostava/${ProstavaUtils.getProstavaId(
+                        prostava
+                    )}`
+                ),
+                CommonView.getExitButton(i18n)
+            ],
+            { columns: 1 }
+        );
+    }
+
+    static getProstavaKeyboard(
+        i18n: I18nContext,
+        prostavas: Prostava[],
+        webApp: boolean = false
+    ): Markup.Markup<InlineKeyboardMarkup> {
+        return Markup.inlineKeyboard(
+            [
+                ...(webApp ? this.getProstavaButtonsWebApp(prostavas) : this.getProstavaButtons(prostavas)),
+                CommonView.getExitButton(i18n)
+            ],
+            {
+                columns: 1
+            }
+        );
     }
     private static getProstavaButtons(prostavas: Prostava[]) {
         return prostavas.map((prostava) =>
@@ -115,6 +141,16 @@ export class ProstavaView {
                     PROSTAVA.ACTION.PROSTAVA_PROSTAVA,
                     ProstavaUtils.getProstavaId(prostava)
                 )
+            )
+        );
+    }
+    private static getProstavaButtonsWebApp(prostavas: Prostava[]) {
+        return prostavas.map((prostava) =>
+            Markup.button.webApp(
+                prostava.title || "",
+                `${CONFIG.PROSTAVAWEB_URL}/webapp/${prostava.group_id}/prostava/${ProstavaUtils.getProstavaId(
+                    prostava
+                )}`
             )
         );
     }
@@ -138,6 +174,28 @@ export class ProstavaView {
                     true
                 )
             )
+        );
+    }
+
+    //Withdraw
+    static getProstavaWithdrawKeyboardWebApp(
+        i18n: I18nContext,
+        prostava: Prostava,
+        command: string
+    ): Markup.Markup<InlineKeyboardMarkup> {
+        return Markup.inlineKeyboard(
+            [
+                Markup.button.webApp(
+                    LocaleUtils.getCommandText(i18n, command),
+                    `${CONFIG.PROSTAVAWEB_URL}/webapp/${prostava.group_id}/prostavacard/${ProstavaUtils.getProstavaId(
+                        prostava
+                    )}`
+                ),
+                CommonView.getExitButton(i18n)
+            ],
+            {
+                columns: 1
+            }
         );
     }
 

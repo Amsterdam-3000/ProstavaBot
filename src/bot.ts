@@ -1,5 +1,6 @@
+import { mongo } from "./commons/db";
 import { bot } from "./commons/bot";
-import { PROSTAVA } from "./constants";
+import { LOCALE, PROSTAVA } from "./constants";
 import { UserMiddleware, GroupMiddleware, GlobalMiddleware, CommonMiddleware, ProstavaMiddleware } from "./middlewares";
 import {
     CommonController,
@@ -8,23 +9,27 @@ import {
     ProstavaController,
     StatsController
 } from "./controllers";
-import { RegexUtils } from "./utils";
-import { prostavaQueue } from "./commons/queue";
-import { ProstavaProcess, StatsProcess, UserProcess } from "./processes";
+import { ConstantUtils, RegexUtils } from "./utils";
+import { i18n } from "./commons/locale";
 import { Scenes } from "telegraf";
 import { UpdateContext } from "./types";
 
 export function launchBot(): void {
     //Global middlewares
-    bot.use(GlobalMiddleware.addSessionToContext);
-    bot.use(GlobalMiddleware.isGroupChat);
-    bot.use(GlobalMiddleware.isUserRealOrProstavaBot);
+    bot.use(GlobalMiddleware.addSessionToContext(mongo.db));
     bot.use(GlobalMiddleware.addI18nToContext);
-    bot.use(GroupMiddleware.addGroupToContext, GroupMiddleware.applyGroupSettings, UserMiddleware.addUserToContext);
+    bot.use(GlobalMiddleware.isUserRealOrProstavaBot);
+    bot.use(GlobalMiddleware.isProstavaBotAndGroupChat);
+    bot.use(
+        GroupMiddleware.addGroupsToContext,
+        GroupMiddleware.addGroupToContext,
+        GroupMiddleware.applyGroupSettings,
+        UserMiddleware.addUserToContext
+    );
     bot.use(UserMiddleware.saveUser, GroupMiddleware.saveGroup);
     bot.use(GlobalMiddleware.addStageToContext);
     bot.use(GlobalMiddleware.addLoggingContext);
-    bot.use(GlobalMiddleware.addChatToUserSession);
+    bot.use(GroupMiddleware.addGroupIdToUserSession);
 
     //For unknown actions
     bot.use(CommonMiddleware.isCbMessageOrigin);
@@ -33,6 +38,13 @@ export function launchBot(): void {
     bot.start(HelpController.showHelp);
     bot.help(HelpController.showHelp);
     bot.settings(GlobalMiddleware.isUserAdmin, CommonController.enterScene(PROSTAVA.SCENE.SETTINGS));
+
+    //Group
+    bot.command(
+        PROSTAVA.COMMAND.GROUP,
+        GlobalMiddleware.isPrivateChat,
+        CommonController.enterScene(PROSTAVA.SCENE.GROUP)
+    );
 
     //User
     bot.command(PROSTAVA.COMMAND.PROFILE, CommonController.enterScene(PROSTAVA.SCENE.PROFILE));
@@ -107,14 +119,21 @@ export function launchBot(): void {
     bot.catch((err) => console.log(err));
     console.log("Prostava Bot is polling");
 
-    //Background jobs
-    prostavaQueue.process(PROSTAVA.JOB.PROSTAVA_AUTO_PUBLISH, ProstavaProcess.publishOrWithdrawCompletedProstavas);
-    prostavaQueue.process(PROSTAVA.JOB.PROSTAVA_RATE_REMINDER, ProstavaProcess.remindUsersRateProstavas);
-    prostavaQueue.process(PROSTAVA.JOB.PROSTAVA_REJECT_EXPIRED, ProstavaProcess.rejectExpiredProstavas);
-    prostavaQueue.process(PROSTAVA.JOB.USER_BIRTHDAY_REMINDER, UserProcess.announceReuestsForBithdayUsers);
-    prostavaQueue.process(PROSTAVA.JOB.STATS_SHOW_LAST_YEAR, StatsProcess.showLastYearStats);
-
     //Enable graceful stop
     process.once("SIGINT", () => bot.stop("SIGINT"));
     process.once("SIGTERM", () => bot.stop("SIGTERM"));
+}
+
+export function setBotCommands(): void {
+    Object.values(LOCALE.LANGUAGE).forEach((locale) => {
+        const I18nContext = i18n.createContext(locale, {});
+        bot.telegram.setMyCommands(ConstantUtils.getBotCommands(I18nContext), {
+            scope: { type: "all_group_chats" },
+            language_code: locale
+        });
+        bot.telegram.setMyCommands(ConstantUtils.getBotCommands(I18nContext, true), {
+            scope: { type: "all_private_chats" },
+            language_code: locale
+        });
+    });
 }

@@ -1,4 +1,4 @@
-import { I18nContext } from "@edjopato/telegraf-i18n/dist/source";
+import { I18nContext } from "@grammyjs/i18n";
 import { Group, Prostava, User as GroupUser } from ".";
 
 declare global {

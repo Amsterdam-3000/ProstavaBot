@@ -6,7 +6,7 @@ import { GroupUtils, ApiUtils, UserUtils } from "../utils";
 export class ApiGroupController {
     static async getGroups(req: Request, res: Response): Promise<void> {
         try {
-            const groups: GroupDocument[] = await GroupUtils.getGroupsByUserIdFromDB(req.user!.id);
+            const groups: GroupDocument[] = await GroupUtils.getGroupsByUserIdFromDB(req.user!.id, false);
             res.json(groups.map((group) => ApiUtils.convertGroupToObject(group)));
         } catch (error) {
             console.log(error);

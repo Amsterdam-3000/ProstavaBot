@@ -7,4 +7,4 @@ connect(CONFIG.MONGODB_URL!);
 //Return updating objects
 set("returnOriginal", false);
 
-export const db = connection;
+export const mongo = connection;

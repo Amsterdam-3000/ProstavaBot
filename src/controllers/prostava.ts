@@ -10,7 +10,7 @@ export class ProstavaController {
         if (ctx.prostavas?.length && !prostava) {
             const message = await ctx.reply(
                 LocaleUtils.getActionReplyText(ctx.i18n, PROSTAVA.ACTION.PROSTAVA_PROSTAVA),
-                ProstavaView.getProstavaKeyboard(ctx.i18n, ctx.prostavas)
+                ProstavaView.getProstavaKeyboard(ctx.i18n, ctx.prostavas, TelegramUtils.isChatPrivate(ctx.chat))
             );
             TelegramUtils.setSceneState(ctx, { messageId: message.message_id });
             return;
@@ -23,12 +23,14 @@ export class ProstavaController {
             const command = ProstavaUtils.getProstavaCommand(prostava);
             const message = await ctx.reply(
                 LocaleUtils.getCommandText(ctx.i18n, command, ctx.user?.personal_data?.name),
-                ProstavaView.getProstavaCreateKeyboard(
-                    ctx.i18n,
-                    prostava,
-                    ProstavaUtils.canAnnounceProstava(prostava),
-                    Number(ctx.prostavas?.length) > 1
-                )
+                TelegramUtils.isChatPrivate(ctx.chat)
+                    ? ProstavaView.getProstavaCreateKeyboardWebApp(ctx.i18n, prostava)
+                    : ProstavaView.getProstavaCreateKeyboard(
+                          ctx.i18n,
+                          prostava,
+                          ProstavaUtils.canAnnounceProstava(prostava),
+                          Number(ctx.prostavas?.length) > 1
+                      )
             );
             TelegramUtils.setSceneState(ctx, { messageId: message.message_id });
             return;
@@ -38,12 +40,17 @@ export class ProstavaController {
     static async showRateProstava(ctx: UpdateContext, next: () => Promise<void>): Promise<void> {
         const prostava = TelegramUtils.getProstavaFromContext(ctx);
         if (prostava && ProstavaUtils.isProstavaPending(prostava)) {
+            const command = ProstavaUtils.getProstavaWithdrawCommand(prostava);
             const message = await ctx.reply(await ProstavaView.getProstavaHtml(ctx.i18n, prostava), {
                 parse_mode: "HTML",
-                reply_markup: ProstavaView.getProstavaRatingKeyboard(ctx.i18n, prostava).reply_markup
+                reply_markup: TelegramUtils.isChatPrivate(ctx.chat)
+                    ? ProstavaView.getProstavaWithdrawKeyboardWebApp(ctx.i18n, prostava, command).reply_markup
+                    : ProstavaView.getProstavaRatingKeyboard(ctx.i18n, prostava).reply_markup
             });
             TelegramUtils.setSceneState(ctx, { messageId: message.message_id });
-            await ctx.pinChatMessage(message.message_id).catch((err) => console.log(err));
+            if (!TelegramUtils.isChatPrivate(ctx.chat)) {
+                await ctx.pinChatMessage(message.message_id).catch((err) => console.log(err));
+            }
             return;
         }
         await next();

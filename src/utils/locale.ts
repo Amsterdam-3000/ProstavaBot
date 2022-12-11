@@ -1,4 +1,4 @@
-import { I18nContext } from "@edjopato/telegraf-i18n/dist/source";
+import { I18nContext } from "@grammyjs/i18n";
 import { Aztro, ProstavaStatus } from "../types";
 import { ConstantUtils } from "./constant";
 import { ConverterUtils } from "./converter";

@@ -6,23 +6,40 @@ import { ProfileView } from "../views";
 
 export class ProfileController {
     static async completeProfile(ctx: UpdateContext): Promise<void> {
-        const message = await ctx.reply(
-            LocaleUtils.getCommandText(ctx.i18n, PROSTAVA.COMMAND.PROFILE, ctx.user?.personal_data?.name),
-            ProfileView.getProfileKeyboard(ctx.i18n, ctx.user?.personal_data)
-        );
+        const message = TelegramUtils.isChatPrivate(ctx.chat)
+            ? await ctx.replyWithPhoto(ctx.user.user_photo || "", {
+                  caption: await ProfileView.getProfileHtml(ctx.i18n, ctx.user),
+                  parse_mode: "HTML",
+                  reply_markup: ProfileView.getProfileKeyboardWebApp(ctx.i18n, ctx.user).reply_markup
+              })
+            : await ctx.reply(
+                  LocaleUtils.getCommandText(ctx.i18n, PROSTAVA.COMMAND.PROFILE, ctx.user?.personal_data?.name),
+                  ProfileView.getProfileKeyboard(ctx.i18n, ctx.user?.personal_data)
+              );
         TelegramUtils.setSceneState(ctx, { messageId: message.message_id });
     }
 
     static async showMyProfile(ctx: UpdateContext): Promise<void> {
         const isProfilesAll = TelegramUtils.getMessageCommand(ctx) === PROSTAVA.COMMAND.PROFILES;
-        const aztro = await AztroModel.getTodayHoroscope(ctx.user.personal_data.birthday);
-        const message = await ctx.replyWithPhoto(ctx.user.user_photo || "", {
-            caption: await ProfileView.getProfileHtml(ctx.i18n, ctx.user, aztro),
-            reply_markup: isProfilesAll
-                ? ProfileView.getUsersKeyboard(ctx.i18n, UserUtils.filterRealUsers(ctx.group.users)).reply_markup
-                : undefined,
-            parse_mode: "HTML"
-        });
+        const message = TelegramUtils.isChatPrivate(ctx.chat)
+            ? await ctx.reply(LocaleUtils.getCommandText(ctx.i18n, PROSTAVA.COMMAND.PROFILES), {
+                  reply_markup: ProfileView.getUsersKeyboardWebApp(
+                      ctx.i18n,
+                      UserUtils.filterRealUsersExceptUserId(ctx.group.users, ctx.user.user_id)
+                  ).reply_markup,
+                  parse_mode: "HTML"
+              })
+            : await ctx.replyWithPhoto(ctx.user.user_photo || "", {
+                  caption: await ProfileView.getProfileHtml(
+                      ctx.i18n,
+                      ctx.user,
+                      await AztroModel.getTodayHoroscope(ctx.user.personal_data.birthday)
+                  ),
+                  reply_markup: isProfilesAll
+                      ? ProfileView.getUsersKeyboard(ctx.i18n, UserUtils.filterRealUsers(ctx.group.users)).reply_markup
+                      : undefined,
+                  parse_mode: "HTML"
+              });
         if (isProfilesAll) {
             TelegramUtils.setSceneState(ctx, { messageId: message.message_id });
         }

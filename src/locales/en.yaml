@@ -98,6 +98,7 @@ polling:
     1: "${code} Yes"
 error:
     not_group: "${code} I only work in groups!"
+    not_groups: "${code} Bot not added to any group!"
     not_admin: "${code} You are not admin in this group!"
     app_wrong: "${code} Something went wrong!"
     are_going: "${code} Where are you going!?"
@@ -109,7 +110,8 @@ header:
 command:
     start: "${code} Start Prostava"
     help: "${code} Show Prostava help"
-    settings: "${code} Change Prostava settings"
+    settings: "${code} Change Group settings"
+    group: "${code} Select Prostava group"
     profile: "${code} Complete Your profile ${value}"
     profiles: "${code} Show user profile"
     profiles_me: "${code} Show your profile"
@@ -134,6 +136,7 @@ command_text:
     stats: "year"
 command_group:
     bot: "Bot"
+    group: "Group"
     user: "User"
     prostava: "Prostava"
     stats: "Stats"
