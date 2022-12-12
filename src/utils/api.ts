@@ -75,8 +75,8 @@ export class ApiUtils {
     }
     static convertUserToObject(user: User): ApiBaseObject {
         return {
-            id: user?.user_id.toString(),
-            name: user?.personal_data.name,
+            id: user?.user_id?.toString(),
+            name: user?.personal_data?.name,
             photo: user?.user_photo,
             link: user?.user_link
         };
