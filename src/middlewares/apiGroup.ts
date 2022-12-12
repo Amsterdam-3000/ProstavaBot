@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from "express";
-import { connect } from "http2";
 import momentTZ from "moment-timezone";
 
 import { LOCALE, CODE } from "../constants";
